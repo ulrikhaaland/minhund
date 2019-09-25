@@ -63,7 +63,7 @@ class EmailLoginController extends BaseController {
         returnUser();
         consensus = true;
       }
-    }
+    } else {}
     return consensus;
   }
 
@@ -167,7 +167,7 @@ class EmailLogin extends BaseView {
                 ),
                 if (!controller.isLogin) ...[
                   PrimaryTextField(
-                    labelText: "Bekreft passord",
+                    hintText: "Bekreft passord",
                     focusNode: controller.confirmPasswordNode,
                     textCapitalization: TextCapitalization.none,
                     textInputAction: TextInputAction.done,

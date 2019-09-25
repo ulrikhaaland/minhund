@@ -45,6 +45,8 @@ class _AppState extends State<App> {
       title: 'Flutter Demo',
       theme: ThemeData(
         // brightness: Brightness.light,
+        backgroundColor: ServiceProvider
+            .instance.instanceStyleService.appStyle.backgroundColor,
         primarySwatch: Colors.grey,
       ),
       home: RootPage(

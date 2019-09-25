@@ -26,6 +26,8 @@ class PhoneLoginController extends BaseController {
 
   final RootPageController rootPageController;
 
+  List<PrimaryTextField> textFields;
+
   PhoneLoginController({
     this.auth,
     this.rootPageController,
@@ -33,13 +35,13 @@ class PhoneLoginController extends BaseController {
 
   @override
   void initState() {
-    super.initState();
     _btnCtrlr = PrimaryButtonController(
       text: "Send meg engangskode på SMS",
       onPressed: () async {
         try {
           if (formKey.currentState.validate()) {
-            if (signInStatus != SignInStatus.enterCode) {
+            if (signInStatus != SignInStatus.enterCode &&
+                textFields[0].canSave) {
               formKey.currentState.save();
 
               _btnCtrlr.isLoading = true;
@@ -58,7 +60,7 @@ class PhoneLoginController extends BaseController {
                     _btnCtrlr.setState(() {});
                     setState(() {});
                   });
-            } else {
+            } else if (textFields[1].canSave) {
               formKey.currentState.save();
 
               _btnCtrlr.isLoading = true;
@@ -71,21 +73,55 @@ class PhoneLoginController extends BaseController {
                   Navigator.pop(context);
                 });
               } else {
-                signInStatus = SignInStatus.enterNumber;
-                setState(() {});
+                onError();
               }
-              _btnCtrlr.isLoading = false;
-              _btnCtrlr.setState(() {});
+              // Might not be needed
+              // _btnCtrlr.isLoading = false;
+              // _btnCtrlr.setState(() {});
             }
+          } else {
+            formKey.currentState.reset();
           }
         } catch (e) {
-          _btnCtrlr.isLoading = false;
-          _btnCtrlr.setState(() {});
-          signInStatus = SignInStatus.enterNumber;
-          setState(() {});
+          onError();
         }
       },
     );
+    textFields = [
+      PrimaryTextField(
+        hintText: "Telefonnummer",
+        key: Key("number"),
+        // initValue: phoneNumber,
+        textInputType: TextInputType.phone,
+        textAlign: TextAlign.center,
+        style: ServiceProvider
+            .instance.instanceStyleService.appStyle.textFieldInput,
+        autoFocus: true,
+        validate: true,
+        onSaved: (val) => phoneNumber = val.trim(),
+        regExType: RegExType.phone,
+      ),
+      PrimaryTextField(
+        regExType: RegExType.smsCode,
+        key: Key("code"),
+        hintText: "Kode",
+        initValue: _smsCode,
+        textInputType: TextInputType.number,
+        textAlign: TextAlign.center,
+        style: ServiceProvider.instance.instanceStyleService.appStyle.pageTitle,
+        autoFocus: true,
+        validate: true,
+        onSaved: (val) => _smsCode = val,
+      ),
+    ];
+    super.initState();
+  }
+
+  void onError() {
+    _btnCtrlr.isLoading = false;
+    _btnCtrlr.setState(() {});
+    // signInStatus = SignInStatus.enterNumber;
+    setState(() {});
   }
 
   @override
@@ -131,135 +167,10 @@ class PhoneLogin extends BaseView {
                   height: getDefaultPadding(context) * 2,
                 ),
                 if (controller.signInStatus == SignInStatus.enterNumber) ...[
-                  PrimaryTextField(
-                    hintText: "Telefonnummer",
-                    key: Key("number"),
-                    initValue: controller.phoneNumber,
-                    textInputType: TextInputType.phone,
-                    textAlign: TextAlign.center,
-                    style: ServiceProvider
-                        .instance.instanceStyleService.appStyle.textFieldInput,
-
-                    autoFocus: true,
-                    validate: true,
-                    onSaved: (val) => controller.phoneNumber = val.trim(),
-                    regExType: RegExType.phone,
-                    // decoration: InputDecoration(
-                    //     hintStyle: ServiceProvider
-                    //         .instance.instanceStyleService.appStyle.titleGrey,
-                    //     hintText: "Telefonnummer",
-                    //     errorStyle: ServiceProvider.instance.instanceStyleService
-                    //         .appStyle.textFieldError,
-                    //     counterStyle:
-                    //         TextStyle(color: Colors.red, fontFamily: "Apercu"),
-                    //     enabledBorder: new UnderlineInputBorder(
-                    //         borderSide: new BorderSide(
-                    //       style: BorderStyle.none,
-                    //     )),
-                    //     focusedBorder: UnderlineInputBorder(
-                    //       borderSide: BorderSide(
-                    //         style: BorderStyle.none,
-                    //       ),
-                    //     ),
-                    //     labelStyle: ServiceProvider.instance.instanceStyleService
-                    //         .appStyle.textFieldLabel),
-                  ),
+                  controller.textFields[0]
                 ] else ...[
-                  PrimaryTextField(
-                    key: Key("code"),
-                    hintText: "Kode",
-                    initValue: controller._smsCode,
-                    textInputType: TextInputType.number,
-                    textAlign: TextAlign.center,
-                    style: ServiceProvider
-                        .instance.instanceStyleService.appStyle.pageTitle,
-                    autoFocus: true,
-                    validate: true,
-                    onSaved: (val) => controller._smsCode = val,
-                  ),
+                  controller.textFields[1]
                 ],
-                // Card(
-                //   shape: RoundedRectangleBorder(
-                //     borderRadius: BorderRadius.circular(15.0),
-                //   ),
-                //   child: controller.signInStatus == SignInStatus.enterNumber
-                //       ? TextFormField(
-                //           key: Key("number"),
-                //           initialValue: controller.phoneNumber,
-                //           keyboardType: TextInputType.phone,
-                //           cursorColor: ServiceProvider
-                //               .instance.instanceStyleService.appStyle.imperial,
-                //           textAlign: TextAlign.center,
-                //           style: ServiceProvider
-                //               .instance.instanceStyleService.appStyle.body1,
-                //           autofocus: true,
-                //           validator: (val) {
-                //             if (val.isEmpty) {
-                //               return "Vennligst skriv inn hele nummeret";
-                //             }
-                //           },
-                //           onSaved: (val) => controller.phoneNumber = val.trim(),
-                //           decoration: InputDecoration(
-                //               hintStyle: ServiceProvider.instance
-                //                   .instanceStyleService.appStyle.titleGrey,
-                //               hintText: "Telefonnummer",
-                //               errorStyle: ServiceProvider.instance
-                //                   .instanceStyleService.appStyle.textFieldError,
-                //               counterStyle: TextStyle(
-                //                   color: Colors.red, fontFamily: "Apercu"),
-                //               enabledBorder: new UnderlineInputBorder(
-                //                   borderSide: new BorderSide(
-                //                 style: BorderStyle.none,
-                //               )),
-                //               focusedBorder: UnderlineInputBorder(
-                //                 borderSide: BorderSide(
-                //                   style: BorderStyle.none,
-                //                 ),
-                //               ),
-                //               labelStyle: ServiceProvider
-                //                   .instance
-                //                   .instanceStyleService
-                //                   .appStyle
-                //                   .textFieldLabel),
-                //         )
-                //       : TextFormField(
-                //           key: Key("code"),
-                //           initialValue: controller._smsCode,
-                //           keyboardType: TextInputType.number,
-                //           cursorColor: ServiceProvider
-                //               .instance.instanceStyleService.appStyle.imperial,
-                //           textAlign: TextAlign.center,
-                //           style: ServiceProvider
-                //               .instance.instanceStyleService.appStyle.pageTitle,
-                //           autofocus: true,
-                //           validator: (val) {
-                //             if (val.length > 6) {
-                //               return "Vennligst skriv inn den 6-sifrede koden";
-                //             }
-                //           },
-                //           onSaved: (val) => controller._smsCode = val,
-                //           decoration: InputDecoration(
-                //               hintStyle: ServiceProvider.instance
-                //                   .instanceStyleService.appStyle.titleGrey,
-                //               hintText: "Engangskode",
-                //               counterStyle: TextStyle(
-                //                   color: Colors.red, fontFamily: "Apercu"),
-                //               enabledBorder: new UnderlineInputBorder(
-                //                   borderSide: new BorderSide(
-                //                 style: BorderStyle.none,
-                //               )),
-                //               focusedBorder: UnderlineInputBorder(
-                //                 borderSide: BorderSide(
-                //                   style: BorderStyle.none,
-                //                 ),
-                //               ),
-                //               labelStyle: ServiceProvider
-                //                   .instance
-                //                   .instanceStyleService
-                //                   .appStyle
-                //                   .textFieldLabel),
-                //         ),
-                // ),
                 PrimaryButton(
                   controller: controller._btnCtrlr,
                 ),
