@@ -100,7 +100,7 @@ class InstanceStyleService {
       color: appStyle.textGrey,
     );
     _appStyle.timestamp = new TextStyle(
-      fontFamily: "Montserrat",
+      fontFamily: "Apercu",
       fontSize: screenHeight * 0.018 * factor,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
@@ -140,11 +140,11 @@ class InstanceStyleService {
     );
 
     _appStyle.body1Black = new TextStyle(
-      fontFamily: "Montserrat",
+      fontFamily: "Apercu",
       fontSize: screenHeight * 0.024 * factor,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
-      color: Colors.black,
+      color: appStyle.textGrey,
     );
 
     _appStyle.body1BlackBig = new TextStyle(
@@ -243,11 +243,11 @@ class InstanceStyleService {
     );
 
     _appStyle.coloredText = new TextStyle(
-      fontFamily: "Montserrat",
-      fontSize: screenHeight * 0.024 * factor,
+      fontFamily: "Apercu",
+      fontSize: screenHeight * 0.018 * factor,
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.normal,
-      color: appStyle.imperial,
+      color: appStyle.skyBlue,
     );
 
     _appStyle.disabledColoredText = new TextStyle(

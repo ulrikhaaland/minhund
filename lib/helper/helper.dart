@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/service/theme_service.dart';
 
@@ -36,6 +37,42 @@ fieldFocusChange(
     BuildContext context, FocusNode currentFocus, FocusNode nextFocus) {
   currentFocus != null ? currentFocus.unfocus() : null;
   FocusScope.of(context).requestFocus(nextFocus);
+}
+
+bool validateTextFields(
+    {List<PrimaryTextField> textFields, PrimaryTextField singleTextField}) {
+  bool canSave = true;
+  if (singleTextField == null) {
+    textFields.forEach((field) {
+      if (field.canSave == false) {
+        canSave = false;
+      }
+    });
+  } else {
+    canSave = singleTextField.canSave;
+  }
+  return canSave;
+}
+
+Widget termsAndConditions() {
+  return Column(
+    children: <Widget>[
+      Text(
+        "Ved å registrere bruker hos Minhund samtykker jeg til Minhund's",
+        style: ServiceProvider.instance.instanceStyleService.appStyle.timestamp,
+        textAlign: TextAlign.start,
+      ),
+      InkWell(
+        onTap: () => print("GO TO TERMS AND CONDITIONS"),
+        child: Text(
+          "brukervilkår.",
+          style: ServiceProvider
+              .instance.instanceStyleService.appStyle.coloredText,
+          textAlign: TextAlign.start,
+        ),
+      ),
+    ],
+  );
 }
 
 double getCircleAvatarSize(BuildContext context) {

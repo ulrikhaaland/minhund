@@ -20,9 +20,7 @@ class EmailLoginController extends BaseController {
 
   final formKey = GlobalKey<FormState>();
 
-  FocusNode emailNode = FocusNode();
-  FocusNode passwordNode = FocusNode();
-  FocusNode confirmPasswordNode = FocusNode();
+  FocusScopeNode _node = FocusScopeNode();
 
   String email;
   String password;
@@ -31,6 +29,8 @@ class EmailLoginController extends BaseController {
   String uid;
 
   String authHint = "";
+
+  List<PrimaryTextField> textFields;
 
   EmailLoginController({this.auth, this.returnUser});
 
@@ -41,6 +41,7 @@ class EmailLoginController extends BaseController {
         onPressed: () async {
           primaryButtonController.setState(() {
             primaryButtonController.isLoading = true;
+            authHint = "";
           });
           await validateAndSave();
           primaryButtonController.setState(() {
@@ -54,8 +55,13 @@ class EmailLoginController extends BaseController {
 
   Future<bool> validateAndSave() async {
     bool consensus = false;
-    if (formKey.currentState.validate()) {
-      formKey.currentState.save();
+    formKey.currentState.save();
+    if (isLogin
+        ? validateTextFields(textFields: [
+            textFields[0],
+            textFields[1],
+          ])
+        : validateTextFields(textFields: textFields)) {
       uid = await loginOrRegister();
       if (uid == null) {
         consensus = false;
@@ -80,16 +86,16 @@ class EmailLoginController extends BaseController {
         }
       }
     } catch (e) {
-      if (e.message ==
-              "The password is invalid or the user does not have a password." ||
-          e.message ==
-              "There is no user record corresponding to this identifier. The user may have been deleted.") {
-        authHint = "Feil email eller passord";
-      } else if (e.message == "The email address is badly formatted.") {
-        authHint = "Email-adressen er feil formatert";
-      }
-      setAuthHint(authHint);
-      print(authHint);
+      // if (e.message ==
+      //         "The password is invalid or the user does not have a password." ||
+      //     e.message ==
+      //         "There is no user record corresponding to this identifier. The user may have been deleted.") {
+      //   authHint = "Feil email eller passord";
+      // } else if (e.message == "The email address is badly formatted.") {
+      //   authHint = "Email-adressen er feil formatert";
+      // }
+      // setAuthHint(authHint);
+      // print(authHint);
     }
     return userId;
   }
@@ -97,10 +103,10 @@ class EmailLoginController extends BaseController {
   setAuthHint(String hintText) {
     authHint = hintText;
     setState(() {});
-    Timer(Duration(seconds: 3), () {
-      authHint = "";
-      setState(() {});
-    });
+    // Timer(Duration(seconds: 3), () {
+    //   authHint = "";
+    //   setState(() {});
+    // });
   }
 }
 
@@ -111,6 +117,37 @@ class EmailLogin extends BaseView {
 
   @override
   Widget build(BuildContext context) {
+    controller.textFields = controller.textFields = <PrimaryTextField>[
+      PrimaryTextField(
+        regExType: RegExType.email,
+        hintText: "Email",
+        textCapitalization: TextCapitalization.none,
+        textInputType: TextInputType.emailAddress,
+        onFieldSubmitted: () => controller._node.nextFocus(),
+        onSaved: (val) => controller.email = val.trim().toLowerCase(),
+      ),
+      PrimaryTextField(
+        regExType: RegExType.password,
+        hintText: "Passord",
+        onFieldSubmitted: () => controller.isLogin
+            ? controller._node.unfocus()
+            : controller._node.nextFocus(),
+        obscure: true,
+        textCapitalization: TextCapitalization.none,
+        textInputAction:
+            controller.isLogin ? TextInputAction.done : TextInputAction.next,
+        onSaved: (val) => controller.password = val.trim().toLowerCase(),
+      ),
+      PrimaryTextField(
+        regExType: RegExType.password,
+        hintText: "Bekreft passord",
+        textCapitalization: TextCapitalization.none,
+        textInputAction: TextInputAction.done,
+        obscure: true,
+        onFieldSubmitted: () => controller._node.unfocus(),
+        onSaved: (val) => controller.confirmPassword = val.trim().toLowerCase(),
+      ),
+    ];
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
       child: Scaffold(
@@ -136,85 +173,57 @@ class EmailLogin extends BaseView {
         body: SingleChildScrollView(
           child: Form(
             key: controller.formKey,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  height: getDefaultPadding(context) * 2,
-                ),
-                PrimaryTextField(
-                  hintText: "Email",
-                  focusNode: controller.emailNode,
-                  textCapitalization: TextCapitalization.none,
-                  textInputType: TextInputType.emailAddress,
-                  onFieldSubmitted: () => fieldFocusChange(
-                      context, controller.emailNode, controller.passwordNode),
-                  onSaved: (val) => controller.email = val.trim().toLowerCase(),
-                  validate: true,
-                ),
-                PrimaryTextField(
-                  hintText: "Passord",
-                  focusNode: controller.passwordNode,
-                  obscure: true,
-                  textCapitalization: TextCapitalization.none,
-                  textInputAction:
-                      controller.isLogin ? TextInputAction.done : null,
-                  onFieldSubmitted: () => !controller.isLogin
-                      ? fieldFocusChange(context, controller.passwordNode,
-                          controller.confirmPasswordNode)
-                      : null,
-                  onSaved: (val) => controller.password = val,
-                  validate: true,
-                ),
-                if (!controller.isLogin) ...[
-                  PrimaryTextField(
-                    hintText: "Bekreft passord",
-                    focusNode: controller.confirmPasswordNode,
-                    textCapitalization: TextCapitalization.none,
-                    textInputAction: TextInputAction.done,
-                    obscure: true,
-                    onSaved: (val) => controller.confirmPassword = val,
-                  ),
-                ],
-                PrimaryButton(
-                  controller: controller.primaryButtonController,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    controller.isLogin = !controller.isLogin;
-                    controller.setState(() {});
-                  },
-                  child: Container(
-                    alignment: Alignment.center,
+            child: FocusScope(
+              node: controller._node,
+              child: Column(
+                children: <Widget>[
+                  controller.textFields[0],
+                  controller.textFields[1],
+                  if (!controller.isLogin) ...[
+                    controller.textFields[2],
+                  ],
+                  Container(
                     width: ServiceProvider.instance.screenService
-                        .getWidthByPercentage(context, 50),
-                    height: ServiceProvider.instance.screenService
-                        .getHeightByPercentage(context, 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: ServiceProvider
-                          .instance.instanceStyleService.appStyle.green,
-                    ),
+                        .getWidthByPercentage(context, 90),
                     child: Text(
-                      controller.isLogin ? "Registrer deg" : "Logg inn",
+                      controller.authHint,
                       style: ServiceProvider
-                          .instance.instanceStyleService.appStyle.buttonText,
+                          .instance.instanceStyleService.appStyle.timestamp,
+                      textAlign: TextAlign.center,
                     ),
                   ),
-                ),
-                Container(
-                  height: getDefaultPadding(context) * 4,
-                ),
-                Container(
-                  width: ServiceProvider.instance.screenService
-                      .getWidthByPercentage(context, 90),
-                  child: Text(
-                    controller.authHint,
-                    style: ServiceProvider
-                        .instance.instanceStyleService.appStyle.body1Black,
-                    textAlign: TextAlign.center,
+                  PrimaryButton(
+                    controller: controller.primaryButtonController,
                   ),
-                )
-              ],
+                  GestureDetector(
+                    onTap: () {
+                      controller.isLogin = !controller.isLogin;
+                      controller.setState(() {});
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: ServiceProvider.instance.screenService
+                          .getWidthByPercentage(context, 50),
+                      height: ServiceProvider.instance.screenService
+                          .getHeightByPercentage(context, 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: ServiceProvider
+                            .instance.instanceStyleService.appStyle.green,
+                      ),
+                      child: Text(
+                        controller.isLogin ? "Registrer deg" : "Logg inn",
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.buttonText,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: getDefaultPadding(context) * 4,
+                  ),
+                  termsAndConditions(),
+                ],
+              ),
             ),
           ),
         ),

@@ -71,15 +71,8 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
 
   TextEditingController textEditingController = TextEditingController();
 
-  String textFieldValue;
-
   @override
   initState() {
-    textEditingController.text = widget.initValue ?? "a";
-    textEditingController.addListener(() {
-      if (textEditingController.text != "")
-        textFieldValue = textEditingController.text;
-    });
     _animController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 200));
     super.initState();
@@ -90,9 +83,6 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
   Widget build(BuildContext context) {
     if (!mounted) return Container();
     double padding = getDefaultPadding(context);
-
-    if (textFieldValue != null && textEditingController.text == "")
-      textFieldValue = textEditingController.text;
 
     widget.validate == null ? widget.validate = true : null;
     return Container(
@@ -171,57 +161,55 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                     style: widget.style ??
                         ServiceProvider.instance.instanceStyleService.appStyle
                             .textFieldInput,
-                    validator:
-                        // Move all of this somewhere more suited
-                        widget.validate
-                            ? (val) {
-                                if (widget.canSave == false)
-                                  widget.canSave = true;
-                                String pattern;
-
-                                if (val.length == 0) {
-                                  errorMessage = 'Vennligst fyll inn feltet';
-                                  widget.canSave = false;
-                                } else {
-                                  switch (widget.regExType) {
-                                    case RegExType.phone:
-                                      pattern = r"(^(?:[+0]9)?[0-9]{8,12}$)";
-                                      errorMessage =
-                                          'Vennligst fyll inn et gyldig mobilnummer';
-
-                                      break;
-                                    case RegExType.email:
-                                      pattern =
-                                          r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
-                                      errorMessage =
-                                          'Vennligst fyll inn en gyldig email adresse';
-
-                                      break;
-                                    case RegExType.smsCode:
-                                      if (val.length < 6) {
-                                        errorMessage =
-                                            "Vennligst fyll inn din 6-sifrede kode";
-                                        widget.canSave = false;
-                                      }
-                                      break;
-                                    default:
-                                  }
-                                  if (widget.regExType != null &&
-                                      pattern != null) {
-                                    RegExp regExp = new RegExp(pattern);
-                                    if (!regExp.hasMatch(val)) {
-                                      widget.canSave = false;
-                                    }
-                                  }
-                                }
-
-                                setState(() {
-                                  _animController.forward();
-                                });
-                                return widget.canSave ? null : "error";
-                              }
-                            : null,
                     onSaved: (val) {
+                      if (widget.canSave == false) widget.canSave = true;
+                      String pattern;
+
+                      if (val.length == 0) {
+                        errorMessage = 'Vennligst fyll inn feltet';
+                        widget.canSave = false;
+                      } else {
+                        switch (widget.regExType) {
+                          case RegExType.phone:
+                            pattern = r"(^(?:[+0]9)?[0-9]{8,12}$)";
+                            errorMessage =
+                                'Vennligst fyll inn et gyldig mobilnummer';
+
+                            break;
+                          case RegExType.email:
+                            pattern = r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+                            errorMessage =
+                                'Vennligst fyll inn en gyldig email adresse';
+
+                            break;
+                          case RegExType.smsCode:
+                            if (val.length < 6) {
+                              errorMessage =
+                                  "Vennligst fyll inn din 6-sifrede kode";
+                              widget.canSave = false;
+                            }
+                            break;
+                          case RegExType.password:
+                            if (val.length < 8) {
+                              errorMessage =
+                                  "Passordet må minst være 8 sifre langt";
+                              widget.canSave = false;
+                            }
+                            break;
+                          default:
+                        }
+                        if (widget.regExType != null && pattern != null) {
+                          RegExp regExp = new RegExp(pattern);
+                          if (!regExp.hasMatch(val)) {
+                            widget.canSave = false;
+                          }
+                        }
+                      }
+
+                      setState(() {
+                        _animController.forward();
+                      });
+
                       if (widget.textEditingController == null) {
                         if (widget.canSave) widget.onSaved(val);
                       } else {

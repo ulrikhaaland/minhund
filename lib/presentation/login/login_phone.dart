@@ -38,49 +38,40 @@ class PhoneLoginController extends BaseController {
     _btnCtrlr = PrimaryButtonController(
       text: "Send meg engangskode på SMS",
       onPressed: () async {
+        formKey.currentState.save();
         try {
-          if (formKey.currentState.validate()) {
-            if (signInStatus != SignInStatus.enterCode &&
-                textFields[0].canSave) {
-              formKey.currentState.save();
+          if (signInStatus != SignInStatus.enterCode &&
+              validateTextFields(singleTextField: textFields[0])) {
+            _btnCtrlr.isLoading = true;
+            _btnCtrlr.setState(() {});
+            _btnCtrlr.text = "Bekreft kode";
 
-              _btnCtrlr.isLoading = true;
-              _btnCtrlr.setState(() {});
-              _btnCtrlr.text = "Bekreft kode";
+            await auth.verifyPhoneNumber(
+                phoneNumber: "+47 " + phoneNumber,
+                theId: (s) {
+                  _verificationId = s;
+                  signInStatus = SignInStatus.enterCode;
 
-              formKey.currentState.save();
-
-              await auth.verifyPhoneNumber(
-                  phoneNumber: "+47 " + phoneNumber,
-                  theId: (s) {
-                    _verificationId = s;
-                    signInStatus = SignInStatus.enterCode;
-
-                    _btnCtrlr.isLoading = false;
-                    _btnCtrlr.setState(() {});
-                    setState(() {});
-                  });
-            } else if (textFields[1].canSave) {
-              formKey.currentState.save();
-
-              _btnCtrlr.isLoading = true;
-              _btnCtrlr.setState(() {});
-              setState(() {});
-              rootPageController.firebaseUser =
-                  await auth.signInWithPhone(_verificationId, _smsCode);
-              if (rootPageController.firebaseUser != null) {
-                rootPageController.getUser().then((v) {
-                  Navigator.pop(context);
+                  _btnCtrlr.isLoading = false;
+                  _btnCtrlr.setState(() {});
+                  setState(() {});
                 });
-              } else {
-                onError();
-              }
-              // Might not be needed
-              // _btnCtrlr.isLoading = false;
-              // _btnCtrlr.setState(() {});
+          } else if (validateTextFields(singleTextField: textFields[1])) {
+            _btnCtrlr.isLoading = true;
+            _btnCtrlr.setState(() {});
+            setState(() {});
+            rootPageController.firebaseUser =
+                await auth.signInWithPhone(_verificationId, _smsCode);
+            if (rootPageController.firebaseUser != null) {
+              rootPageController.getUser().then((v) {
+                Navigator.pop(context);
+              });
+            } else {
+              onError();
             }
-          } else {
-            formKey.currentState.reset();
+            // Might not be needed
+            // _btnCtrlr.isLoading = false;
+            // _btnCtrlr.setState(() {});
           }
         } catch (e) {
           onError();
@@ -111,7 +102,7 @@ class PhoneLoginController extends BaseController {
         style: ServiceProvider.instance.instanceStyleService.appStyle.pageTitle,
         autoFocus: true,
         validate: true,
-        onSaved: (val) => _smsCode = val,
+        onSaved: (val) => _smsCode = val.trim(),
       ),
     ];
     super.initState();
@@ -174,6 +165,7 @@ class PhoneLogin extends BaseView {
                 PrimaryButton(
                   controller: controller._btnCtrlr,
                 ),
+                termsAndConditions(),
               ],
             ),
           ),
