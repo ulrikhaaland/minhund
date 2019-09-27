@@ -35,7 +35,7 @@ abstract class MasterPage extends BaseView {
             centerTitle: true,
             leading: controller.actionOne,
             title: Text(
-              controller.title,
+              controller.title ?? "Tilfeldig",
               style:
                   ServiceProvider.instance.instanceStyleService.appStyle.title,
             ),
@@ -43,13 +43,11 @@ abstract class MasterPage extends BaseView {
           ),
           bottomNavigationBar: controller.bottomNav,
           floatingActionButton: controller.fab,
-          body: SingleChildScrollView(
-            child: LayoutBuilder(
-              builder: (context, con) {
-                return Container(
-                    alignment: Alignment.center, child: buildContent(context));
-              },
-            ),
+          body: LayoutBuilder(
+            builder: (context, con) {
+              return Container(
+                  alignment: Alignment.center, child: buildContent(context));
+            },
           )),
     );
   }
