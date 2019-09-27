@@ -79,12 +79,14 @@ class DateTimePickerController extends BaseController {
               return Future.value(true);
             },
             child: SimpleDialog(
+              backgroundColor: ServiceProvider
+                  .instance.instanceStyleService.appStyle.backgroundColor,
               title: Align(
                   alignment: Alignment.center,
                   child: Text(
                     title ?? "N/A",
                     style: ServiceProvider
-                        .instance.instanceStyleService.appStyle.titleGrey,
+                        .instance.instanceStyleService.appStyle.title,
                   )),
               children: <Widget>[
                 DatePickerWidget(
@@ -93,8 +95,12 @@ class DateTimePickerController extends BaseController {
                     _setCtrlrText(selectedTime);
                     onConfirmed(selectedTime);
                   },
-                  // locale: DateTimePickerLocale.no,
+                  locale: DateTimePickerLocale.hu,
                   pickerTheme: DateTimePickerTheme(
+                    itemTextStyle: ServiceProvider
+                        .instance.instanceStyleService.appStyle.body1,
+                    backgroundColor: ServiceProvider
+                        .instance.instanceStyleService.appStyle.backgroundColor,
                     cancelTextStyle: ServiceProvider
                         .instance.instanceStyleService.appStyle.cancel,
                     confirmTextStyle: ServiceProvider
@@ -120,12 +126,10 @@ class DateTimePicker extends BaseView {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: PrimaryTextField(
-        textEditingController: controller._textCtrlr,
-        focusNode: controller._textNode,
-        labelText: controller.label,
-      ),
+    return PrimaryTextField(
+      textEditingController: controller._textCtrlr,
+      focusNode: controller._textNode,
+      hintText: controller.label,
     );
   }
 }

@@ -108,19 +108,19 @@ class InstanceStyleService {
     );
 
     _appStyle.confirm = new TextStyle(
-      fontFamily: "Asap",
+      fontFamily: "Apercu",
       fontSize: screenHeight * 0.024 * factor,
-      fontWeight: FontWeight.normal,
+      fontWeight: FontWeight.bold,
       fontStyle: FontStyle.normal,
       color: _appStyle.green,
     );
 
     _appStyle.cancel = new TextStyle(
-      fontFamily: "Asap",
+      fontFamily: "Apercu",
       fontSize: screenHeight * 0.024 * factor,
-      fontWeight: FontWeight.normal,
+      fontWeight: FontWeight.bold,
       fontStyle: FontStyle.normal,
-      color: _appStyle.imperial,
+      color: _appStyle.pink,
     );
 
     _appStyle.textFieldError = TextStyle(

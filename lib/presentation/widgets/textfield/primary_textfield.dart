@@ -73,6 +73,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
 
   @override
   initState() {
+    textEditingController.text = widget.initValue ?? "";
     _animController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 200));
     super.initState();
@@ -163,6 +164,8 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                             .textFieldInput,
                     onSaved: (val) {
                       if (widget.canSave == false) widget.canSave = true;
+                      val.trim();
+
                       String pattern;
 
                       if (val.length == 0) {

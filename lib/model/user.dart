@@ -1,43 +1,39 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import 'dog.dart';
 
 part 'user.g.dart';
 
 @JsonSerializable()
 class User {
-  User(
-      {this.email,
-      this.id,
-      this.userName,
-      this.fcm,
-      this.bio,
-      this.imageUrl,
-      this.appVersion,
-      this.notifications,
-      this.blockedUserIds,
-      this.bookmarkIds,
-      this.docRef,
-      this.rating,
-      this.userNameId});
+  User({
+    this.email,
+    this.id,
+    this.fcm,
+    this.appVersion,
+    this.notifications,
+    this.docRef,
+    this.name,
+    this.dogs,
+    this.phoneNumber,
+    this.address,
+    this.city,
+    this.county,
+  });
 
-  String userName;
-  String userNameId;
   String id;
+  String name;
+  String phoneNumber;
   String email;
+  String city;
+  String county;
+  String address;
   String fcm;
-  String bio;
-  String imageUrl;
   double appVersion;
   int notifications;
-  double rating;
-  DateTime birthDate;
-  List<String> blockedUserIds;
-  @JsonKey(ignore: true)
-  bool blocked;
-  @JsonKey(ignore: true)
-  Widget profileImageWidget;
-  List<String> bookmarkIds;
+  List<Dog> dogs;
+
   @JsonKey(ignore: true)
   DocumentReference docRef;
 

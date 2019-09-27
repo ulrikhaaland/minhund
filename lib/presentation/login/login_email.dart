@@ -53,6 +53,12 @@ class EmailLoginController extends BaseController {
     super.initState();
   }
 
+  @override
+  dispose() {
+    _node.dispose();
+    super.dispose();
+  }
+
   Future<bool> validateAndSave() async {
     bool consensus = false;
     formKey.currentState.save();

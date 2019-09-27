@@ -1,5 +1,6 @@
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +10,11 @@ import 'package:minhund/presentation/home/journal/journal.dart';
 import 'package:minhund/presentation/home/leverage/leverage.dart';
 import 'package:minhund/presentation/home/map/map.dart';
 import 'package:minhund/presentation/home/profile/profile.dart';
+import 'package:minhund/presentation/intro/user_intro.dart';
 import 'package:minhund/presentation/login/login_page.dart';
 import 'package:minhund/presentation/widgets/bottom_nav.dart';
 import 'package:minhund/provider/user_provider.dart';
+import 'package:minhund/utilities/masterpage.dart';
 import 'package:provider/provider.dart';
 import 'model/user.dart';
 import 'presentation/base_view.dart';
@@ -37,41 +40,13 @@ class RootPageController extends BaseController {
   User _user;
   bool introDone = false;
 
-  Widget bottomNav;
-
-  int bottomNavIndex = 0;
-
-  List<Widget> pages;
+  bool newUser = true;
 
   @override
   void initState() {
     print('RootPage: initState');
     getUser();
-    bottomNav = BottomNav(
-      onTabChanged: (index) => bottomNavIndex = index,
-    );
-    pages = <Widget>[
-      Journal(
-        controller: JournalController(
-          bottomNav: bottomNav,
-        ),
-      ),
-      MapLocation(
-        controller: MapLocationController(
-          bottomNav: bottomNav,
-        ),
-      ),
-      Leverage(
-        controller: LeverageController(
-          bottomNav: bottomNav,
-        ),
-      ),
-      Profile(
-        controller: ProfileController(
-          bottomNav: bottomNav,
-        ),
-      ),
-    ];
+
     super.initState();
   }
 
@@ -90,22 +65,16 @@ class RootPageController extends BaseController {
       _user = await UserProvider().get(firebaseUser.uid);
       if (_user == null) {
         _user = User(
-          userName: null,
-          userNameId: null,
           email: firebaseUser.email == "" ? null : firebaseUser.email,
           id: firebaseUser.uid == "" ? null : firebaseUser.uid,
           fcm: null,
-          bio: null,
-          imageUrl: null,
           appVersion: 1,
           notifications: 0,
-          blockedUserIds: <String>[],
-          bookmarkIds: <String>[],
+          phoneNumber: firebaseUser.phoneNumber,
         );
-
+        newUser = true;
         await UserProvider().set(_user);
       }
-
       UserProvider().updateFcmToken(_user, firebaseMessaging);
     }
 
@@ -125,7 +94,6 @@ class RootPage extends BaseView {
   RootPage({this.controller, Key key})
       : super(
           controller: controller,
-          key: key,
         );
 
   @override
@@ -133,10 +101,6 @@ class RootPage extends BaseView {
     if (!mounted) {
       return Container();
     }
-
-    Locale myLocale = Localizations.localeOf(context);
-
-    print(myLocale.countryCode.toString());
 
     /// Force the app bar to be "white" so that the time,
     /// battery and all those symbols are rendered as black
@@ -150,12 +114,13 @@ class RootPage extends BaseView {
     /// lifetime so re-render of this page will not
     /// set the style every time since the style service
     /// has an internal control of that
+    ///
     ServiceProvider.instance.instanceStyleService.setStandardStyle(
       ServiceProvider.instance.screenService.getPortraitHeight(context),
       ServiceProvider.instance.screenService.getBambooFactor(context),
     );
 
-    // controller.auth.signOut();
+    controller.auth.signOut();
 
     if (!controller.introDone) {
       return Intro(
@@ -178,10 +143,32 @@ class RootPage extends BaseView {
           },
         ),
       );
+    } else if (controller.newUser) {
+      return UserIntro(
+        controller: UserIntroController(
+            user: controller._user,
+            onIntroFinished: () =>
+                controller.setState(() => controller.newUser = false)),
+      );
     } else {
       return Provider<User>.value(
         value: controller._user,
-        child: controller.pages[controller.bottomNavIndex],
+        child: BottomNavigation(
+          controller: BottomNavigationController(
+            journal: Journal(
+              controller: JournalController(),
+            ),
+            mapLocation: MapLocation(
+              controller: MapLocationController(),
+            ),
+            leverage: Leverage(
+              controller: LeverageController(),
+            ),
+            profile: Profile(
+              controller: ProfileController(),
+            ),
+          ),
+        ),
       );
     }
   }
