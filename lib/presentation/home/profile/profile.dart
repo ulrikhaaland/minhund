@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
+import 'package:minhund/presentation/widgets/bottom_nav.dart';
 import 'package:minhund/root_page.dart';
-import 'package:minhund/utilities/masterpage.dart';
+import 'package:minhund/utilities/master_page.dart';
 
 import '../../../bottom_navigation.dart';
 
-class ProfileController extends MasterPageController {
+class ProfileController extends BottomNavigationController {
   ProfileController();
   @override
   // TODO: implement fab
@@ -14,7 +15,7 @@ class ProfileController extends MasterPageController {
 
   @override
   // TODO: implement title
-  String get title => null;
+  String get title => "Profil";
 
   @override
   // TODO: implement bottomNav
@@ -29,7 +30,7 @@ class ProfileController extends MasterPageController {
   Widget get actionTwo => null;
 }
 
-class Profile extends MasterPage {
+class Profile extends BottomNavigation {
   final ProfileController controller;
 
   Profile({this.controller});

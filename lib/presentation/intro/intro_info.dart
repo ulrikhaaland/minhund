@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:minhund/helper/helper.dart';
+import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/info/dog/dog_info.dart';
 import 'package:minhund/presentation/info/user/user_info.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
+import 'package:minhund/provider/crud_provider.dart';
 import 'package:minhund/service/service_provider.dart';
-import 'package:minhund/utilities/masterpage.dart';
+import 'package:minhund/utilities/master_page.dart';
 
 class IntroInfoOwnerController extends MasterPageController {
   final User user;
@@ -17,9 +19,11 @@ class IntroInfoOwnerController extends MasterPageController {
 
   String pageTitle = "Eier";
 
+  final VoidCallback onDone;
+
   String infoInfo = "Først trenger vi litt informasjon om deg";
 
-  IntroInfoOwnerController({this.user});
+  IntroInfoOwnerController({this.user, this.onDone});
   @override
   // TODO: implement bottomNav
   Widget get bottomNav => null;
@@ -78,7 +82,20 @@ class IntroInfoOwner extends MasterPage {
           ),
         if (!controller.editingOwner)
           DogInfo(
-            controller: DogInfoController(user: controller.user),
+            controller: DogInfoController(
+                user: controller.user,
+                dog: controller
+                        .user.dogs[controller.user.currentDogIndex ?? 0] ??
+                    Dog(),
+                onDone: (dog) async {
+                  if (controller.user.dogs == null) controller.user.dogs = [];
+                  controller.user.dogs.add(dog);
+                  await CrudProvider().update(controller.user);
+                  await CrudProvider()
+                      .create(dog, controller.user.docRef.path + "/dogs");
+                  controller.onDone();
+                  return dog;
+                }),
           )
       ],
     );

@@ -85,8 +85,6 @@ class PhoneLoginController extends BaseController {
         // initValue: phoneNumber,
         textInputType: TextInputType.phone,
         textAlign: TextAlign.center,
-        style: ServiceProvider
-            .instance.instanceStyleService.appStyle.textFieldInput,
         autoFocus: true,
         validate: true,
         onSaved: (val) => phoneNumber = val.trim(),
@@ -99,7 +97,6 @@ class PhoneLoginController extends BaseController {
         initValue: _smsCode,
         textInputType: TextInputType.number,
         textAlign: TextAlign.center,
-        style: ServiceProvider.instance.instanceStyleService.appStyle.pageTitle,
         autoFocus: true,
         validate: true,
         onSaved: (val) => _smsCode = val.trim(),

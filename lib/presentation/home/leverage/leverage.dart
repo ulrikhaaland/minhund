@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
+import 'package:minhund/presentation/widgets/bottom_nav.dart';
 import 'package:minhund/root_page.dart';
-import 'package:minhund/utilities/masterpage.dart';
+import 'package:minhund/utilities/master_page.dart';
 
 import '../../../bottom_navigation.dart';
 
-class LeverageController extends MasterPageController {
+class LeverageController extends BottomNavigationController {
   LeverageController();
 
   @override
@@ -16,10 +17,6 @@ class LeverageController extends MasterPageController {
   @override
   // TODO: implement title
   String get title => "Fordelsprogram";
-
-  @override
-  // TODO: implement bottomNavigationBar
-  Widget get bottomNavigationBar => null;
 
   @override
   // TODO: implement bottomNav
@@ -34,7 +31,7 @@ class LeverageController extends MasterPageController {
   Widget get actionTwo => null;
 }
 
-class Leverage extends MasterPage {
+class Leverage extends BottomNavigation {
   final LeverageController controller;
 
   Leverage({this.controller});

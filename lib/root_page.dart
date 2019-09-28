@@ -8,13 +8,11 @@ import 'package:minhund/presentation/animation/intro.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/home/journal/journal.dart';
 import 'package:minhund/presentation/home/leverage/leverage.dart';
-import 'package:minhund/presentation/home/map/map.dart';
 import 'package:minhund/presentation/home/profile/profile.dart';
 import 'package:minhund/presentation/intro/user_intro.dart';
 import 'package:minhund/presentation/login/login_page.dart';
 import 'package:minhund/presentation/widgets/bottom_nav.dart';
 import 'package:minhund/provider/user_provider.dart';
-import 'package:minhund/utilities/masterpage.dart';
 import 'package:provider/provider.dart';
 import 'model/user.dart';
 import 'presentation/base_view.dart';
@@ -40,7 +38,7 @@ class RootPageController extends BaseController {
   User _user;
   bool introDone = false;
 
-  bool newUser = true;
+  bool newUser = false;
 
   @override
   void initState() {
@@ -62,18 +60,23 @@ class RootPageController extends BaseController {
     }
 
     if (firebaseUser != null) {
-      _user = await UserProvider().get(firebaseUser.uid);
+      _user = await UserProvider().get(id: firebaseUser.uid, withDogs: true);
+
       if (_user == null) {
         _user = User(
-          email: firebaseUser.email == "" ? null : firebaseUser.email,
-          id: firebaseUser.uid == "" ? null : firebaseUser.uid,
-          fcm: null,
-          appVersion: 1,
-          notifications: 0,
-          phoneNumber: firebaseUser.phoneNumber,
-        );
+            email: firebaseUser.email == "" ? null : firebaseUser.email,
+            id: firebaseUser.uid == "" ? null : firebaseUser.uid,
+            fcm: null,
+            appVersion: 1,
+            notifications: 0,
+            phoneNumber: firebaseUser.phoneNumber,
+            dogs: [],
+            currentDogIndex: 0);
         newUser = true;
         await UserProvider().set(_user);
+        _user = await UserProvider().get(id: _user.id, withDogs: false);
+      } else {
+        if (_user.dogs == null) _user.dogs = [];
       }
       UserProvider().updateFcmToken(_user, firebaseMessaging);
     }
@@ -120,7 +123,7 @@ class RootPage extends BaseView {
       ServiceProvider.instance.screenService.getBambooFactor(context),
     );
 
-    controller.auth.signOut();
+    // controller.auth.signOut();
 
     if (!controller.introDone) {
       return Intro(
@@ -154,20 +157,7 @@ class RootPage extends BaseView {
       return Provider<User>.value(
         value: controller._user,
         child: BottomNavigation(
-          controller: BottomNavigationController(
-            journal: Journal(
-              controller: JournalController(),
-            ),
-            mapLocation: MapLocation(
-              controller: MapLocationController(),
-            ),
-            leverage: Leverage(
-              controller: LeverageController(),
-            ),
-            profile: Profile(
-              controller: ProfileController(),
-            ),
-          ),
+          controller: BottomNavigationController(),
         ),
       );
     }

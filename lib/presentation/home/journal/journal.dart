@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
+import 'package:minhund/presentation/widgets/bottom_nav.dart';
 import 'package:minhund/root_page.dart';
 import 'package:minhund/service/service_provider.dart';
-import 'package:minhund/utilities/masterpage.dart';
+import 'package:minhund/utilities/master_page.dart';
 
 import '../../../bottom_navigation.dart';
 
-class JournalController extends MasterPageController {
+class JournalController extends BottomNavigationController {
   JournalController();
 
   @override
@@ -21,11 +22,7 @@ class JournalController extends MasterPageController {
 
   @override
   // TODO: implement title
-  String get title => "Hund";
-
-  @override
-  // TODO: implement bottomNav
-  Widget get bottomNav => null;
+  String get title => "Broren";
 
   @override
   // TODO: implement actionOne
@@ -34,9 +31,13 @@ class JournalController extends MasterPageController {
   @override
   // TODO: implement actionTwo
   Widget get actionTwo => null;
+
+  @override
+  // TODO: implement bottomNav
+  Widget get bottomNav => null;
 }
 
-class Journal extends MasterPage {
+class Journal extends BottomNavigation {
   final JournalController controller;
 
   Journal({this.controller});

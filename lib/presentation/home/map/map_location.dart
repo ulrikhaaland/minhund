@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
+import 'package:minhund/presentation/widgets/bottom_nav.dart';
 import 'package:minhund/root_page.dart';
-import 'package:minhund/utilities/masterpage.dart';
+import 'package:minhund/utilities/master_page.dart';
 
 import '../../../bottom_navigation.dart';
 
-class MapLocationController extends MasterPageController {
+class MapLocationController extends BottomNavigationController {
   MapLocationController();
 
   @override
@@ -22,11 +23,6 @@ class MapLocationController extends MasterPageController {
   Widget get bottomNav => null;
 
   @override
-  void initState() {
-    // TODO: implement initState
-  }
-
-  @override
   // TODO: implement actionOne
   Widget get actionOne => null;
 
@@ -35,7 +31,7 @@ class MapLocationController extends MasterPageController {
   Widget get actionTwo => null;
 }
 
-class MapLocation extends MasterPage {
+class MapLocation extends BottomNavigation {
   final MapLocationController controller;
 
   MapLocation({this.controller});

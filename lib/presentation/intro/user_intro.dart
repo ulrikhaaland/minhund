@@ -1,16 +1,12 @@
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/user.dart';
-import 'package:minhund/presentation/base_controller.dart';
-import 'package:minhund/presentation/base_view.dart';
-import 'package:minhund/presentation/intro/intro_info_owner.dart';
-import 'package:minhund/presentation/widgets/app_bar.dart';
+import 'package:minhund/presentation/intro/intro_info.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:minhund/utilities/masterpage.dart';
+import 'package:minhund/utilities/master_page.dart';
 
 class UserIntroController extends MasterPageController {
   final VoidCallback onIntroFinished;
@@ -80,6 +76,7 @@ class UserIntro extends MasterPage {
                     builder: (context) => IntroInfoOwner(
                         controller: IntroInfoOwnerController(
                       user: controller.user,
+                      onDone: () => controller.onIntroFinished(),
                     )),
                   ),
                 ),

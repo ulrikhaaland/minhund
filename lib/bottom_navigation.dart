@@ -1,54 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:minhund/presentation/base_controller.dart';
+import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/home/journal/journal.dart';
 import 'package:minhund/presentation/home/leverage/leverage.dart';
-import 'package:minhund/presentation/home/map/map.dart';
+import 'package:minhund/presentation/home/map/map_location.dart';
 import 'package:minhund/presentation/home/profile/profile.dart';
 import 'package:minhund/presentation/widgets/bottom_nav.dart';
-import 'package:minhund/utilities/masterpage.dart';
+import 'package:minhund/utilities/master_page.dart';
 
 class BottomNavigationController extends MasterPageController {
   Widget bottomNavigationBar;
   int bottomNavIndex = 0;
 
-  BottomNavigationController({
-    this.journal,
-    this.mapLocation,
-    this.leverage,
-    this.profile,
-  });
+  BottomNavigationController();
 
-  final Journal journal;
-  final MapLocation mapLocation;
-  final Leverage leverage;
-  final Profile profile;
+  Journal journal;
+  MapLocation mapLocation;
+  Leverage leverage;
+  Profile profile;
 
-  final List<Widget> pages = [];
+  List<BottomNavigation> pages;
   @override
   void initState() {
     bottomNavigationBar = BottomNav(
-      onTabChanged: (index) => setState(() => bottomNavIndex = index),
+      onTabChanged: (index) {
+        bottomNavIndex = index;
+        refresh();
+      },
     );
-    pages.addAll(<MasterPage>[
-      journal,
-      mapLocation,
-      leverage,
-      profile,
-    ]);
-
+    journal = Journal(
+      controller: JournalController(),
+    );
+    mapLocation = MapLocation(
+      controller: MapLocationController(),
+    );
+    profile = Profile(
+      controller: ProfileController(),
+    );
+    leverage = Leverage(
+      controller: LeverageController(),
+    );
+    pages = [journal, mapLocation, leverage, profile];
     super.initState();
   }
-
-  @override
-  // TODO: implement bottomNav
-  Widget get bottomNav => bottomNavigationBar;
-
-  @override
-  // TODO: implement fab
-  FloatingActionButton get fab => null;
-
-  @override
-  // TODO: implement title
-  String get title => null;
 
   @override
   // TODO: implement actionOne
@@ -57,6 +51,18 @@ class BottomNavigationController extends MasterPageController {
   @override
   // TODO: implement actionTwo
   Widget get actionTwo => null;
+
+  @override
+  // TODO: implement bottomNav
+  Widget get bottomNav => bottomNavigationBar;
+
+  @override
+  // TODO: implement title
+  String get title => null;
+
+  @override
+  // TODO: implement fab
+  FloatingActionButton get fab => null;
 }
 
 class BottomNavigation extends MasterPage {

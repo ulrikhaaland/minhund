@@ -23,30 +23,43 @@ abstract class MasterPage extends BaseView {
   @override
   Widget build(BuildContext context) {
     if (!mounted) return Container();
+
+    Widget appBar;
+
+    if (controller.title != null ||
+        controller.actionOne != null ||
+        controller.actionTwo != null)
+      appBar = AppBar(
+        elevation: 0,
+        backgroundColor: ServiceProvider
+            .instance.instanceStyleService.appStyle.backgroundColor,
+        centerTitle: true,
+        leading: controller.actionOne,
+        title: Text(
+          controller.title ?? "",
+          style: ServiceProvider.instance.instanceStyleService.appStyle.title,
+        ),
+        actions: <Widget>[controller.actionTwo ?? Container()],
+      );
+
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
           backgroundColor: ServiceProvider
               .instance.instanceStyleService.appStyle.backgroundColor,
-          appBar: AppBar(
-            elevation: 0,
-            backgroundColor: ServiceProvider
-                .instance.instanceStyleService.appStyle.backgroundColor,
-            centerTitle: true,
-            leading: controller.actionOne,
-            title: Text(
-              controller.title ?? "Tilfeldig",
-              style:
-                  ServiceProvider.instance.instanceStyleService.appStyle.title,
-            ),
-            actions: <Widget>[controller.actionTwo ?? Container()],
-          ),
+          appBar: appBar,
           bottomNavigationBar: controller.bottomNav,
           floatingActionButton: controller.fab,
           body: LayoutBuilder(
             builder: (context, con) {
               return Container(
-                  alignment: Alignment.center, child: buildContent(context));
+                  alignment: Alignment.center,
+                  child: Container(
+                      height: con.maxHeight,
+                      child: SingleChildScrollView(
+                          child: Container(
+                              height: con.maxHeight,
+                              child: buildContent(context)))));
             },
           )),
     );

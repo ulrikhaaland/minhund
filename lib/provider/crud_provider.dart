@@ -8,21 +8,24 @@ class CrudProvider {
   }
 
   Future create(dynamic model, String path) {
-    return _firestoreInstance
-        .collection(path)
-        .add(model.toJson())
-        .then((docRef) {
-      model.docRef = docRef;
-      model.id = docRef.documentID;
-    });
+    if (model.id != null) {
+      return update(model);
+    } else {
+      _firestoreInstance.collection(path).add(model.toJson()).then((docRef) {
+        model.docRef = docRef;
+        model.id = docRef.documentID;
+        return model;
+      });
+    }
   }
 
   Future getCollection(String path) async {
     return await _firestoreInstance.collection(path).getDocuments();
   }
 
-  Future<DocumentSnapshot> read(String path) async {
-    return await _firestoreInstance.document(path).get();
+  Future read(String path, dynamic model) async {
+    DocumentSnapshot docSnap = await _firestoreInstance.document(path).get();
+    return model.fromJson(docSnap.data);
   }
 
   Future delete(dynamic model) {

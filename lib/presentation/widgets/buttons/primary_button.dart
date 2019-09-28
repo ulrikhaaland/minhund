@@ -48,10 +48,12 @@ class PrimaryButton extends BaseView {
           bottom: controller.bottomPadding ?? getDefaultPadding(context) * 4),
       child: ConstrainedBox(
         constraints: BoxConstraints(
-            minWidth: controller.width ??
-                ServiceProvider.instance.screenService
-                    .getPortraitWidthByPercentage(context, 90),
-            minHeight: controller.heigth ?? 54),
+          minWidth: controller.width ??
+              ServiceProvider.instance.screenService
+                  .getPortraitWidthByPercentage(context, 90),
+          minHeight: ServiceProvider.instance.screenService
+              .getPortraitHeightByPercentage(context, 7.5),
+        ),
         child: RaisedButton(
             child: controller.isLoading
                 ? CPI(false)

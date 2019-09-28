@@ -39,8 +39,7 @@ fieldFocusChange(
   FocusScope.of(context).requestFocus(nextFocus);
 }
 
-bool validateTextFields(
-    {List<PrimaryTextField> textFields, PrimaryTextField singleTextField}) {
+bool validateTextFields({List<dynamic> textFields, dynamic singleTextField}) {
   bool canSave = true;
   if (singleTextField == null) {
     textFields.forEach((field) {

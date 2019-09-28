@@ -14,6 +14,8 @@ class DateTimePickerController extends BaseController {
   final DateTime initialDate;
   final String title;
 
+  bool canSave = false;
+
   TextEditingController _textCtrlr = TextEditingController();
 
   FocusNode _textNode = FocusNode();
@@ -30,6 +32,7 @@ class DateTimePickerController extends BaseController {
     super.initState();
     _textNode.addListener(() => openDatePicker());
     initialDate != null ? _setCtrlrText(initialDate) : null;
+    if (_textCtrlr.text != "" && _textCtrlr.text != null) canSave = true;
   }
 
   @override
@@ -79,8 +82,7 @@ class DateTimePickerController extends BaseController {
               return Future.value(true);
             },
             child: SimpleDialog(
-              backgroundColor: ServiceProvider
-                  .instance.instanceStyleService.appStyle.backgroundColor,
+              backgroundColor: Colors.white,
               title: Align(
                   alignment: Alignment.center,
                   child: Text(
@@ -90,8 +92,10 @@ class DateTimePickerController extends BaseController {
                   )),
               children: <Widget>[
                 DatePickerWidget(
+                  maxDateTime: DateTime.now(),
                   dateFormat: dateFormat ?? "dd-MM-yyyy",
                   onConfirm: (DateTime selectedTime, List<int> list) {
+                    canSave = true;
                     _setCtrlrText(selectedTime);
                     onConfirmed(selectedTime);
                   },
@@ -99,15 +103,14 @@ class DateTimePickerController extends BaseController {
                   pickerTheme: DateTimePickerTheme(
                     itemTextStyle: ServiceProvider
                         .instance.instanceStyleService.appStyle.body1,
-                    backgroundColor: ServiceProvider
-                        .instance.instanceStyleService.appStyle.backgroundColor,
+                    backgroundColor: Colors.white,
                     cancelTextStyle: ServiceProvider
                         .instance.instanceStyleService.appStyle.cancel,
                     confirmTextStyle: ServiceProvider
                         .instance.instanceStyleService.appStyle.confirm,
                   ),
                   initialDateTime: initialDate ??
-                      DateTime.now().subtract(Duration(days: 10000)),
+                      DateTime.now().subtract(Duration(days: 2000)),
                 ),
               ],
             ),
@@ -119,6 +122,8 @@ class DateTimePickerController extends BaseController {
 class DateTimePicker extends BaseView {
   final DateTimePickerController controller;
 
+  bool canSave;
+
   DateTimePicker({
     Key key,
     this.controller,
@@ -126,7 +131,9 @@ class DateTimePicker extends BaseView {
 
   @override
   Widget build(BuildContext context) {
+    canSave = controller.canSave;
     return PrimaryTextField(
+      validate: true,
       textEditingController: controller._textCtrlr,
       focusNode: controller._textNode,
       hintText: controller.label,

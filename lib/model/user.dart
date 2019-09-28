@@ -17,23 +17,19 @@ class User {
     this.name,
     this.dogs,
     this.phoneNumber,
-    this.address,
-    this.city,
-    this.county,
+    this.currentDogIndex,
   });
 
   String id;
   String name;
   String phoneNumber;
   String email;
-  String city;
-  String county;
-  String address;
+  int currentDogIndex;
   String fcm;
   double appVersion;
   int notifications;
+  @JsonKey(ignore: true)
   List<Dog> dogs;
-
   @JsonKey(ignore: true)
   DocumentReference docRef;
 

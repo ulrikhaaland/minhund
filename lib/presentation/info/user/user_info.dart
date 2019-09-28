@@ -56,36 +56,6 @@ class UserInfoController extends BaseController {
         hintText: "Telefonnummer",
         autocorrect: false,
       ),
-      PrimaryTextField(
-        initValue: user.city,
-        onSaved: (val) => user.city = val.trim(),
-        hintText: "By",
-        onFieldSubmitted: () => _node.nextFocus(),
-        autocorrect: false,
-        textInputAction: TextInputAction.next,
-        textInputType: TextInputType.text,
-        textCapitalization: TextCapitalization.words,
-      ),
-      PrimaryTextField(
-        initValue: user.county,
-        onSaved: (val) => user.county = val.trim(),
-        hintText: "Fylke",
-        onFieldSubmitted: () => _node.nextFocus(),
-        autocorrect: false,
-        textInputType: TextInputType.text,
-        textInputAction: TextInputAction.next,
-        textCapitalization: TextCapitalization.words,
-      ),
-      PrimaryTextField(
-        initValue: user.address,
-        onSaved: (val) => user.address = val.trim(),
-        hintText: "Adresse",
-        onFieldSubmitted: () => _node.unfocus(),
-        autocorrect: false,
-        textInputType: TextInputType.text,
-        textInputAction: TextInputAction.done,
-        textCapitalization: TextCapitalization.words,
-      ),
     ];
     super.initState();
   }
