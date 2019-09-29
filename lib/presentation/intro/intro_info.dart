@@ -116,6 +116,7 @@ class IntroInfoOwner extends MasterPage {
                       dog.imgUrl = await FileProvider().uploadFile(
                           file: controller.imageFile,
                           path: "dogs/${dog.id}/${dog.id}");
+                      CrudProvider().update(dog);
                     }
 
                     Navigator.pop(context);

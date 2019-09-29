@@ -7,16 +7,16 @@ class CrudProvider {
     return model.docRef.updateData(model.toJson());
   }
 
-  Future create(dynamic model, String path) {
+  Future<dynamic> create(dynamic model, String path) async {
     if (model.id != null) {
       return update(model);
     } else {
-      _firestoreInstance.collection(path).add(model.toJson()).then((docRef) {
-        model.docRef = docRef;
-        model.id = docRef.documentID;
-        update(model);
-        return model;
-      });
+      DocumentReference docRef =
+          await _firestoreInstance.collection(path).add(model.toJson());
+      model.docRef = docRef;
+      model.id = docRef.documentID;
+      update(model);
+      return model;
     }
   }
 

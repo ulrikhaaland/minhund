@@ -32,6 +32,8 @@ class User {
   List<Dog> dogs;
   @JsonKey(ignore: true)
   DocumentReference docRef;
+  @JsonKey(ignore: true)
+  Dog dog;
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 

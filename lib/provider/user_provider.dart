@@ -27,12 +27,12 @@ class UserProvider<T> {
       user.dogs = [];
 
       if (withDogs) {
-        user.docRef.collection("dogs").getDocuments().then((docs) {
-          docs.documents.forEach((dog) {
-            Dog duggy = Dog.fromJson(dog.data);
-            duggy.docRef = dog.reference;
-            user.dogs.add(duggy);
-          });
+        QuerySnapshot qSnap =
+            await user.docRef.collection("dogs").getDocuments();
+        qSnap.documents.forEach((dog) {
+          Dog duggy = Dog.fromJson(dog.data);
+          duggy.docRef = dog.reference;
+          user.dogs.add(duggy);
         });
       }
     }
@@ -41,8 +41,6 @@ class UserProvider<T> {
   }
 
   Future set(User user) async {
-    await _firestoreInstance
-        .document("users/${user.id}")
-        .setData(user.toJson());
+    _firestoreInstance.document("users/${user.id}").setData(user.toJson());
   }
 }

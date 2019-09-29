@@ -16,7 +16,7 @@ enum CustomImageType { circle, squared }
 class CustomImageController extends BaseController {
   File imageFile;
 
-  final double imageSize;
+  double imageSizePercentage;
 
   final CustomImageType customImageType;
 
@@ -26,10 +26,10 @@ class CustomImageController extends BaseController {
 
   final void Function(File file) getImageFile;
 
-  final bool init;
+  bool init;
 
   CustomImageController(
-      {this.imageSize,
+      {this.imageSizePercentage,
       this.imageFile,
       this.customImageType,
       this.imgUrl,
@@ -52,6 +52,17 @@ class CustomImage extends BaseView {
   Widget build(BuildContext context) {
     if (!mounted) return Container();
 
+    Widget icon;
+
+    if (controller.imageFile == null && controller.init) {
+      icon = Icon(
+        Icons.add_a_photo,
+        size:
+            ServiceProvider.instance.instanceStyleService.appStyle.iconSizeBig,
+        color: Colors.white,
+      );
+    }
+
     switch (controller.customImageType) {
       case CustomImageType.circle:
         return Column(
@@ -63,19 +74,12 @@ class CustomImage extends BaseView {
               child: CircleAvatar(
                 radius: ServiceProvider.instance.screenService
                     .getHeightByPercentage(
-                        context, controller.imageSize ?? 7.5),
+                        context, controller.imageSizePercentage ?? 7.5),
                 backgroundColor: ServiceProvider
                     .instance.instanceStyleService.appStyle.green,
                 child: controller.isLoading
                     ? CPI(false)
-                    : controller.imageFile == null
-                        ? Icon(
-                            Icons.add_a_photo,
-                            size: ServiceProvider.instance.instanceStyleService
-                                .appStyle.iconSizeBig,
-                            color: Colors.white,
-                          )
-                        : null,
+                    : controller.imageFile == null ? icon : null,
                 backgroundImage: controller.imgUrl != null
                     ? AdvancedNetworkImage(controller.imgUrl)
                     : controller.imageFile != null

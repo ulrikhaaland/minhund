@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:minhund/helper/helper.dart';
+import 'package:minhund/model/dog.dart';
+import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/bottom_nav.dart';
@@ -9,7 +12,9 @@ import 'package:minhund/utilities/master_page.dart';
 import '../../../bottom_navigation.dart';
 
 class JournalController extends BottomNavigationController {
-  JournalController();
+  final User user;
+
+  JournalController({this.user});
 
   @override
   FloatingActionButton get fab => FloatingActionButton(
@@ -22,7 +27,7 @@ class JournalController extends BottomNavigationController {
 
   @override
   // TODO: implement title
-  String get title => "Broren";
+  String get title => null;
 
   @override
   // TODO: implement actionOne
@@ -35,6 +40,11 @@ class JournalController extends BottomNavigationController {
   @override
   // TODO: implement bottomNav
   Widget get bottomNav => null;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 }
 
 class Journal extends BottomNavigation {
@@ -45,6 +55,42 @@ class Journal extends BottomNavigation {
   @override
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
-    return Center(child: TextField());
+
+    Dog dog = controller.user.dog;
+    dog.profileImage.controller.imageSizePercentage = 5;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          color: Colors.white,
+          child: Padding(
+            padding: EdgeInsets.all(getDefaultPadding(context)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      dog.name,
+                      style: ServiceProvider
+                          .instance.instanceStyleService.appStyle.title,
+                    ),
+                    Text(
+                      "${dog.race} ${getTimeDifference(dog.birthDate)} ${dog.weigth}",
+                      style: ServiceProvider
+                          .instance.instanceStyleService.appStyle.body1,
+                    ),
+                  ],
+                ),
+                controller.user.dog.profileImage
+              ],
+            ),
+          ),
+        )
+      ],
+    );
   }
 }

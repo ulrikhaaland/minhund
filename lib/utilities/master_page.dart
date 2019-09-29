@@ -57,7 +57,15 @@ abstract class MasterPage extends BaseView {
                   child: SingleChildScrollView(
                       child: Container(
                           height: con.maxHeight,
-                          child: buildContent(context))));
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                height: ServiceProvider.instance.screenService
+                                    .getHeightByPercentage(context, 2),
+                              ),
+                              Expanded(child: buildContent(context)),
+                            ],
+                          ))));
             },
           )),
     );

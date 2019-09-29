@@ -6,14 +6,19 @@ import 'package:minhund/presentation/home/leverage/leverage.dart';
 import 'package:minhund/presentation/home/map/map_location.dart';
 import 'package:minhund/presentation/home/profile/profile.dart';
 import 'package:minhund/presentation/widgets/bottom_nav.dart';
+import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
+
+import 'model/user.dart';
 
 class BottomNavigationController extends MasterPageController {
   Widget bottomNavigationBar;
   int bottomNavIndex = 0;
 
-  BottomNavigationController();
+  final User user;
+
+  BottomNavigationController({this.user});
 
   Journal journal;
   MapLocation mapLocation;
@@ -30,7 +35,9 @@ class BottomNavigationController extends MasterPageController {
       },
     );
     journal = Journal(
-      controller: JournalController(),
+      controller: JournalController(
+        user: user,
+      ),
     );
     mapLocation = MapLocation(
       controller: MapLocationController(),
@@ -75,6 +82,16 @@ class BottomNavigation extends MasterPage {
   @override
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
+    if (controller.user.dog.profileImage == null) {
+      controller.user.dog.profileImage = CustomImage(
+        controller: CustomImageController(
+          customImageType: CustomImageType.circle,
+          imgUrl: controller.user.dog.imgUrl,
+        ),
+      );
+    } else {
+      controller.user.dog.profileImage.controller.init = false;
+    }
     return IndexedStack(
       index: controller.bottomNavIndex,
       children: controller.pages,

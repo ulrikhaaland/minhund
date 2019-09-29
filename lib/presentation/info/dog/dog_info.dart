@@ -147,6 +147,15 @@ class DogInfoController extends BaseController {
             .setState(() => primaryButtonController.isLoading = false);
       },
     );
+    dog.profileImage = CustomImage(
+      controller: CustomImageController(
+        customImageType: CustomImageType.circle,
+        imageFile: null,
+        imgUrl: dog.imgUrl,
+        init: true,
+        getImageFile: (file) => imageFile = file,
+      ),
+    );
     super.initState();
   }
 
@@ -176,15 +185,7 @@ class DogInfo extends BaseView {
         node: controller._node,
         child: Column(
           children: <Widget>[
-            CustomImage(
-              controller: CustomImageController(
-                customImageType: CustomImageType.circle,
-                imageFile: null,
-                imgUrl: controller.dog.imgUrl,
-                init: true,
-                getImageFile: (file) => controller.imageFile = file,
-              ),
-            ),
+            controller.dog.profileImage,
             Container(
               height: getDefaultPadding(context),
             ),
