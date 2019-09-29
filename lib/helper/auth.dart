@@ -7,7 +7,7 @@ abstract class BaseAuth {
   Future<String> signIn(String email, String password);
   Future<String> createUser(String email, String password);
   Future<void> signOut();
-  Future<String> resetPassword(String email);
+  Future<void> resetPassword(String email);
   Future<void> verifyPhoneNumber(
       {String phoneNumber, void Function(String id) theId});
   Future<FirebaseUser> signInWithPhone(String id, String smsCode);
@@ -77,7 +77,7 @@ class Auth implements BaseAuth {
     return _firebaseAuth.signInAnonymously();
   }
 
-  Future<String> resetPassword(String email) {
+  Future<void> resetPassword(String email) {
     return _firebaseAuth.sendPasswordResetEmail(email: email);
   }
 

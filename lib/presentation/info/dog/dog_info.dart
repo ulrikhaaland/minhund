@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:minhund/helper/helper.dart';
+import 'package:minhund/helper/image_cropper.dart';
+import 'package:minhund/helper/image_picker.dart';
 import 'package:minhund/model/address.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/user.dart';
@@ -8,9 +13,12 @@ import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
+import 'package:minhund/presentation/widgets/circular_progress_indicator.dart';
+import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/crud_provider.dart';
 import 'package:minhund/provider/user_provider.dart';
+import 'package:minhund/service/service_provider.dart';
 
 enum CreateOrUpdateDog { create, update }
 
@@ -21,14 +29,29 @@ class DogInfoController extends BaseController {
 
   final CreateOrUpdateDog createOrUpdateDog;
 
-  final void Function(Dog dog) onDone;
+  final Future Function(Dog dog) onDone;
 
   final _formKey = GlobalKey<FormState>();
+
+  PrimaryButtonController primaryButtonController;
 
   final FocusScopeNode _node = FocusScopeNode();
   List<Widget> textFields;
 
-  DogInfoController({this.onDone, this.user, this.dog, this.createOrUpdateDog});
+  bool isLoading = false;
+
+  final void Function(File file) getImageFile;
+
+  final ScrollController scrollController = ScrollController();
+
+  File imageFile;
+
+  DogInfoController(
+      {this.onDone,
+      this.user,
+      this.dog,
+      this.createOrUpdateDog,
+      this.getImageFile});
 
   @override
   void initState() {
@@ -37,7 +60,7 @@ class DogInfoController extends BaseController {
       PrimaryTextField(
         initValue: dog?.name,
         onSaved: (val) => dog?.name = val.trim(),
-        onFieldSubmitted: () => _node.nextFocus(),
+        onFieldSubmitted: () => textFieldNext(10),
         hintText: "Navn",
         autocorrect: false,
         textCapitalization: TextCapitalization.words,
@@ -46,7 +69,7 @@ class DogInfoController extends BaseController {
       PrimaryTextField(
         initValue: dog?.race,
         onSaved: (val) => dog?.race = val.trim(),
-        onFieldSubmitted: () => _node.nextFocus(),
+        onFieldSubmitted: () => textFieldNext(20),
         hintText: "Rase",
         autocorrect: false,
         textCapitalization: TextCapitalization.words,
@@ -55,7 +78,7 @@ class DogInfoController extends BaseController {
       PrimaryTextField(
         initValue: dog?.weigth,
         onSaved: (val) => dog?.weigth = val.trim(),
-        onFieldSubmitted: () => _node.nextFocus(),
+        onFieldSubmitted: () => textFieldNext(30),
         hintText: "Vekt",
         autocorrect: false,
         textCapitalization: TextCapitalization.none,
@@ -65,7 +88,7 @@ class DogInfoController extends BaseController {
         initValue: dog?.address?.county,
         onSaved: (val) => dog?.address?.county = val.trim(),
         hintText: "Fylke",
-        onFieldSubmitted: () => _node.nextFocus(),
+        onFieldSubmitted: () => textFieldNext(40),
         autocorrect: false,
         textInputType: TextInputType.text,
         textInputAction: TextInputAction.next,
@@ -75,7 +98,7 @@ class DogInfoController extends BaseController {
         initValue: dog?.address?.city,
         onSaved: (val) => dog?.address?.city = val.trim(),
         hintText: "By",
-        onFieldSubmitted: () => _node.nextFocus(),
+        onFieldSubmitted: () => textFieldNext(50),
         autocorrect: false,
         textInputAction: TextInputAction.next,
         textInputType: TextInputType.text,
@@ -110,7 +133,34 @@ class DogInfoController extends BaseController {
         textInputType: TextInputType.number,
       ),
     ];
+    primaryButtonController = PrimaryButtonController(
+      text: "Bekreft ",
+      onPressed: () async {
+        primaryButtonController
+            .setState(() => primaryButtonController.isLoading = true);
+        _formKey.currentState.save();
+        if (validateTextFields(textFields: textFields)) {
+          getImageFile(imageFile);
+          await onDone(dog);
+        }
+        primaryButtonController
+            .setState(() => primaryButtonController.isLoading = false);
+      },
+    );
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void textFieldNext(double heigth) {
+    scrollScreen(
+        controller: scrollController,
+        height: ServiceProvider.instance.screenService
+            .getHeightByPercentage(context, heigth));
+    _node.nextFocus();
   }
 }
 
@@ -120,29 +170,41 @@ class DogInfo extends BaseView {
   DogInfo({this.controller});
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Form(
-        key: controller._formKey,
-        child: FocusScope(
-          node: controller._node,
-          child: Column(
-            children: <Widget>[
-              Column(
-                children: controller.textFields,
+    return Form(
+      key: controller._formKey,
+      child: FocusScope(
+        node: controller._node,
+        child: Column(
+          children: <Widget>[
+            CustomImage(
+              controller: CustomImageController(
+                customImageType: CustomImageType.circle,
+                imageFile: null,
+                imgUrl: controller.dog.imgUrl,
+                init: true,
+                getImageFile: (file) => controller.imageFile = file,
               ),
-              PrimaryButton(
-                controller: PrimaryButtonController(
-                  text: "Bekreft ",
-                  onPressed: () {
-                    controller._formKey.currentState.save();
-                    if (validateTextFields(textFields: controller.textFields)) {
-                      controller.onDone(controller.dog);
-                    }
-                  },
+            ),
+            Container(
+              height: getDefaultPadding(context),
+            ),
+            Container(
+              height: ServiceProvider.instance.screenService
+                  .getHeightByPercentage(context, 50),
+              width: ServiceProvider.instance.screenService
+                  .getWidthByPercentage(context, 80),
+              child: Scrollbar(
+                child: ListView(
+                  controller: controller.scrollController,
+                  shrinkWrap: true,
+                  children: controller.textFields,
                 ),
               ),
-            ],
-          ),
+            ),
+            PrimaryButton(
+              controller: controller.primaryButtonController,
+            ),
+          ],
         ),
       ),
     );

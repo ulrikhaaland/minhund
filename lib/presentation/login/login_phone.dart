@@ -7,10 +7,11 @@ import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/root_page.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:minhund/utilities/master_page.dart';
 
 enum SignInStatus { enterNumber, enterCode }
 
-class PhoneLoginController extends BaseController {
+class PhoneLoginController extends MasterPageController {
   final BaseAuth auth;
 
   final formKey = GlobalKey<FormState>();
@@ -116,56 +117,55 @@ class PhoneLoginController extends BaseController {
   void dispose() {
     super.dispose();
   }
+
+  @override
+  // TODO: implement actionOne
+  Widget get actionOne => null;
+
+  @override
+  // TODO: implement actionTwo
+  Widget get actionTwo => null;
+
+  @override
+  // TODO: implement bottomNav
+  Widget get bottomNav => null;
+
+  @override
+  // TODO: implement fab
+  FloatingActionButton get fab => null;
+
+  @override
+  // TODO: implement title
+  String get title => "Logg inn";
 }
 
-class PhoneLogin extends BaseView {
+class PhoneLogin extends MasterPage {
   final PhoneLoginController controller;
 
   PhoneLogin({this.controller});
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
-      child: Scaffold(
-        appBar: AppBar(
-          iconTheme: IconThemeData(
-              color: ServiceProvider
-                  .instance.instanceStyleService.appStyle.textGrey),
-          centerTitle: true,
-          backgroundColor: ServiceProvider
-              .instance.instanceStyleService.appStyle.backgroundColor,
-          elevation: 0,
-          title: Text(
-            "LOGG INN",
-            style: ServiceProvider
-                .instance.instanceStyleService.appStyle.pageTitle,
-          ),
-        ),
-        backgroundColor: ServiceProvider
-            .instance.instanceStyleService.appStyle.backgroundColor,
-        body: SingleChildScrollView(
-          child: Form(
-            key: controller.formKey,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  height: getDefaultPadding(context) * 2,
-                ),
-                if (controller.signInStatus == SignInStatus.enterNumber) ...[
-                  controller.textFields[0]
-                ] else ...[
-                  controller.textFields[1]
-                ],
-                PrimaryButton(
-                  controller: controller._btnCtrlr,
-                ),
-                termsAndConditions(context),
-              ],
+    return SingleChildScrollView(
+      child: Form(
+        key: controller.formKey,
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: getDefaultPadding(context) * 2,
             ),
-          ),
+            if (controller.signInStatus == SignInStatus.enterNumber) ...[
+              controller.textFields[0]
+            ] else ...[
+              controller.textFields[1]
+            ],
+            PrimaryButton(
+              controller: controller._btnCtrlr,
+            ),
+            termsAndConditions(context),
+          ],
         ),
       ),
     );

@@ -223,12 +223,11 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                           setState(() {
                             _animController.forward();
                           });
-
-                          if (widget.textEditingController == null) {
-                            if (widget.canSave) widget.onSaved(val);
-                          } else {
-                            return null;
-                          }
+                        }
+                        if (widget.textEditingController == null) {
+                          if (widget.canSave) widget.onSaved(val);
+                        } else {
+                          return null;
                         }
                       },
                       onFieldSubmitted: (val) => widget.onFieldSubmitted(),

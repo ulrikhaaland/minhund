@@ -8,8 +8,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.38.3"
-<<<<<<< HEAD
-=======
   archive:
     dependency: transitive
     description:
@@ -17,7 +15,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.10"
->>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
   args:
     dependency: transitive
     description:
@@ -31,22 +28,14 @@ packages:
       name: async
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
-    version: "2.2.0"
-=======
     version: "2.3.0"
->>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
   boolean_selector:
     dependency: transitive
     description:
       name: boolean_selector
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
-    version: "1.0.4"
-=======
     version: "1.0.5"
->>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
   build:
     dependency: transitive
     description:
@@ -344,8 +333,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.3"
-<<<<<<< HEAD
-=======
   image:
     dependency: transitive
     description:
@@ -353,7 +340,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.4"
->>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
   image_cropper:
     dependency: "direct main"
     description:
@@ -423,11 +409,7 @@ packages:
       name: meta
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
-    version: "1.1.6"
-=======
     version: "1.1.7"
->>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
   mime:
     dependency: transitive
     description:
@@ -455,11 +437,7 @@ packages:
       name: path
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
-    version: "1.6.2"
-=======
     version: "1.6.4"
->>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
   path_drawing:
     dependency: transitive
     description:
@@ -487,11 +465,7 @@ packages:
       name: pedantic
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
-    version: "1.7.0"
-=======
     version: "1.8.0+1"
->>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
   percent_indicator:
     dependency: "direct main"
     description:
@@ -547,11 +521,7 @@ packages:
       name: quiver
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
-    version: "2.0.3"
-=======
     version: "2.0.5"
->>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
   shelf:
     dependency: transitive
     description:
@@ -612,11 +582,7 @@ packages:
       name: string_scanner
       url: "https://pub.dartlang.org"
     source: hosted
-<<<<<<< HEAD
-    version: "1.0.4"
-=======
     version: "1.0.5"
->>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
   term_glyph:
     dependency: transitive
     description:

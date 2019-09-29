@@ -251,11 +251,11 @@ class InstanceStyleService {
     );
 
     _appStyle.disabledColoredText = new TextStyle(
-      fontFamily: "Montserrat",
-      fontSize: screenHeight * 0.024 * factor,
-      fontWeight: FontWeight.bold,
+      fontFamily: "Apercu",
+      fontSize: screenHeight * 0.018 * factor,
+      fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
-      color: appStyle.textGrey,
+      color: Color.fromRGBO(63, 82, 97, 0.5),
     );
 
     _appStyle.iconSizeSmall = screenHeight * 0.031 * factor;

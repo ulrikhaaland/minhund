@@ -3,13 +3,16 @@ import 'package:minhund/helper/auth.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
+import 'package:minhund/presentation/login/reset_password.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
+import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:minhund/utilities/master_page.dart';
 
-class EmailLoginController extends BaseController {
+class EmailLoginController extends MasterPageController {
   bool isLogin = true;
 
   final BaseAuth auth;
@@ -92,16 +95,16 @@ class EmailLoginController extends BaseController {
         }
       }
     } catch (e) {
-      // if (e.message ==
-      //         "The password is invalid or the user does not have a password." ||
-      //     e.message ==
-      //         "There is no user record corresponding to this identifier. The user may have been deleted.") {
-      //   authHint = "Feil email eller passord";
-      // } else if (e.message == "The email address is badly formatted.") {
-      //   authHint = "Email-adressen er feil formatert";
-      // }
-      // setAuthHint(authHint);
-      // print(authHint);
+      if (e.message ==
+              "The password is invalid or the user does not have a password." ||
+          e.message ==
+              "There is no user record corresponding to this identifier. The user may have been deleted.") {
+        authHint = "Feil email eller passord";
+      } else if (e.code == "ERROR_EMAIL_ALREADY_IN_USE") {
+        authHint = "Email-adressen er allerede i bruk";
+      }
+      setAuthHint(authHint);
+      print(authHint);
     }
     return userId;
   }
@@ -114,15 +117,35 @@ class EmailLoginController extends BaseController {
     //   setState(() {});
     // });
   }
+
+  @override
+  // TODO: implement actionOne
+  Widget get actionOne => null;
+
+  @override
+  // TODO: implement actionTwo
+  Widget get actionTwo => null;
+
+  @override
+  // TODO: implement bottomNav
+  Widget get bottomNav => null;
+
+  @override
+  // TODO: implement fab
+  FloatingActionButton get fab => null;
+
+  @override
+  // TODO: implement title
+  String get title => isLogin ? "Logg inn" : "Registrer";
 }
 
-class EmailLogin extends BaseView {
+class EmailLogin extends MasterPage {
   final EmailLoginController controller;
 
   EmailLogin({this.controller});
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildContent(BuildContext context) {
     controller.textFields = controller.textFields = <PrimaryTextField>[
       PrimaryTextField(
         regExType: RegExType.email,
@@ -154,91 +177,63 @@ class EmailLogin extends BaseView {
         onSaved: (val) => controller.confirmPassword = val.trim().toLowerCase(),
       ),
     ];
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
-      child: Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          backgroundColor: ServiceProvider
-              .instance.instanceStyleService.appStyle.backgroundColor,
-          elevation: 0,
-          title: Text(
-            controller.isLogin ? "LOGG INN" : "REGISTRER",
-            style: ServiceProvider
-                .instance.instanceStyleService.appStyle.pageTitle,
-          ),
-          // bottom: PreferredSize(
-          //     preferredSize: Size(0, 0),
-          //     child: Divider(
-          //       color: ServiceProvider
-          //           .instance.instanceStyleService.appStyle.textGrey,
-          //     )),
-        ),
-        backgroundColor: ServiceProvider
-            .instance.instanceStyleService.appStyle.backgroundColor,
-        body: Container(
-          width: ServiceProvider.instance.screenService
-              .getWidthByPercentage(context, 100),
-          child: SingleChildScrollView(
-            child: Form(
-              key: controller.formKey,
-              child: FocusScope(
-                node: controller._node,
-                child: Container(
-                  alignment: Alignment.center,
+
+    return SingleChildScrollView(
+      child: Form(
+        key: controller.formKey,
+        child: FocusScope(
+          node: controller._node,
+          child: Container(
+            alignment: Alignment.center,
+            width: ServiceProvider.instance.screenService
+                .getWidthByPercentage(context, 90),
+            child: Column(
+              children: <Widget>[
+                Container(
                   width: ServiceProvider.instance.screenService
                       .getWidthByPercentage(context, 90),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        width: ServiceProvider.instance.screenService
-                            .getWidthByPercentage(context, 90),
-                        child: Text(
-                          controller.authHint,
-                          style: ServiceProvider
-                              .instance.instanceStyleService.appStyle.timestamp,
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      controller.textFields[0],
-                      controller.textFields[1],
-                      if (!controller.isLogin) ...[
-                        controller.textFields[2],
-                      ],
-                      PrimaryButton(
-                        controller: controller.primaryButtonController,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          controller.isLogin = !controller.isLogin;
-                          controller.setState(() {});
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: ServiceProvider.instance.screenService
-                              .getWidthByPercentage(context, 50),
-                          height: ServiceProvider.instance.screenService
-                              .getHeightByPercentage(context, 5),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15),
-                            color: ServiceProvider
-                                .instance.instanceStyleService.appStyle.green,
-                          ),
-                          child: Text(
-                            controller.isLogin ? "Registrer deg" : "Logg inn",
-                            style: ServiceProvider.instance.instanceStyleService
-                                .appStyle.buttonText,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: getDefaultPadding(context) * 4,
-                      ),
-                      termsAndConditions(context),
-                    ],
+                  child: Text(
+                    controller.authHint,
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.cancel,
+                    textAlign: TextAlign.center,
                   ),
                 ),
-              ),
+                controller.textFields[0],
+                controller.textFields[1],
+                if (!controller.isLogin) ...[
+                  controller.textFields[2],
+                ],
+                PrimaryButton(
+                  controller: controller.primaryButtonController,
+                ),
+                SecondaryButton(
+                  onPressed: () {
+                    controller.isLogin = !controller.isLogin;
+                    controller.setState(() {});
+                  },
+                  text: controller.isLogin ? "Registrer deg" : "Logg inn",
+                  bottomPadding: controller.isLogin ? 0 : null,
+                ),
+                if (controller.isLogin)
+                  FlatButton(
+                    child: Text(
+                      "Glemt passord?",
+                      style: ServiceProvider
+                          .instance.instanceStyleService.appStyle.body1,
+                    ),
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ResetPassword(
+                            controller: ResetPasswordController(
+                              auth: controller.auth,
+                            ),
+                          ),
+                        )),
+                  ),
+                termsAndConditions(context),
+              ],
             ),
           ),
         ),

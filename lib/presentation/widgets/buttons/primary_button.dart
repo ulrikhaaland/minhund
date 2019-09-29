@@ -44,8 +44,8 @@ class PrimaryButton extends BaseView {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          top: controller.topPadding ?? getDefaultPadding(context) * 4,
-          bottom: controller.bottomPadding ?? getDefaultPadding(context) * 4),
+          top: controller.topPadding ?? getDefaultPadding(context) * 2,
+          bottom: controller.bottomPadding ?? getDefaultPadding(context) * 2),
       child: ConstrainedBox(
         constraints: BoxConstraints(
           minWidth: controller.width ??

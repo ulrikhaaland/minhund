@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:minhund/model/address.dart';
 import 'package:minhund/model/course.dart';
 import 'package:minhund/model/veterinary_visit.dart';
+import 'package:minhund/presentation/widgets/custom_image.dart';
 
 part 'dog.g.dart';
 
@@ -18,11 +19,13 @@ class Dog {
     this.address,
     this.chipNumber,
     this.id,
+    this.imgUrl,
   });
   String id;
   String name;
   String weigth;
   String chipNumber;
+  String imgUrl;
   Address address;
   DateTime birthDate;
   String race;
@@ -30,6 +33,8 @@ class Dog {
   List<Course> courses;
   @JsonKey(ignore: true)
   DocumentReference docRef;
+  @JsonKey(ignore: true)
+  CustomImage profileImage;
 
   factory Dog.fromJson(Map<String, dynamic> json) => _$DogFromJson(json);
 

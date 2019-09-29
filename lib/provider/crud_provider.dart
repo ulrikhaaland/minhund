@@ -14,6 +14,7 @@ class CrudProvider {
       _firestoreInstance.collection(path).add(model.toJson()).then((docRef) {
         model.docRef = docRef;
         model.id = docRef.documentID;
+        update(model);
         return model;
       });
     }

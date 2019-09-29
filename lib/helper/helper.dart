@@ -57,34 +57,40 @@ Widget termsAndConditions(BuildContext context) {
   return Container(
     width: ServiceProvider.instance.screenService
         .getWidthByPercentage(context, 90),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    child: Row(
       children: <Widget>[
-        Text(
-          "Ved å registrere bruker hos Minhund samtykker",
-          style:
-              ServiceProvider.instance.instanceStyleService.appStyle.timestamp,
-          textAlign: TextAlign.start,
-        ),
-        Row(
+        Spacer(),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              "jeg til Minhund's ",
+              "Ved å registrere bruker hos Minhund samtykker",
               style: ServiceProvider
                   .instance.instanceStyleService.appStyle.timestamp,
               textAlign: TextAlign.start,
             ),
-            InkWell(
-              onTap: () => print("GO TO TERMS AND CONDITIONS"),
-              child: Text(
-                "brukervilkår.",
-                style: ServiceProvider
-                    .instance.instanceStyleService.appStyle.coloredText,
-                textAlign: TextAlign.start,
-              ),
+            Row(
+              children: <Widget>[
+                Text(
+                  "jeg til Minhund's ",
+                  style: ServiceProvider
+                      .instance.instanceStyleService.appStyle.timestamp,
+                  textAlign: TextAlign.start,
+                ),
+                InkWell(
+                  onTap: () => print("GO TO TERMS AND CONDITIONS"),
+                  child: Text(
+                    "brukervilkår.",
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.coloredText,
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
+        Spacer(),
       ],
     ),
   );
