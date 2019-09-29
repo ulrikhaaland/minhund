@@ -20,8 +20,11 @@
 # is commented out by default.
 #.vscode/
 
+<<<<<<< HEAD
 ./GoogleService-Info.plist
 
+=======
+>>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
 # Flutter/Dart/Pub related
 **/doc/api/
 .dart_tool/

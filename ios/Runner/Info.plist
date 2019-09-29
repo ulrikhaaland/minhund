@@ -29,6 +29,11 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+<<<<<<< HEAD
+=======
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+>>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
