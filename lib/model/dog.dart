@@ -5,17 +5,17 @@ import 'package:minhund/model/course.dart';
 import 'package:minhund/model/veterinary_visit.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 
+import 'journal_item.dart';
+
 part 'dog.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(anyMap: true)
 class Dog {
   Dog({
     this.name,
     this.weigth,
     this.birthDate,
     this.race,
-    this.veterinaryVisits,
-    this.courses,
     this.address,
     this.chipNumber,
     this.id,
@@ -29,8 +29,9 @@ class Dog {
   Address address;
   DateTime birthDate;
   String race;
-  List<VeterinaryVisit> veterinaryVisits;
-  List<Course> courses;
+  @JsonKey(ignore: true)
+  List<JournalItem> journalItems;
+
   @JsonKey(ignore: true)
   DocumentReference docRef;
   @JsonKey(ignore: true)

@@ -83,6 +83,7 @@ class DogInfoController extends BaseController {
         autocorrect: false,
         textCapitalization: TextCapitalization.none,
         textInputType: TextInputType.number,
+        maxLength: 4,
       ),
       PrimaryTextField(
         initValue: dog?.address?.county,

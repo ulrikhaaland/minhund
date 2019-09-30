@@ -14,22 +14,16 @@ Dog _$DogFromJson(Map<String, dynamic> json) {
         ? null
         : DateTime.parse(json['birthDate'] as String),
     race: json['race'] as String,
-    veterinaryVisits: (json['veterinaryVisits'] as List)
-        ?.map((e) => e == null
-            ? null
-            : VeterinaryVisit.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
-    courses: (json['courses'] as List)
-        ?.map((e) =>
-            e == null ? null : Course.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
     address: json['address'] == null
         ? null
         : Address.fromJson(json['address'] as Map<dynamic, dynamic>),
     chipNumber: json['chipNumber'] as String,
     id: json['id'] as String,
     imgUrl: json['imgUrl'] as String,
-  );
+  )..journalItems = (json['journalItems'] as List)
+      ?.map((e) =>
+          e == null ? null : JournalItem.fromJson(e as Map<String, dynamic>))
+      ?.toList();
 }
 
 Map<String, dynamic> _$DogToJson(Dog instance) => <String, dynamic>{
@@ -38,9 +32,8 @@ Map<String, dynamic> _$DogToJson(Dog instance) => <String, dynamic>{
       'weigth': instance.weigth,
       'chipNumber': instance.chipNumber,
       'imgUrl': instance.imgUrl,
-      'address': instance.address.toJson(),
+      'address': instance.address,
       'birthDate': instance.birthDate?.toIso8601String(),
       'race': instance.race,
-      'veterinaryVisits': instance.veterinaryVisits,
-      'courses': instance.courses,
+      'journalItems': instance.journalItems,
     };

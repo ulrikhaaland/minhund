@@ -10,6 +10,7 @@ import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 
 import '../../../bottom_navigation.dart';
+import 'journal-items/journal_items.dart';
 
 class JournalController extends BottomNavigationController {
   final User user;
@@ -58,38 +59,58 @@ class Journal extends BottomNavigation {
 
     Dog dog = controller.user.dog;
     dog.profileImage.controller.imageSizePercentage = 5;
+
+    getTimeDifference(time: dog.birthDate, daysMonthsYears: true);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Container(
-          color: Colors.white,
+        Flexible(
           child: Padding(
-            padding: EdgeInsets.all(getDefaultPadding(context)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+            padding: EdgeInsets.all(getDefaultPadding(context) * 2),
+            child: Card(
+              color: Colors.white,
+              elevation: 6,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(getDefaultPadding(context)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      dog.name,
-                      style: ServiceProvider
-                          .instance.instanceStyleService.appStyle.title,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Flexible(
+                          child: Text(
+                            dog.name,
+                            style: ServiceProvider
+                                .instance.instanceStyleService.appStyle.title,
+                          ),
+                        ),
+                        Flexible(
+                          child: Text(
+                            "${dog.race}, ${getTimeDifference(time: dog.birthDate, daysMonthsYears: true)}, ${dog.weigth} kilo",
+                            style: ServiceProvider
+                                .instance.instanceStyleService.appStyle.body1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      "${dog.race} ${getTimeDifference(dog.birthDate)} ${dog.weigth}",
-                      style: ServiceProvider
-                          .instance.instanceStyleService.appStyle.body1,
-                    ),
+                    controller.user.dog.profileImage
                   ],
                 ),
-                controller.user.dog.profileImage
-              ],
+              ),
             ),
           ),
-        )
+        ),
+        JournalItemsPage(
+          controller: JournalItemsController(journalItems: dog.journalItems),
+        ),
       ],
     );
   }

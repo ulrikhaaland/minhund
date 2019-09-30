@@ -31,6 +31,7 @@ class PrimaryTextField extends StatefulWidget {
   final bool autocorrect;
   final TextAlign textAlign;
   final RegExType regExType;
+  final int maxLength;
 
   bool canSave = true;
 
@@ -60,6 +61,7 @@ class PrimaryTextField extends StatefulWidget {
     this.autocorrect,
     this.textAlign,
     this.regExType,
+    this.maxLength,
   }) : super(key: key);
 
   _PrimaryTextFieldState createState() => _PrimaryTextFieldState();
@@ -150,6 +152,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                       EdgeInsets.only(left: padding * 4, right: padding * 4),
                   child: Center(
                     child: TextFormField(
+                      maxLength: widget.maxLength,
                       autocorrect: widget.autocorrect ?? false,
                       obscureText: widget.obscure ?? false,
                       autofocus: widget.autoFocus ?? false,

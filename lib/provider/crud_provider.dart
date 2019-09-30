@@ -1,35 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
-class CrudProvider {
-  Firestore _firestoreInstance = Firestore.instance;
-
-  Future update(dynamic model) {
+abstract class CrudProvider {
+  Future<dynamic> update({@required dynamic model}) {
     return model.docRef.updateData(model.toJson());
   }
 
-  Future<dynamic> create(dynamic model, String path) async {
-    if (model.id != null) {
-      return update(model);
-    } else {
-      DocumentReference docRef =
-          await _firestoreInstance.collection(path).add(model.toJson());
-      model.docRef = docRef;
-      model.id = docRef.documentID;
-      update(model);
-      return model;
-    }
+  Future<DocumentReference> create(
+      {@required dynamic model, @required String path}) {
+    return Firestore.instance.collection(path).add(model.toJson());
   }
 
-  Future getCollection(String path) async {
-    return await _firestoreInstance.collection(path).getDocuments();
-  }
+  Future getCollection({@required String path});
 
-  Future read(String path, dynamic model) async {
-    DocumentSnapshot docSnap = await _firestoreInstance.document(path).get();
-    return model.fromJson(docSnap.data);
-  }
+  Future<dynamic> read({@required String id});
 
-  Future delete(dynamic model) {
+  Future delete({@required dynamic model}) {
     return model.docRef.delete();
   }
+
+  Future set({@required String id, @required dynamic model});
 }

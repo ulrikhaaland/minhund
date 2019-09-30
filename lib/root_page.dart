@@ -38,7 +38,7 @@ class RootPageController extends BaseController {
   User _user;
   bool introDone = false;
 
-  bool newUser = true;
+  bool newUser = false;
 
   @override
   void initState() {
@@ -60,7 +60,9 @@ class RootPageController extends BaseController {
     }
 
     if (firebaseUser != null) {
-      _user = await UserProvider().get(id: firebaseUser.uid, withDogs: true);
+      _user = await UserProvider().read(
+        id: firebaseUser.uid,
+      );
 
       if (_user == null) {
         _user = User(
@@ -72,9 +74,12 @@ class RootPageController extends BaseController {
             phoneNumber: firebaseUser.phoneNumber,
             dogs: [],
             currentDogIndex: 0);
+
         newUser = true;
-        await UserProvider().set(_user);
-        _user = await UserProvider().get(id: _user.id, withDogs: false);
+        await UserProvider().set(id: _user.id, model: _user);
+        _user = await UserProvider().read(
+          id: _user.id,
+        );
       } else {
         if (_user.dogs == null) _user.dogs = [];
       }

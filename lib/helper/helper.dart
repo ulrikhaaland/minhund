@@ -131,36 +131,47 @@ void scrollScreen(
   });
 }
 
-String getTimeDifference(DateTime time) {
+String getTimeDifference({DateTime time, bool daysMonthsYears}) {
   String difference;
-
-  double days;
-  int hours;
-  int minutes;
-  int seconds;
-
-  hours = time.difference(DateTime.now()).inHours.abs();
-  minutes = time.difference(DateTime.now()).inMinutes.abs();
-  seconds = time.difference(DateTime.now()).inSeconds.abs();
-
-  if (hours != 0) {
-    days = hours / 24;
-    if (days < 1) {
-      difference = "${hours.abs()} t";
+  if (daysMonthsYears) {
+    int days = DateTime.now().difference(time).inDays.abs();
+    if (days > 365) {
+      int years = (days / 365).round();
+      days = (days % 365).round();
+      print(" $years + $days");
+      return "$years år";
     } else {
-      if (days > 2) {
-        difference = "${time.day}.${time.month}.${time.year}";
-      } else {
-        difference = "${days.abs().round()} d";
-      }
+      return " ${(days % 365).round().abs()} dager";
     }
-  } else if (minutes != 0) {
-    difference = "$minutes m";
   } else {
-    difference = "$seconds s";
-  }
+    double days;
+    int hours;
+    int minutes;
+    int seconds;
 
-  return difference ?? "N/A";
+    hours = time.difference(DateTime.now()).inHours.abs();
+    minutes = time.difference(DateTime.now()).inMinutes.abs();
+    seconds = time.difference(DateTime.now()).inSeconds.abs();
+
+    if (hours != 0) {
+      days = hours / 24;
+      if (days < 1) {
+        difference = "${hours.abs()} t";
+      } else {
+        if (days > 2) {
+          difference = "${time.day}.${time.month}.${time.year}";
+        } else {
+          difference = "${days.abs().round()} d";
+        }
+      }
+    } else if (minutes != 0) {
+      difference = "$minutes m";
+    } else {
+      difference = "$seconds s";
+    }
+
+    return difference ?? "N/A";
+  }
 }
 
 double _avatarCircleBorderSize;

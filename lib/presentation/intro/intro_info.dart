@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/helper/image_picker.dart';
 import 'package:minhund/model/dog.dart';
+import 'package:minhund/model/journal_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
@@ -55,6 +56,40 @@ class IntroInfoOwnerController extends MasterPageController {
   @override
   // TODO: implement actionTwo
   Widget get actionTwo => null;
+
+  Future<void> saveInfo(Dog dog) async {
+    if (user.dogs == null) {
+      user.dogs = [];
+    }
+
+    if (!user.dogs.contains(dog)) {
+      user.dogs.add(dog);
+    }
+
+    dog.journalItems = <JournalItem>[
+      JournalItem(
+        title: "Veterinær",
+        sortIndex: 0,
+      ),
+      JournalItem(
+        title: "Kurs",
+        sortIndex: 1,
+      ),
+    ];
+    await CrudProvider().update(user);
+
+    await CrudProvider().create(dog, user.docRef.path + "/dogs");
+
+    onDone();
+
+    if (imageFile != null) {
+      dog.imgUrl = await FileProvider()
+          .uploadFile(file: imageFile, path: "dogs/${dog.id}/${dog.id}");
+      CrudProvider().update(dog);
+    }
+
+    Navigator.pop(context);
+  }
 }
 
 class IntroInfoOwner extends MasterPage {
@@ -98,29 +133,7 @@ class IntroInfoOwner extends MasterPage {
                           .user.dogs[controller.user.currentDogIndex ?? 0]
                       : Dog(),
                   onDone: (dog) async {
-                    if (controller.user.dogs == null) {
-                      controller.user.dogs = [];
-                    }
-
-                    if (!controller.user.dogs.contains(dog)) {
-                      controller.user.dogs.add(dog);
-                    }
-                    await CrudProvider().update(controller.user);
-
-                    await CrudProvider()
-                        .create(dog, controller.user.docRef.path + "/dogs");
-
-                    controller.onDone();
-
-                    if (controller.imageFile != null) {
-                      dog.imgUrl = await FileProvider().uploadFile(
-                          file: controller.imageFile,
-                          path: "dogs/${dog.id}/${dog.id}");
-                      CrudProvider().update(dog);
-                    }
-
-                    Navigator.pop(context);
-                    return dog;
+                    controller.saveInfo(dog);
                   }),
             )
         ],
