@@ -15,7 +15,8 @@ class UserProvider extends CrudProvider {
         update(model: user);
       });
 
-  Future read({@required String id}) async {
+  Future read({@required String id, model: User}) async {
+    return super.read(id: id,)
     User user;
 
     String path = "users/$id";
