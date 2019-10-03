@@ -32,6 +32,7 @@ class PrimaryTextField extends StatefulWidget {
   final TextAlign textAlign;
   final RegExType regExType;
   final int maxLength;
+  final double width;
 
   bool canSave = true;
 
@@ -62,6 +63,7 @@ class PrimaryTextField extends StatefulWidget {
     this.textAlign,
     this.regExType,
     this.maxLength,
+    this.width,
   }) : super(key: key);
 
   _PrimaryTextFieldState createState() => _PrimaryTextFieldState();
@@ -96,8 +98,9 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
 
     widget.validate == null ? widget.validate = true : null;
     return Container(
-      width: ServiceProvider.instance.screenService
-          .getWidthByPercentage(context, 80),
+      width: widget.width ??
+          ServiceProvider.instance.screenService
+              .getWidthByPercentage(context, 80),
       height: ServiceProvider.instance.screenService
           .getHeightByPercentage(context, !widget.canSave ? 11.5 : 10),
       child: Padding(
@@ -118,7 +121,11 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                     padding: EdgeInsets.only(left: padding * 2),
                     child: Card(
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
+                        borderRadius: BorderRadius.circular(ServiceProvider
+                            .instance
+                            .instanceStyleService
+                            .appStyle
+                            .borderRadius),
                       ),
                       color: ServiceProvider
                           .instance.instanceStyleService.appStyle.pink,
@@ -145,7 +152,8 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                   .getHeightByPercentage(context, 7.5),
               child: Card(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
+                  borderRadius: BorderRadius.circular(ServiceProvider
+                      .instance.instanceStyleService.appStyle.borderRadius),
                 ),
                 child: Padding(
                   padding:

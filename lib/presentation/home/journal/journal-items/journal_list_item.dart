@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:minhund/helper/helper.dart';
+import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/journal_item.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
+import 'package:minhund/presentation/home/journal/journal-event/journal_list_item_event.dart';
 import 'package:minhund/service/service_provider.dart';
 
 class JournalListItemController extends BaseController {
@@ -33,9 +36,37 @@ class JournalListItem extends BaseView {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            IconButton(
-              icon: Icon(Icons.add),
-              onPressed: () => null,
+            Container(
+              height: ServiceProvider
+                      .instance.instanceStyleService.appStyle.iconSizeStandard *
+                  1.5,
+              width: ServiceProvider
+                      .instance.instanceStyleService.appStyle.iconSizeStandard *
+                  1.5,
+              decoration: BoxDecoration(
+                color: ServiceProvider
+                    .instance.instanceStyleService.appStyle.green,
+                borderRadius: BorderRadius.all(Radius.circular(ServiceProvider
+                        .instance.instanceStyleService.appStyle.borderRadius -
+                    3)),
+              ),
+              child: Align(
+                alignment: Alignment.center,
+                child: IconButton(
+                  icon: Icon(Icons.add),
+                  color: Colors.white,
+                  onPressed: () => showCustomDialog(
+                      context: context,
+                      child: JournalListItemEvent(
+                        controller: JournalListItemEventController(
+                          title: controller.item.title,
+                          eventItem: JournalEventItem(),
+                        ),
+                      )),
+                  iconSize: ServiceProvider
+                      .instance.instanceStyleService.appStyle.iconSizeSmall,
+                ),
+              ),
             ),
           ],
         ),
@@ -50,10 +81,7 @@ class JournalListItem extends BaseView {
             },
           ),
         ] else ...[
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () => null,
-          ),
+          Container(),
         ],
       ],
     );

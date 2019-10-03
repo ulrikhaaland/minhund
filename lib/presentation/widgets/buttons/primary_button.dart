@@ -66,7 +66,9 @@ class PrimaryButton extends BaseView {
                   ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(
-                Radius.circular(controller.radius ?? 15.0),
+                Radius.circular(controller.radius ??
+                    ServiceProvider
+                        .instance.instanceStyleService.appStyle.borderRadius),
               ),
             ),
             color: controller.color ??

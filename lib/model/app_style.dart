@@ -49,6 +49,8 @@ class AppStyle {
     this.pink,
     this.textFieldError,
     this.textFieldInput,
+    this.borderRadius,
+    this.elevation,
   });
 
   Color themeColor;
@@ -105,4 +107,6 @@ class AppStyle {
   double iconSizeExtraSmall;
   double iconSizeStandard;
   double iconSizeBig;
+  double borderRadius;
+  double elevation;
 }

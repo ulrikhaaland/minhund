@@ -81,7 +81,11 @@ class LoginPage extends BaseView {
                     child: Container(
                       decoration: BoxDecoration(
                           color: Color.fromARGB(255, 161, 196, 253),
-                          borderRadius: BorderRadius.circular(8)),
+                          borderRadius: BorderRadius.circular(ServiceProvider
+                              .instance
+                              .instanceStyleService
+                              .appStyle
+                              .borderRadius)),
                       height: ServiceProvider.instance.screenService
                           .getPortraitHeightByPercentage(context, 7.5),
                       width: ServiceProvider.instance.screenService
@@ -123,7 +127,11 @@ class LoginPage extends BaseView {
                           color: Color.fromARGB(255, 230, 115, 153),
                           // ServiceProvider.instance.instanceStyleService
                           //     .appStyle.mountbattenPink,
-                          borderRadius: BorderRadius.circular(8)),
+                          borderRadius: BorderRadius.circular(ServiceProvider
+                              .instance
+                              .instanceStyleService
+                              .appStyle
+                              .borderRadius)),
                       child: Center(
                         child: Text(
                           "Email",

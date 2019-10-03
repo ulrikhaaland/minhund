@@ -72,25 +72,11 @@ class InstanceStyleService {
 
     _appStyle.smallTitle = new TextStyle(
       fontSize: screenHeight * 0.026 * factor,
-      fontFamily: 'Montserrat',
+      fontFamily: 'Apercu',
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.normal,
-      color: Colors.black,
+      color: _appStyle.textGrey,
     );
-
-    _appStyle.titleGrey = new TextStyle(
-        fontSize: screenHeight * 0.024 * factor,
-        fontFamily: 'Montserrat',
-        // fontWeight: FontWeight.bold,
-        fontStyle: FontStyle.normal,
-        color: _appStyle.textGrey);
-
-    _appStyle.titleWhite = new TextStyle(
-        fontSize: screenHeight * 0.024 * factor,
-        fontFamily: 'Montserrat',
-        fontWeight: FontWeight.bold,
-        fontStyle: FontStyle.normal,
-        color: Colors.white);
 
     _appStyle.body1 = new TextStyle(
       fontFamily: "Apercu",
@@ -269,6 +255,10 @@ class InstanceStyleService {
     _appStyle.activeIconColor = _appStyle.green;
 
     _appStyle.inactiveIconColor = Colors.grey;
+
+    _appStyle.borderRadius = 15;
+
+    _appStyle.elevation = 6;
 
     _defaultAppStyle = _appStyle;
 

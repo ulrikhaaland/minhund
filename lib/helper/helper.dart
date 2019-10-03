@@ -296,7 +296,7 @@ double getDefaultButtonHeight(BuildContext context) {
 
 double _defaultButtonHeight;
 
-Future<void> showBambooDialog({
+Future<void> showCustomDialog({
   BuildContext context,
   Widget child,
 }) async {
@@ -308,6 +308,13 @@ Future<void> showBambooDialog({
     context: context,
     builder: (con) {
       return Dialog(
+        backgroundColor:
+            ServiceProvider.instance.instanceStyleService.appStyle.lightBlue,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ServiceProvider
+                  .instance.instanceStyleService.appStyle.borderRadius ??
+              10),
+        ),
         child: Container(
           width: width,
           height: height,

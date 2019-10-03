@@ -14,24 +14,49 @@ class DateTimePickerController extends BaseController {
   final DateTime initialDate;
   final String title;
 
+  final double width;
+
   bool canSave = false;
+
+  final bool time;
+
+  final bool overrideInitialDate;
 
   TextEditingController _textCtrlr = TextEditingController();
 
   FocusNode _textNode = FocusNode();
+
+  Icon confirmIcon;
+  Icon cancelIcon;
 
   DateTimePickerController(
       {this.onConfirmed,
       this.title,
       this.dateFormat,
       this.label,
-      this.initialDate});
+      this.initialDate,
+      this.width,
+      this.time = false,
+      this.overrideInitialDate = false});
 
   @override
   void initState() {
+    confirmIcon = Icon(
+      Icons.check,
+      color: ServiceProvider.instance.instanceStyleService.appStyle.green,
+      size: ServiceProvider
+          .instance.instanceStyleService.appStyle.iconSizeStandard,
+    );
+    cancelIcon = Icon(
+      Icons.close,
+      color: ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
+      size: ServiceProvider
+          .instance.instanceStyleService.appStyle.iconSizeStandard,
+    );
     super.initState();
     _textNode.addListener(() => openDatePicker());
-    initialDate != null ? _setCtrlrText(initialDate) : null;
+    if (initialDate != null && overrideInitialDate != true)
+      _setCtrlrText(initialDate);
     if (_textCtrlr.text != "" && _textCtrlr.text != null) canSave = true;
   }
 
@@ -50,11 +75,14 @@ class DateTimePickerController extends BaseController {
   }
 
   _setCtrlrText(DateTime date) {
-    String month;
-    date.month.toString().length == 1
-        ? month = "0" + date.month.toString()
-        : month = date.month.toString();
-    setState(() {
+    if (time) {
+      _textCtrlr.text = "${date.hour}:${date.minute}";
+    } else {
+      String month;
+      date.month.toString().length == 1
+          ? month = "0" + date.month.toString()
+          : month = date.month.toString();
+
       if (date == null) {
         _textCtrlr.text = "";
       } else {
@@ -70,7 +98,8 @@ class DateTimePickerController extends BaseController {
             _textCtrlr.text = "${date.day}-$month-${date.year}";
         }
       }
-    });
+    }
+    setState(() {});
   }
 
   Future<void> _birthDialog({BuildContext context}) async {
@@ -82,36 +111,62 @@ class DateTimePickerController extends BaseController {
               return Future.value(true);
             },
             child: SimpleDialog(
-              backgroundColor: Colors.white,
               title: Align(
                   alignment: Alignment.center,
                   child: Text(
                     title ?? "N/A",
                     style: ServiceProvider
-                        .instance.instanceStyleService.appStyle.title,
+                        .instance.instanceStyleService.appStyle.smallTitle,
                   )),
+              backgroundColor: Colors.white,
               children: <Widget>[
-                DatePickerWidget(
-                  maxDateTime: DateTime.now(),
-                  dateFormat: dateFormat ?? "dd-MM-yyyy",
-                  onConfirm: (DateTime selectedTime, List<int> list) {
-                    canSave = true;
-                    _setCtrlrText(selectedTime);
-                    onConfirmed(selectedTime);
-                  },
-                  locale: DateTimePickerLocale.hu,
-                  pickerTheme: DateTimePickerTheme(
-                    itemTextStyle: ServiceProvider
-                        .instance.instanceStyleService.appStyle.body1,
-                    backgroundColor: Colors.white,
-                    cancelTextStyle: ServiceProvider
-                        .instance.instanceStyleService.appStyle.cancel,
-                    confirmTextStyle: ServiceProvider
-                        .instance.instanceStyleService.appStyle.confirm,
+                if (time == true)
+                  TimePickerWidget(
+                    dateFormat: dateFormat ?? "HH-mm",
+                    onConfirm: (DateTime selectedTime, List<int> list) {
+                      canSave = true;
+                      _setCtrlrText(selectedTime);
+                      onConfirmed(selectedTime);
+                    },
+                    locale: DateTimePickerLocale.hu,
+                    pickerTheme: DateTimePickerTheme(
+                      confirm: confirmIcon,
+                      cancel: cancelIcon,
+                      itemTextStyle: ServiceProvider
+                          .instance.instanceStyleService.appStyle.body1,
+                      backgroundColor: Colors.white,
+                      cancelTextStyle: ServiceProvider
+                          .instance.instanceStyleService.appStyle.cancel,
+                      confirmTextStyle: ServiceProvider
+                          .instance.instanceStyleService.appStyle.confirm,
+                    ),
+                    initDateTime: initialDate ??
+                        DateTime.now().subtract(Duration(days: 2000)),
                   ),
-                  initialDateTime: initialDate ??
-                      DateTime.now().subtract(Duration(days: 2000)),
-                ),
+                if (time != true)
+                  DatePickerWidget(
+                    maxDateTime: DateTime.now(),
+                    dateFormat: dateFormat ?? "dd-MM-yyyy",
+                    onConfirm: (DateTime selectedTime, List<int> list) {
+                      canSave = true;
+                      _setCtrlrText(selectedTime);
+                      onConfirmed(selectedTime);
+                    },
+                    locale: DateTimePickerLocale.hu,
+                    pickerTheme: DateTimePickerTheme(
+                      confirm: confirmIcon,
+                      cancel: cancelIcon,
+                      itemTextStyle: ServiceProvider
+                          .instance.instanceStyleService.appStyle.body1,
+                      backgroundColor: Colors.white,
+                      cancelTextStyle: ServiceProvider
+                          .instance.instanceStyleService.appStyle.cancel,
+                      confirmTextStyle: ServiceProvider
+                          .instance.instanceStyleService.appStyle.confirm,
+                    ),
+                    initialDateTime: initialDate ??
+                        DateTime.now().subtract(Duration(days: 2000)),
+                  ),
               ],
             ),
           );
@@ -137,6 +192,7 @@ class DateTimePicker extends BaseView {
       textEditingController: controller._textCtrlr,
       focusNode: controller._textNode,
       hintText: controller.label,
+      width: controller.width,
     );
   }
 }
