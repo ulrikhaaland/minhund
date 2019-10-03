@@ -60,7 +60,7 @@ class RootPageController extends BaseController {
     }
 
     if (firebaseUser != null) {
-      _user = await UserProvider().read(
+      _user = await UserProvider().get(
         id: firebaseUser.uid,
       );
 
@@ -77,7 +77,7 @@ class RootPageController extends BaseController {
 
         newUser = true;
         await UserProvider().set(id: _user.id, model: _user);
-        _user = await UserProvider().read(
+        _user = await UserProvider().get(
           id: _user.id,
         );
       } else {

@@ -6,7 +6,7 @@ part of 'dog.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Dog _$DogFromJson(Map<String, dynamic> json) {
+Dog _$DogFromJson(Map json) {
   return Dog(
     name: json['name'] as String,
     weigth: json['weigth'] as String,
@@ -16,14 +16,11 @@ Dog _$DogFromJson(Map<String, dynamic> json) {
     race: json['race'] as String,
     address: json['address'] == null
         ? null
-        : Address.fromJson(json['address'] as Map<dynamic, dynamic>),
+        : Address.fromJson(json['address'] as Map),
     chipNumber: json['chipNumber'] as String,
     id: json['id'] as String,
     imgUrl: json['imgUrl'] as String,
-  )..journalItems = (json['journalItems'] as List)
-      ?.map((e) =>
-          e == null ? null : JournalItem.fromJson(e as Map<String, dynamic>))
-      ?.toList();
+  );
 }
 
 Map<String, dynamic> _$DogToJson(Dog instance) => <String, dynamic>{
@@ -32,8 +29,7 @@ Map<String, dynamic> _$DogToJson(Dog instance) => <String, dynamic>{
       'weigth': instance.weigth,
       'chipNumber': instance.chipNumber,
       'imgUrl': instance.imgUrl,
-      'address': instance.address,
+      'address': instance.address.toJson(),
       'birthDate': instance.birthDate?.toIso8601String(),
       'race': instance.race,
-      'journalItems': instance.journalItems,
     };

@@ -14,6 +14,8 @@ import 'package:minhund/presentation/info/dog/dog_info.dart';
 import 'package:minhund/presentation/info/user/user_info.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/crud_provider.dart';
+import 'package:minhund/provider/dog_provider.dart';
+import 'package:minhund/provider/user_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 
@@ -75,17 +77,21 @@ class IntroInfoOwnerController extends MasterPageController {
         title: "Kurs",
         sortIndex: 1,
       ),
+      JournalItem(
+        title: "Annet",
+        sortIndex: 2,
+      ),
     ];
-    await CrudProvider().update(user);
+    await UserProvider().update(model: user);
 
-    await CrudProvider().create(dog, user.docRef.path + "/dogs");
+    await DogProvider().create(id: user.id, model: dog);
 
     onDone();
 
     if (imageFile != null) {
       dog.imgUrl = await FileProvider()
           .uploadFile(file: imageFile, path: "dogs/${dog.id}/${dog.id}");
-      CrudProvider().update(dog);
+      DogProvider().update(model: dog);
     }
 
     Navigator.pop(context);

@@ -7,6 +7,7 @@ import 'package:minhund/provider/crud_provider.dart';
 import 'package:minhund/provider/dog_provider.dart';
 
 class UserProvider extends CrudProvider {
+  String path = "users";
   Firestore _firestoreInstance = Firestore.instance;
 
   Future updateFcmToken(User user, FirebaseMessaging firebaseMessaging) =>
@@ -15,42 +16,37 @@ class UserProvider extends CrudProvider {
         update(model: user);
       });
 
-  Future read({@required String id, model: User}) async {
-    return super.read(id: id,)
+  Future get({String id, model: User}) async {
     User user;
 
-    String path = "users/$id";
-
-    DocumentSnapshot docSnap = await _firestoreInstance.document(path).get();
+    DocumentSnapshot docSnap = await super.get(id: path + "/" + id);
 
     if (docSnap.exists) {
       user = User.fromJson(docSnap.data);
       user.docRef = docSnap.reference;
-      user.dogs = await DogProvider().getCollection(path: path);
+      user.dogs = await DogProvider().getCollection(id: id);
     }
 
     return user;
   }
 
   Future set({String id, dynamic model}) async {
-    _firestoreInstance.document("users/$id").setData(model.toJson());
+    return super.set(id: path + "/$id", model: model);
   }
 
   @override
-  Future<DocumentReference> create({dynamic model, String path}) {
-    return super.create(model: model, path: path);
+  Future<DocumentReference> create({dynamic model, String id}) {
+    return super.create(model: model, id: path);
   }
 
   @override
   Future delete({model}) {
-    // TODO: implement delete
     return super.delete(model: model);
   }
 
   @override
-  Future getCollection({String path}) {
-    // TODO: implement getCollection
-    return null;
+  Future getCollection({String id}) {
+    return super.getCollection(id: id);
   }
 
   @override

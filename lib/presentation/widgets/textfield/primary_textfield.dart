@@ -152,7 +152,6 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                       EdgeInsets.only(left: padding * 4, right: padding * 4),
                   child: Center(
                     child: TextFormField(
-                      maxLength: widget.maxLength,
                       autocorrect: widget.autocorrect ?? false,
                       obscureText: widget.obscure ?? false,
                       autofocus: widget.autoFocus ?? false,

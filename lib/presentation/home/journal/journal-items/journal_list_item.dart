@@ -17,13 +17,44 @@ class JournalListItem extends BaseView {
 
   @override
   Widget build(BuildContext context) {
+    if (!mounted) return Container();
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          controller.item.title,
-          style: ServiceProvider.instance.instanceStyleService.appStyle.title,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Flexible(
+              child: Text(
+                controller.item.title,
+                style: ServiceProvider
+                    .instance.instanceStyleService.appStyle.title,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: () => null,
+            ),
+          ],
         ),
         Divider(),
+        if (controller.item.journalEventItems != null) ...[
+          ListView.builder(
+            shrinkWrap: true,
+            itemCount: controller.item.journalEventItems.length,
+            itemBuilder: (context, index) {
+              return Text("data");
+              // JournalListItemEvent();
+            },
+          ),
+        ] else ...[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => null,
+          ),
+        ],
       ],
     );
   }
