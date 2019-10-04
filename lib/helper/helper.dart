@@ -315,10 +315,12 @@ Future<void> showCustomDialog({
                   .instance.instanceStyleService.appStyle.borderRadius ??
               10),
         ),
-        child: Container(
-          width: width,
-          height: height,
-          child: child,
+        child: SingleChildScrollView(
+          child: Container(
+            width: width,
+            height: height,
+            child: child,
+          ),
         ),
       );
     },

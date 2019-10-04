@@ -10,7 +10,15 @@ import 'package:minhund/service/service_provider.dart';
 class JournalListItemController extends BaseController {
   final JournalItem item;
 
+  bool expanded = false;
+
   JournalListItemController({this.item});
+
+  @override
+  void initState() {
+    if (item.journalEventItems == null) item.journalEventItems = [];
+    super.initState();
+  }
 }
 
 class JournalListItem extends BaseView {
@@ -21,69 +29,72 @@ class JournalListItem extends BaseView {
   @override
   Widget build(BuildContext context) {
     if (!mounted) return Container();
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return LayoutBuilder(
+      builder: (context, con) {
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Flexible(
-              child: Text(
-                controller.item.title,
-                style: ServiceProvider
-                    .instance.instanceStyleService.appStyle.title,
-                overflow: TextOverflow.ellipsis,
+            Container(
+              height: ServiceProvider.instance.screenService
+                  .getHeightByPercentage(context, 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Flexible(
+                    child: Text(
+                      controller.item.title,
+                      style: ServiceProvider
+                          .instance.instanceStyleService.appStyle.title,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(controller.expanded ? Icons.remove : Icons.add),
+                    color: ServiceProvider
+                        .instance.instanceStyleService.appStyle.textGrey,
+                    onPressed: () => controller.setState(
+                        () => controller.expanded = !controller.expanded),
+                    iconSize: ServiceProvider
+                        .instance.instanceStyleService.appStyle.iconSizeSmall,
+                  ),
+                ],
               ),
             ),
-            Container(
-              height: ServiceProvider
-                      .instance.instanceStyleService.appStyle.iconSizeStandard *
-                  1.5,
-              width: ServiceProvider
-                      .instance.instanceStyleService.appStyle.iconSizeStandard *
-                  1.5,
-              decoration: BoxDecoration(
-                color: ServiceProvider
-                    .instance.instanceStyleService.appStyle.green,
-                borderRadius: BorderRadius.all(Radius.circular(ServiceProvider
-                        .instance.instanceStyleService.appStyle.borderRadius -
-                    3)),
-              ),
-              child: Align(
-                alignment: Alignment.center,
-                child: IconButton(
-                  icon: Icon(Icons.add),
-                  color: Colors.white,
-                  onPressed: () => showCustomDialog(
-                      context: context,
-                      child: JournalListItemEvent(
-                        controller: JournalListItemEventController(
-                          title: controller.item.title,
-                          eventItem: JournalEventItem(),
-                        ),
-                      )),
-                  iconSize: ServiceProvider
-                      .instance.instanceStyleService.appStyle.iconSizeSmall,
+            Divider(),
+            if ((controller.item.journalEventItems != null &&
+                    controller.item.journalEventItems.isNotEmpty) &&
+                controller.expanded) ...[
+              Container(
+                height: getListItemHeight(context),
+                child: ListView.builder(
+                  padding: EdgeInsets.zero,
+                  shrinkWrap: true,
+                  itemCount: controller.item.journalEventItems.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: <Widget>[
+                        Text("data"),
+                        Text("data"),
+                        Text("data"),
+                        Text("data"),
+                        Text("data"),
+                      ],
+                    );
+                    // JournalListItemEvent();
+                  },
                 ),
               ),
-            ),
+            ] else if (controller.expanded) ...[
+              Text(
+                "Her var det tomt gitt...",
+                style: ServiceProvider
+                    .instance.instanceStyleService.appStyle.body1,
+              ),
+            ]
           ],
-        ),
-        Divider(),
-        if (controller.item.journalEventItems != null) ...[
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: controller.item.journalEventItems.length,
-            itemBuilder: (context, index) {
-              return Text("data");
-              // JournalListItemEvent();
-            },
-          ),
-        ] else ...[
-          Container(),
-        ],
-      ],
+        );
+      },
     );
   }
 }

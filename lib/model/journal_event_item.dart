@@ -5,10 +5,11 @@ part 'journal_event_item.g.dart';
 
 @JsonSerializable()
 class JournalEventItem {
-  JournalEventItem({this.title, this.timeStamp, this.note});
+  JournalEventItem({this.title, this.timeStamp, this.note, this.reminder});
 
   String title;
   DateTime timeStamp;
+  DateTime reminder;
   String note;
   @JsonKey(ignore: true)
   DocumentReference docRef;

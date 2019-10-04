@@ -18,6 +18,8 @@ class DateTimePickerController extends BaseController {
 
   bool canSave = false;
 
+  final bool validate;
+
   final bool time;
 
   final bool overrideInitialDate;
@@ -37,6 +39,7 @@ class DateTimePickerController extends BaseController {
       this.initialDate,
       this.width,
       this.time = false,
+      this.validate = true,
       this.overrideInitialDate = false});
 
   @override
@@ -188,7 +191,7 @@ class DateTimePicker extends BaseView {
   Widget build(BuildContext context) {
     canSave = controller.canSave;
     return PrimaryTextField(
-      validate: true,
+      validate: controller.validate ?? true,
       textEditingController: controller._textCtrlr,
       focusNode: controller._textNode,
       hintText: controller.label,

@@ -51,6 +51,7 @@ class AppStyle {
     this.textFieldInput,
     this.borderRadius,
     this.elevation,
+    this.transparentDisabledColoredText,
   });
 
   Color themeColor;
@@ -68,6 +69,7 @@ class AppStyle {
 
   List<Color> gradient;
   TextStyle textFieldError;
+  TextStyle transparentDisabledColoredText;
   TextStyle disabledColoredText;
   TextStyle textFieldInput;
   TextStyle coloredText;

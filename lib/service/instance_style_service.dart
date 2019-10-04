@@ -85,6 +85,14 @@ class InstanceStyleService {
       fontStyle: FontStyle.normal,
       color: appStyle.textGrey,
     );
+
+    _appStyle.transparentDisabledColoredText = new TextStyle(
+      fontFamily: "Apercu",
+      fontSize: screenHeight * 0.018 * factor,
+      fontWeight: FontWeight.normal,
+      fontStyle: FontStyle.normal,
+      color: Colors.transparent,
+    );
     _appStyle.timestamp = new TextStyle(
       fontFamily: "Apercu",
       fontSize: screenHeight * 0.018 * factor,

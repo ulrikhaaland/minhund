@@ -18,19 +18,16 @@ class JournalItemsPage extends BaseView {
   JournalItemsPage({this.controller});
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // color: ServiceProvider.instance.instanceStyleService.appStyle.lightBlue,
-      child: Column(
-        children: controller.journalItems != null
-            ? controller.journalItems.map((item) {
-                return JournalListItem(
-                  controller: JournalListItemController(item: item),
-                );
-              }).toList()
-            : [
-                Container(),
-              ],
-      ),
-    );
+    if (!mounted) return Container();
+
+    if (controller.journalItems != null)
+      return Column(
+          children: controller.journalItems.map((item) {
+        return JournalListItem(
+          controller: JournalListItemController(item: item),
+        );
+      }).toList());
+
+    return Container();
   }
 }

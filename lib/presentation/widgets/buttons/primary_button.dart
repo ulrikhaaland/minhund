@@ -74,7 +74,7 @@ class PrimaryButton extends BaseView {
             color: controller.color ??
                 ServiceProvider.instance.instanceStyleService.appStyle.skyBlue,
             textColor: Colors.black,
-            elevation: 0,
+            elevation: 3,
             onPressed: controller.onPressed),
       ),
     );
