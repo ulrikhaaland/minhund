@@ -35,6 +35,8 @@ class JournalListItemEventController extends BaseController {
 
   List<Widget> textFields;
 
+  PrimaryTextField addTextField;
+
   JournalListItemEventController(
       {this.eventItem, this.title, this.onSaved, this.journalItems});
 
@@ -47,17 +49,17 @@ class JournalListItemEventController extends BaseController {
   }
 
   void setTextFields() {
-    textFields = [
-      PrimaryTextField(
-        validate: true,
-        onSaved: (val) => journalItems.add(JournalItem(
-          title: val,
-          journalEventItems: [],
-          sortIndex: journalItems.length + 1,
-        )),
-        hintText: "Kategori-navn",
-      ),
-    ];
+    addTextField = PrimaryTextField(
+      validate: true,
+      onSaved: (val) => journalItems.add(JournalItem(
+        title: val,
+        journalEventItems: [],
+        sortIndex: journalItems.length + 1,
+      )),
+      hintText: "Kategori-navn",
+    );
+
+    textFields = [];
   }
 
   Widget basicContainer({Widget child}) {
@@ -92,372 +94,396 @@ class JournalListItemEvent extends BaseView {
 
     double padding = getDefaultPadding(context);
 
-    return Container(
-      padding: EdgeInsets.all(padding * 2),
-      child: Form(
-        key: controller._formKey,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            controller.height = constraints.maxHeight;
-            return Stack(
-              children: <Widget>[
-                if (controller.addNewCategory) ...[
-                  Column(
-                    children: <Widget>[
-                      controller.basicContainer(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.only(
-                                left: padding * 1.6,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Container(
+        color: Colors.transparent,
+        padding: EdgeInsets.all(padding * 2),
+        child: Form(
+          key: controller._formKey,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              controller.height = constraints.maxHeight;
+              return Stack(
+                children: <Widget>[
+                  if (controller.addNewCategory) ...[
+                    Column(
+                      children: <Widget>[
+                        controller.basicContainer(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: padding * 1.6,
+                                ),
+                                child: Text(
+                                  "Legg til ny kategori",
+                                  style: ServiceProvider.instance
+                                      .instanceStyleService.appStyle.smallTitle,
+                                ),
                               ),
-                              child: Text(
-                                "Legg til ny kategori",
-                                style: ServiceProvider.instance
-                                    .instanceStyleService.appStyle.smallTitle,
-                              ),
-                            ),
-                            popIcon,
-                          ],
+                              popIcon,
+                            ],
+                          ),
                         ),
-                      ),
-                      controller.textFields[0],
-                      PrimaryButton(
-                        controller: PrimaryButtonController(
-                          text: "Legg til",
-                          color: ServiceProvider
-                              .instance.instanceStyleService.appStyle.green,
-                          onPressed: () {
-                            controller._formKey.currentState.save();
-                            if (validateTextFields(
-                                singleTextField: controller.textFields[0])) {
-                              controller.selectedJournalItem =
-                                  controller.journalItems[
-                                      controller.journalItems.length - 1];
+                        controller.addTextField,
+                        PrimaryButton(
+                          controller: PrimaryButtonController(
+                            text: "Legg til",
+                            color: ServiceProvider
+                                .instance.instanceStyleService.appStyle.green,
+                            onPressed: () {
+                              controller._formKey.currentState.save();
+                              if (validateTextFields(
+                                  singleTextField: controller.addTextField)) {
+                                controller.selectedJournalItem =
+                                    controller.journalItems[
+                                        controller.journalItems.length - 1];
 
-                              controller.setState(
-                                  () => controller.addNewCategory = false);
-                            }
-                          },
-                        ),
-                      )
-                    ],
-                  )
-                ] else ...[
-                  Column(
-                    children: <Widget>[
-                      Container(
-                        height: constraints.maxHeight * 0.8,
-                        child: Column(
-                          children: <Widget>[
-                            controller.basicContainer(
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                controller.setState(
+                                    () => controller.addNewCategory = false);
+                              }
+                            },
+                          ),
+                        )
+                      ],
+                    )
+                  ] else ...[
+                    Column(
+                      children: <Widget>[
+                        Container(
+                          height: constraints.maxHeight * 0.8,
+                          child: Column(
+                            children: <Widget>[
+                              controller.basicContainer(
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding:
+                                          EdgeInsets.only(left: padding * 1.6),
+                                      child: Text(
+                                        controller.eventItem.title ??
+                                            "Ny oppgave",
+                                        style: ServiceProvider
+                                            .instance
+                                            .instanceStyleService
+                                            .appStyle
+                                            .smallTitle,
+                                      ),
+                                    ),
+                                    popIcon,
+                                  ],
+                                ),
+                              ),
+                              controller.basicContainer(
+                                child: PrimaryTextField(
+                                  hintText: "Tittel",
+                                  onSaved: (val) =>
+                                      controller.eventItem.title = val,
+                                  validate: false,
+                                ),
+                              ),
+                              Divider(),
+                              Row(
                                 children: <Widget>[
-                                  Padding(
-                                    padding:
-                                        EdgeInsets.only(left: padding * 1.6),
-                                    child: Text(
-                                      controller.eventItem.title ??
-                                          "Ny oppgave",
-                                      style: ServiceProvider
-                                          .instance
-                                          .instanceStyleService
-                                          .appStyle
-                                          .smallTitle,
+                                  Container(
+                                    width: constraints.maxWidth * 0.5,
+                                    child: Column(
+                                      children: <Widget>[
+                                        controller.basicContainer(
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                                left: padding * 1.6),
+                                            child: Text(
+                                              "Kategori",
+                                              style: ServiceProvider
+                                                  .instance
+                                                  .instanceStyleService
+                                                  .appStyle
+                                                  .smallTitle,
+                                            ),
+                                          ),
+                                        ),
+                                        Divider(),
+                                        controller.basicContainer(
+                                          child: DateTimePicker(
+                                            controller:
+                                                DateTimePickerController(
+                                                    validate: false,
+                                                    width:
+                                                        constraints.maxWidth /
+                                                            2.2,
+                                                    overrideInitialDate: true,
+                                                    onConfirmed: (date) {
+                                                      controller.eventItem
+                                                          .timeStamp = DateTime(
+                                                        date.year,
+                                                        date.month,
+                                                        date.day,
+                                                        controller
+                                                                .eventItem
+                                                                .timeStamp
+                                                                ?.hour ??
+                                                            DateTime.now().hour,
+                                                        controller
+                                                                .eventItem
+                                                                .timeStamp
+                                                                ?.minute ??
+                                                            DateTime.now()
+                                                                .minute,
+                                                      );
+                                                      print(controller
+                                                          .eventItem.timeStamp
+                                                          .toString());
+                                                    },
+                                                    initialDate: controller
+                                                        .eventItem.timeStamp,
+                                                    title: "Dato",
+                                                    label: "Dato"),
+                                          ),
+                                        ),
+                                        Divider(),
+                                        controller.basicContainer(
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                                left: padding * 1.6),
+                                            child: Text(
+                                              "Påminnelse",
+                                              style: ServiceProvider
+                                                  .instance
+                                                  .instanceStyleService
+                                                  .appStyle
+                                                  .smallTitle,
+                                            ),
+                                          ),
+                                        ),
+                                        if (controller.reminderError)
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                left: padding * 2),
+                                            child: Text(
+                                              controller.reminderErrorText,
+                                              style: ServiceProvider
+                                                  .instance
+                                                  .instanceStyleService
+                                                  .appStyle
+                                                  .transparentDisabledColoredText,
+                                            ),
+                                          ),
+                                        Divider(),
+                                      ],
                                     ),
                                   ),
-                                  popIcon,
-                                ],
-                              ),
-                            ),
-                            controller.basicContainer(
-                              child: PrimaryTextField(
-                                hintText: "Tittel",
-                                onSaved: (val) =>
-                                    controller.eventItem.title = val,
-                                validate: false,
-                              ),
-                            ),
-                            Divider(),
-                            Row(
-                              children: <Widget>[
-                                Container(
-                                  width: constraints.maxWidth * 0.5,
-                                  child: Column(
-                                    children: <Widget>[
-                                      controller.basicContainer(
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                              left: padding * 1.6),
-                                          child: Text(
-                                            "Kategori",
-                                            style: ServiceProvider
-                                                .instance
-                                                .instanceStyleService
-                                                .appStyle
-                                                .smallTitle,
-                                          ),
-                                        ),
-                                      ),
-                                      Divider(),
-                                      controller.basicContainer(
-                                        child: DateTimePicker(
-                                          controller: DateTimePickerController(
-                                              validate: false,
-                                              width: constraints.maxWidth / 2.2,
-                                              overrideInitialDate: true,
-                                              onConfirmed: (date) {
-                                                controller.eventItem.timeStamp =
-                                                    DateTime(
-                                                  date.year,
-                                                  date.month,
-                                                  date.day,
-                                                  controller.eventItem.timeStamp
-                                                          ?.hour ??
-                                                      DateTime.now().hour,
-                                                  controller.eventItem.timeStamp
-                                                          ?.minute ??
-                                                      DateTime.now().minute,
-                                                );
-                                                print(controller
-                                                    .eventItem.timeStamp
-                                                    .toString());
-                                              },
-                                              initialDate: controller
-                                                  .eventItem.timeStamp,
-                                              title: "Dato",
-                                              label: "Dato"),
-                                        ),
-                                      ),
-                                      Divider(),
-                                      controller.basicContainer(
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                              left: padding * 1.6),
-                                          child: Text(
-                                            "Påminnelse",
-                                            style: ServiceProvider
-                                                .instance
-                                                .instanceStyleService
-                                                .appStyle
-                                                .smallTitle,
-                                          ),
-                                        ),
-                                      ),
-                                      if (controller.reminderError)
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                              left: padding * 2),
-                                          child: Text(
-                                            controller.reminderErrorText,
-                                            style: ServiceProvider
-                                                .instance
-                                                .instanceStyleService
-                                                .appStyle
-                                                .transparentDisabledColoredText,
-                                          ),
-                                        ),
-                                      Divider(),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  width: constraints.maxWidth * 0.5,
-                                  child: Column(
-                                    children: <Widget>[
-                                      controller.basicContainer(
-                                        child: DropDownBtn(
-                                          controller: DropDownBtnController(
-                                            width: constraints.maxWidth,
-                                            value: controller
-                                                .selectedJournalItem.title,
-                                            items: controller.journalItems
-                                                .map((item) => item.title)
-                                                .toList(),
-                                            onChanged: (title) {
-                                              controller.selectedJournalItem =
-                                                  controller.journalItems
-                                                      .firstWhere((item) =>
-                                                          item.title == title);
+                                  Container(
+                                    width: constraints.maxWidth * 0.5,
+                                    child: Column(
+                                      children: <Widget>[
+                                        controller.basicContainer(
+                                          child: DropDownBtn(
+                                            controller: DropDownBtnController(
+                                              width: constraints.maxWidth,
+                                              value: controller
+                                                  .selectedJournalItem.title,
+                                              items: controller.journalItems
+                                                  .map((item) => item.title)
+                                                  .toList(),
+                                              onChanged: (title) {
+                                                controller.selectedJournalItem =
+                                                    controller.journalItems
+                                                        .firstWhere((item) =>
+                                                            item.title ==
+                                                            title);
 
-                                              controller.setState(() {});
-                                            },
-                                            onAddNew: () => controller.setState(
-                                                () => controller
-                                                    .addNewCategory = true),
+                                                controller.setState(() {});
+                                              },
+                                              onAddNew: () => controller
+                                                  .setState(() => controller
+                                                      .addNewCategory = true),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Divider(),
-                                      controller.basicContainer(
-                                        child: DateTimePicker(
-                                          controller: DateTimePickerController(
-                                              validate: false,
-                                              time: true,
-                                              dateFormat: "HH-mm",
-                                              width: constraints.maxWidth / 2.2,
-                                              overrideInitialDate: true,
-                                              onConfirmed: (date) {
-                                                controller.eventItem.timeStamp =
-                                                    DateTime(
-                                                        controller
-                                                                .eventItem
-                                                                .timeStamp
-                                                                ?.year ??
-                                                            DateTime.now().year,
-                                                        controller
-                                                                .eventItem
-                                                                .timeStamp
-                                                                ?.month ??
-                                                            DateTime.now()
-                                                                .month,
-                                                        controller
-                                                                .eventItem
-                                                                .timeStamp
-                                                                ?.day ??
-                                                            DateTime.now().day,
-                                                        date.hour,
-                                                        date.minute);
-                                                print(controller
-                                                    .eventItem.timeStamp
-                                                    .toString());
-                                              },
-                                              initialDate: controller
-                                                  .eventItem.timeStamp,
-                                              title: "Tidspunkt",
-                                              label: "Tidspunkt"),
+                                        Divider(),
+                                        controller.basicContainer(
+                                          child: DateTimePicker(
+                                            controller:
+                                                DateTimePickerController(
+                                                    validate: false,
+                                                    time: true,
+                                                    dateFormat: "HH-mm",
+                                                    width:
+                                                        constraints.maxWidth /
+                                                            2.2,
+                                                    overrideInitialDate: true,
+                                                    onConfirmed: (date) {
+                                                      controller.eventItem
+                                                              .timeStamp =
+                                                          DateTime(
+                                                              controller
+                                                                      .eventItem
+                                                                      .timeStamp
+                                                                      ?.year ??
+                                                                  DateTime.now()
+                                                                      .year,
+                                                              controller
+                                                                      .eventItem
+                                                                      .timeStamp
+                                                                      ?.month ??
+                                                                  DateTime.now()
+                                                                      .month,
+                                                              controller
+                                                                      .eventItem
+                                                                      .timeStamp
+                                                                      ?.day ??
+                                                                  DateTime.now()
+                                                                      .day,
+                                                              date.hour,
+                                                              date.minute);
+                                                      print(controller
+                                                          .eventItem.timeStamp
+                                                          .toString());
+                                                    },
+                                                    initialDate: controller
+                                                        .eventItem.timeStamp,
+                                                    title: "Tidspunkt",
+                                                    label: "Tidspunkt"),
+                                          ),
                                         ),
-                                      ),
-                                      Divider(),
-                                      controller.basicContainer(
-                                        child: DropDownBtn(
-                                          controller: DropDownBtnController(
-                                            width: constraints.maxWidth,
-                                            onChanged: (newValue) {
-                                              if (controller
-                                                      .eventItem.timeStamp !=
-                                                  null) {
+                                        Divider(),
+                                        controller.basicContainer(
+                                          child: DropDownBtn(
+                                            controller: DropDownBtnController(
+                                              width: constraints.maxWidth,
+                                              onChanged: (newValue) {
                                                 if (controller
-                                                    .eventItem.timeStamp
-                                                    .isBefore(DateTime.now())) {
+                                                        .eventItem.timeStamp !=
+                                                    null) {
+                                                  if (controller
+                                                      .eventItem.timeStamp
+                                                      .isBefore(
+                                                          DateTime.now())) {
+                                                    controller.reminderError =
+                                                        true;
+                                                    controller
+                                                            .reminderErrorText =
+                                                        "Påminnelse er ikke mulig når datoen er i fortid";
+                                                  } else {
+                                                    controller.reminderError =
+                                                        false;
+
+                                                    controller.dropDownValue =
+                                                        newValue;
+
+                                                    int add;
+
+                                                    switch (newValue) {
+                                                      case "ingen":
+                                                        break;
+                                                      case "5 minutter før":
+                                                        add = 5;
+                                                        break;
+                                                      case "30 minutter før":
+                                                        add = 30;
+                                                        break;
+                                                      case "1 time før":
+                                                        add = 60;
+                                                        break;
+                                                      case "2 timer før":
+                                                        add = 120;
+                                                        break;
+                                                      case "1 dag før":
+                                                        add = 60 * 24;
+                                                        print("dasd");
+                                                        break;
+
+                                                      default:
+                                                    }
+                                                    if (add != null)
+                                                      controller.eventItem
+                                                              .reminder =
+                                                          controller.eventItem
+                                                              .timeStamp
+                                                              .add(Duration(
+                                                                  minutes:
+                                                                      add));
+                                                  }
+                                                } else {
                                                   controller.reminderError =
                                                       true;
                                                   controller.reminderErrorText =
-                                                      "Påminnelse er ikke mulig når datoen er i fortid";
-                                                } else {
-                                                  controller.reminderError =
-                                                      false;
-
-                                                  controller.dropDownValue =
-                                                      newValue;
-
-                                                  int add;
-
-                                                  switch (newValue) {
-                                                    case "ingen":
-                                                      break;
-                                                    case "5 minutter før":
-                                                      add = 5;
-                                                      break;
-                                                    case "30 minutter før":
-                                                      add = 30;
-                                                      break;
-                                                    case "1 time før":
-                                                      add = 60;
-                                                      break;
-                                                    case "2 timer før":
-                                                      add = 120;
-                                                      break;
-                                                    case "1 dag før":
-                                                      add = 60 * 24;
-                                                      print("dasd");
-                                                      break;
-
-                                                    default:
-                                                  }
-                                                  if (add != null)
-                                                    controller.eventItem
-                                                            .reminder =
-                                                        controller
-                                                            .eventItem.timeStamp
-                                                            .add(Duration(
-                                                                minutes: add));
+                                                      "Vennligst velg en dato først";
                                                 }
-                                              } else {
-                                                controller.reminderError = true;
-                                                controller.reminderErrorText =
-                                                    "Vennligst velg en dato først";
-                                              }
-                                              controller.setState(() {});
-                                            },
-                                            items: <String>[
-                                              "Ingen",
-                                              '5 minutter før',
-                                              '30 minutter før',
-                                              '1 time før',
-                                              '2 timer før',
-                                              '1 dag før',
-                                            ],
-                                            value: "Ingen",
+                                                controller.setState(() {});
+                                              },
+                                              items: <String>[
+                                                "Ingen",
+                                                '5 minutter før',
+                                                '30 minutter før',
+                                                '1 time før',
+                                                '2 timer før',
+                                                '1 dag før',
+                                              ],
+                                              value: "Ingen",
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      if (controller.reminderError)
-                                        Padding(
-                                          padding: EdgeInsets.only(
-                                              left: padding * 2),
-                                          child: Text(
-                                            controller.reminderErrorText,
-                                            style: ServiceProvider
-                                                .instance
-                                                .instanceStyleService
-                                                .appStyle
-                                                .disabledColoredText,
+                                        if (controller.reminderError)
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                left: padding * 2),
+                                            child: Text(
+                                              controller.reminderErrorText,
+                                              style: ServiceProvider
+                                                  .instance
+                                                  .instanceStyleService
+                                                  .appStyle
+                                                  .disabledColoredText,
+                                            ),
                                           ),
-                                        ),
-                                      Divider(),
-                                    ],
+                                        Divider(),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            PrimaryTextField(
-                              hintText: "Beskrivelse",
-                              maxLines: 10,
-                              validate: false,
-                              onSaved: (val) => controller.eventItem.note = val,
-                            ),
-                          ],
+                                ],
+                              ),
+                              PrimaryTextField(
+                                hintText: "Beskrivelse",
+                                maxLines: 10,
+                                validate: false,
+                                onSaved: (val) =>
+                                    controller.eventItem.note = val,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Container(
-                        alignment: Alignment.bottomLeft,
-                        child: PrimaryButton(
-                          controller: PrimaryButtonController(
-                              color: ServiceProvider
-                                  .instance.instanceStyleService.appStyle.green,
-                              text: "Lagre",
-                              onPressed: () {
-                                controller._formKey.currentState.save();
-                                if (validateTextFields(
-                                    textFields: controller.textFields)) {
-                                  controller
-                                      .selectedJournalItem.journalEventItems
-                                      .add(controller.eventItem);
-                                  Navigator.pop(context);
-                                }
-                              }),
+                        Container(
+                          alignment: Alignment.bottomLeft,
+                          child: PrimaryButton(
+                            controller: PrimaryButtonController(
+                                color: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.green,
+                                text: "Lagre",
+                                onPressed: () {
+                                  controller._formKey.currentState.save();
+                                  if (validateTextFields(
+                                      textFields: controller.textFields)) {
+                                    controller
+                                        .selectedJournalItem.journalEventItems
+                                        .add(controller.eventItem);
+                                    Navigator.pop(context);
+                                  }
+                                }),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ]
-              ],
-            );
-          },
+                      ],
+                    ),
+                  ]
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

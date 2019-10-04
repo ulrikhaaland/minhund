@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
@@ -23,6 +24,14 @@ abstract class MasterPage extends BaseView {
   @override
   Widget build(BuildContext context) {
     if (!mounted) return Container();
+
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color.fromARGB(255, 233, 242, 248), //top bar color
+      statusBarIconBrightness: Brightness.dark, //top bar icons
+      systemNavigationBarColor:
+          Color.fromARGB(255, 233, 242, 248), //bottom bar color
+      systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
+    ));
 
     Widget appBar;
 
