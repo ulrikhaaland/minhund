@@ -148,7 +148,7 @@ class DateTimePickerController extends BaseController {
                   ),
                 if (time != true)
                   DatePickerWidget(
-                    maxDateTime: DateTime.now(),
+                    // maxDateTime: DateTime.now(),
                     dateFormat: dateFormat ?? "dd-MM-yyyy",
                     onConfirm: (DateTime selectedTime, List<int> list) {
                       canSave = true;

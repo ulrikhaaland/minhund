@@ -5,17 +5,17 @@ abstract class CrudProvider {
   Firestore firestoreInstance = Firestore.instance;
 
   // Super returns void
-  Future update({@required dynamic model}) {
+  Future update({@required model}) {
     return model.docRef.updateData(model.toJson());
   }
 
   // Super returns a DocumentReference and populates the model with id and docref
-  Future<DocumentReference> create(
-      {@required dynamic model, @required String id}) async {
+  Future create({@required model, @required String id}) async {
     DocumentReference ref =
         await firestoreInstance.collection(id).add(model.toJson());
     model.id = ref.documentID;
     model.docRef = ref;
+    update(model: model);
     return ref;
   }
 
@@ -32,12 +32,12 @@ abstract class CrudProvider {
   }
 
   // Super returns void
-  Future delete({@required dynamic model}) {
+  Future delete({@required model}) {
     return model.docRef.delete();
   }
 
   // Super returns void
-  Future set({@required String id, @required dynamic model}) async {
+  Future set({@required String id, @required model}) async {
     return await firestoreInstance.document(id).setData(model.toJson());
   }
 }

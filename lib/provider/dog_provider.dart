@@ -45,16 +45,15 @@ class DogProvider extends CrudProvider {
   Future<List<Dog>> getCollection({String id}) async {
     List<Dog> list = [];
     String path = "users/$id/dogs";
-    await super.getCollection(id: path).then((qSnap) {
-      if (qSnap.documents.isNotEmpty) {
-        qSnap.documents.forEach((doc) async {
-          Dog dog = Dog.fromJson(doc.data);
-          dog.docRef = doc.reference;
-          list.add(dog);
-          dog.journalItems = await getJournalItems(path + "/${doc.documentID}");
-        });
-      }
-    });
+    QuerySnapshot qSnap = await super.getCollection(id: path);
+    if (qSnap.documents.isNotEmpty) {
+      qSnap.documents.forEach((doc) async {
+        Dog dog = Dog.fromJson(doc.data);
+        dog.docRef = doc.reference;
+        list.add(dog);
+        dog.journalItems = await getJournalItems(path + "/${doc.documentID}");
+      });
+    }
     return list;
   }
 

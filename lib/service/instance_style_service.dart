@@ -42,7 +42,7 @@ class InstanceStyleService {
     _appStyle.pink = new Color.fromARGB(255, 230, 115, 153);
     _appStyle.skyBlue = new Color.fromARGB(255, 161, 196, 253);
     _appStyle.green = new Color.fromARGB(255, 120, 222, 166);
-    _appStyle.imperial = new Color.fromARGB(255, 105, 48, 109);
+    _appStyle.imperial = new Color.fromARGB(255, 250, 147, 28);
     _appStyle.lightBlue = new Color.fromARGB(255, 191, 219, 233);
     _appStyle.leBleu = new Color.fromARGB(255, 122, 149, 241);
     _appStyle.textGrey = new Color.fromARGB(255, 63, 82, 97);
@@ -238,10 +238,10 @@ class InstanceStyleService {
 
     _appStyle.coloredText = new TextStyle(
       fontFamily: "Apercu",
-      fontSize: screenHeight * 0.018 * factor,
+      fontSize: screenHeight * 0.028 * factor,
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.normal,
-      color: appStyle.skyBlue,
+      color: _appStyle.imperial,
     );
 
     _appStyle.disabledColoredText = new TextStyle(

@@ -13,12 +13,17 @@ JournalEventItem _$JournalEventItemFromJson(Map<String, dynamic> json) {
         ? null
         : DateTime.parse(json['timeStamp'] as String),
     note: json['note'] as String,
-  );
+    reminder: json['reminder'] == null
+        ? null
+        : DateTime.parse(json['reminder'] as String),
+  )..id = json['id'] as String;
 }
 
 Map<String, dynamic> _$JournalEventItemToJson(JournalEventItem instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'title': instance.title,
       'timeStamp': instance.timeStamp?.toIso8601String(),
+      'reminder': instance.reminder?.toIso8601String(),
       'note': instance.note,
     };

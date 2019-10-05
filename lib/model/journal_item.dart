@@ -8,7 +8,9 @@ part 'journal_item.g.dart';
 class JournalItem {
   JournalItem({this.title, this.journalEventItems, this.sortIndex});
 
+  String id;
   String title;
+  @JsonKey(ignore: true)
   List<JournalEventItem> journalEventItems;
   int sortIndex;
   @JsonKey(ignore: true)

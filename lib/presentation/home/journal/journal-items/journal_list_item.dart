@@ -4,7 +4,6 @@ import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/journal_item.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
-import 'package:minhund/presentation/home/journal/journal-event/journal_list_item_event.dart';
 import 'package:minhund/service/service_provider.dart';
 
 class JournalListItemController extends BaseController {

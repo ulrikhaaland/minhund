@@ -29,7 +29,7 @@ Map<String, dynamic> _$DogToJson(Dog instance) => <String, dynamic>{
       'weigth': instance.weigth,
       'chipNumber': instance.chipNumber,
       'imgUrl': instance.imgUrl,
-      'address': instance.address.toJson(),
+      'address': instance.address,
       'birthDate': instance.birthDate?.toIso8601String(),
       'race': instance.race,
     };

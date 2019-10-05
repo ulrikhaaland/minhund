@@ -34,6 +34,10 @@ class PrimaryTextField extends StatefulWidget {
   final int maxLength;
   final double width;
 
+  final void Function(String val) onChanged;
+
+  final bool asTextField;
+
   bool canSave = true;
 
   PrimaryTextField({
@@ -63,6 +67,8 @@ class PrimaryTextField extends StatefulWidget {
     this.textAlign,
     this.regExType,
     this.maxLength,
+    this.onChanged,
+    this.asTextField = false,
     this.width,
   }) : super(key: key);
 
@@ -101,8 +107,8 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
       width: widget.width ??
           ServiceProvider.instance.screenService
               .getWidthByPercentage(context, 80),
-      height: ServiceProvider.instance.screenService
-          .getHeightByPercentage(context, !widget.canSave ? 11.5 : 10),
+      height: ServiceProvider.instance.screenService.getHeightByPercentage(
+          context, !widget.canSave ? 11.5 : widget.maxLines > 1 ? 15 : 10),
       child: Padding(
         padding: EdgeInsets.only(
             top: widget.paddingTop ?? 0, bottom: widget.paddingBottom ?? 0),
@@ -149,7 +155,8 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
               ),
             Container(
               height: ServiceProvider.instance.screenService
-                  .getHeightByPercentage(context, 7.5),
+                  .getHeightByPercentage(
+                      context, widget.maxLines > 1 ? 15 : 7.5),
               child: Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(ServiceProvider
@@ -160,112 +167,168 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                       EdgeInsets.only(left: padding * 4, right: padding * 4),
                   child: Center(
                     child: Container(
-                      child: TextFormField(
-                        autocorrect: widget.autocorrect ?? false,
-                        obscureText: widget.obscure ?? false,
-                        autofocus: widget.autoFocus ?? false,
-                        controller: widget.textEditingController ??
-                            textEditingController,
-                        textCapitalization: widget.textCapitalization ??
-                            TextCapitalization.words,
-                        maxLines: widget.maxLines?.toInt() ?? 1,
-                        textAlign: widget.textAlign ?? TextAlign.start,
-                        focusNode: widget.focusNode,
-                        textInputAction:
-                            widget.textInputAction ?? TextInputAction.next,
-                        cursorRadius: Radius.circular(1),
-                        keyboardType:
-                            widget.textInputType ?? TextInputType.text,
-                        cursorColor: widget.cursorColor ??
-                            ServiceProvider
-                                .instance.instanceStyleService.appStyle.skyBlue,
-                        style: widget.style ??
-                            ServiceProvider.instance.instanceStyleService
-                                .appStyle.textFieldInput,
-                        onSaved: (val) {
-                          val = val.trim();
+                      child: widget.asTextField
+                          ? TextField(
+                              autocorrect: widget.autocorrect ?? false,
+                              obscureText: widget.obscure ?? false,
+                              autofocus: widget.autoFocus ?? false,
+                              controller: widget.textEditingController ??
+                                  textEditingController,
+                              textCapitalization: widget.textCapitalization ??
+                                  TextCapitalization.words,
+                              maxLines: widget.maxLines?.toInt() ?? 1,
+                              textAlign: widget.textAlign ?? TextAlign.start,
+                              focusNode: widget.focusNode,
+                              textInputAction: widget.textInputAction ??
+                                  TextInputAction.next,
+                              cursorRadius: Radius.circular(1),
+                              keyboardType:
+                                  widget.textInputType ?? TextInputType.text,
+                              cursorColor: widget.cursorColor ??
+                                  ServiceProvider.instance.instanceStyleService
+                                      .appStyle.skyBlue,
+                              style: widget.style ??
+                                  ServiceProvider.instance.instanceStyleService
+                                      .appStyle.textFieldInput,
+                              onChanged: (val) => widget.onChanged(val),
+                              decoration: InputDecoration(
+                                hintText: widget.hintText ?? null,
+                                labelText: widget.labelText ?? null,
+                                hintStyle: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.body1,
+                                helperText: widget.helperText ?? null,
+                                helperStyle: widget.helperStyle ??
+                                    ServiceProvider.instance
+                                        .instanceStyleService.appStyle.italic,
+                                labelStyle: widget.labelStyle ??
+                                    ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .body1Black,
+                                counterStyle: TextStyle(
+                                    color: Colors.green,
+                                    fontFamily: "Montserrat"),
+                                enabledBorder: new UnderlineInputBorder(
+                                    borderSide: BorderSide.none),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                            )
+                          : TextFormField(
+                              autocorrect: widget.autocorrect ?? false,
+                              obscureText: widget.obscure ?? false,
+                              autofocus: widget.autoFocus ?? false,
+                              controller: widget.textEditingController ??
+                                  textEditingController,
+                              textCapitalization: widget.textCapitalization ??
+                                  TextCapitalization.words,
+                              maxLines: widget.maxLines?.toInt() ?? 1,
+                              textAlign: widget.textAlign ?? TextAlign.start,
+                              focusNode: widget.focusNode,
+                              textInputAction: widget.textInputAction ??
+                                  TextInputAction.next,
+                              cursorRadius: Radius.circular(1),
+                              keyboardType:
+                                  widget.textInputType ?? TextInputType.text,
+                              cursorColor: widget.cursorColor ??
+                                  ServiceProvider.instance.instanceStyleService
+                                      .appStyle.skyBlue,
+                              style: widget.style ??
+                                  ServiceProvider.instance.instanceStyleService
+                                      .appStyle.textFieldInput,
+                              onSaved: (val) {
+                                val = val.trim();
 
-                          if (widget.validate == true ||
-                              widget.validate == null) {
-                            if (widget.canSave == false) widget.canSave = true;
+                                if (widget.validate == true ||
+                                    widget.validate == null) {
+                                  if (widget.canSave == false)
+                                    widget.canSave = true;
 
-                            String pattern;
+                                  String pattern;
 
-                            if (val.length == 0) {
-                              errorMessage = 'Vennligst fyll inn feltet';
-                              widget.canSave = false;
-                            } else {
-                              switch (widget.regExType) {
-                                case RegExType.phone:
-                                  pattern =
-                                      r"(^(?:[+][0-9]{1,4})?[0-9]{8,12}$)";
-                                  errorMessage =
-                                      'Vennligst fyll inn et gyldig mobilnummer';
-
-                                  break;
-                                case RegExType.email:
-                                  pattern =
-                                      r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
-                                  errorMessage =
-                                      'Vennligst fyll inn en gyldig email adresse';
-
-                                  break;
-                                case RegExType.smsCode:
-                                  if (val.length < 6) {
-                                    errorMessage =
-                                        "Vennligst fyll inn din 6-sifrede kode";
+                                  if (val.length == 0) {
+                                    errorMessage = 'Vennligst fyll inn feltet';
                                     widget.canSave = false;
+                                  } else {
+                                    switch (widget.regExType) {
+                                      case RegExType.phone:
+                                        pattern =
+                                            r"(^(?:[+][0-9]{1,4})?[0-9]{8,12}$)";
+                                        errorMessage =
+                                            'Vennligst fyll inn et gyldig mobilnummer';
+
+                                        break;
+                                      case RegExType.email:
+                                        pattern =
+                                            r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+                                        errorMessage =
+                                            'Vennligst fyll inn en gyldig email adresse';
+
+                                        break;
+                                      case RegExType.smsCode:
+                                        if (val.length < 6) {
+                                          errorMessage =
+                                              "Vennligst fyll inn din 6-sifrede kode";
+                                          widget.canSave = false;
+                                        }
+                                        break;
+                                      case RegExType.password:
+                                        if (val.length < 8) {
+                                          errorMessage =
+                                              "Passordet må minst være 8 sifre langt";
+                                          widget.canSave = false;
+                                        }
+                                        break;
+                                      default:
+                                    }
+                                    if (widget.regExType != null &&
+                                        pattern != null) {
+                                      RegExp regExp = new RegExp(pattern);
+                                      if (!regExp.hasMatch(val)) {
+                                        widget.canSave = false;
+                                      }
+                                    }
                                   }
-                                  break;
-                                case RegExType.password:
-                                  if (val.length < 8) {
-                                    errorMessage =
-                                        "Passordet må minst være 8 sifre langt";
-                                    widget.canSave = false;
-                                  }
-                                  break;
-                                default:
-                              }
-                              if (widget.regExType != null && pattern != null) {
-                                RegExp regExp = new RegExp(pattern);
-                                if (!regExp.hasMatch(val)) {
-                                  widget.canSave = false;
+
+                                  setState(() {
+                                    _animController.forward();
+                                  });
                                 }
-                              }
-                            }
-
-                            setState(() {
-                              _animController.forward();
-                            });
-                          }
-                          if (widget.textEditingController == null) {
-                            if (widget.canSave) widget.onSaved(val);
-                          } else {
-                            return null;
-                          }
-                        },
-                        onFieldSubmitted: (val) => widget.onFieldSubmitted(),
-                        decoration: InputDecoration(
-                          hintText: widget.hintText ?? null,
-                          labelText: widget.labelText ?? null,
-                          hintStyle: ServiceProvider
-                              .instance.instanceStyleService.appStyle.body1,
-                          helperText: widget.helperText ?? null,
-                          helperStyle: widget.helperStyle ??
-                              ServiceProvider.instance.instanceStyleService
-                                  .appStyle.italic,
-                          labelStyle: widget.labelStyle ??
-                              ServiceProvider.instance.instanceStyleService
-                                  .appStyle.body1Black,
-                          counterStyle: TextStyle(
-                              color: Colors.green, fontFamily: "Montserrat"),
-                          enabledBorder: new UnderlineInputBorder(
-                              borderSide: BorderSide.none),
-                          focusedBorder: UnderlineInputBorder(
-                            borderSide: BorderSide.none,
-                          ),
-                        ),
-                      ),
+                                if (widget.textEditingController == null) {
+                                  if (widget.canSave) widget.onSaved(val);
+                                } else {
+                                  return null;
+                                }
+                              },
+                              onFieldSubmitted: (val) =>
+                                  widget.onFieldSubmitted(),
+                              decoration: InputDecoration(
+                                hintText: widget.hintText ?? null,
+                                labelText: widget.labelText ?? null,
+                                hintStyle: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.body1,
+                                helperText: widget.helperText ?? null,
+                                helperStyle: widget.helperStyle ??
+                                    ServiceProvider.instance
+                                        .instanceStyleService.appStyle.italic,
+                                labelStyle: widget.labelStyle ??
+                                    ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .body1Black,
+                                counterStyle: TextStyle(
+                                    color: Colors.green,
+                                    fontFamily: "Montserrat"),
+                                enabledBorder: new UnderlineInputBorder(
+                                    borderSide: BorderSide.none),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                            ),
                     ),
                   ),
                 ),

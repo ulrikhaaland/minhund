@@ -12,8 +12,13 @@ class DropDownBtnController extends BaseController {
 
   String value;
 
-  DropDownBtnController(
-      {this.width, this.onChanged, this.items, this.value, this.onAddNew});
+  DropDownBtnController({
+    this.width,
+    this.onChanged,
+    this.items,
+    this.value,
+    this.onAddNew,
+  });
 
   @override
   void initState() {
@@ -28,13 +33,11 @@ class DropDownBtn extends BaseView {
   DropDownBtn({this.controller});
   @override
   Widget build(BuildContext context) {
-    if (!mounted) return Container();
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(ServiceProvider
             .instance.instanceStyleService.appStyle.borderRadius),
       ),
-      elevation: 3,
       child: Padding(
         padding: EdgeInsets.all(getDefaultPadding(context)),
         child: Container(

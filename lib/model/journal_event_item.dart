@@ -7,6 +7,7 @@ part 'journal_event_item.g.dart';
 class JournalEventItem {
   JournalEventItem({this.title, this.timeStamp, this.note, this.reminder});
 
+  String id;
   String title;
   DateTime timeStamp;
   DateTime reminder;
