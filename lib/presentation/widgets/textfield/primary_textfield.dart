@@ -38,7 +38,7 @@ class PrimaryTextField extends StatefulWidget {
 
   final bool asTextField;
 
-  bool canSave = true;
+  bool canSave;
 
   PrimaryTextField({
     Key key,
@@ -70,6 +70,7 @@ class PrimaryTextField extends StatefulWidget {
     this.onChanged,
     this.asTextField = false,
     this.width,
+    this.canSave = true,
   }) : super(key: key);
 
   _PrimaryTextFieldState createState() => _PrimaryTextFieldState();

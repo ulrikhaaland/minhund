@@ -79,7 +79,7 @@ class DogInfoController extends BaseController {
         initValue: dog?.weigth,
         onSaved: (val) => dog?.weigth = val.trim(),
         onFieldSubmitted: () => textFieldNext(30),
-        hintText: "Vekt",
+        hintText: "Vekt(kg)",
         autocorrect: false,
         textCapitalization: TextCapitalization.none,
         textInputType: TextInputType.number,

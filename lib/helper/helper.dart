@@ -53,6 +53,34 @@ bool validateTextFields({List<dynamic> textFields, dynamic singleTextField}) {
   return canSave;
 }
 
+String formatDate({String format, bool time, DateTime date}) {
+  if (date == null) return null;
+  if (time == true) {
+    return "${date.hour.toString().length < 2 ? "0" + date.hour.toString() : date.hour.toString()}:${date.minute.toString().length < 2 ? "0" + date.minute.toString() : date.minute.toString()}";
+  } else {
+    String month;
+    date.month.toString().length == 1
+        ? month = "0" + date.month.toString()
+        : month = date.month.toString();
+
+    if (date == null) {
+      return "";
+    } else {
+      switch (format) {
+        case ("dd.MM.yyyy"):
+          return "${date.day.toString().length < 2 ? "0" + date.day.toString() : date.day.toString()}-${date.month.toString().length < 2 ? "0" + date.month.toString() : date.month.toString()}-${date.year}";
+          break;
+        case ("MM-yyyy"):
+          return "${date.month.toString().length < 2 ? "0" + date.month.toString() : date.month.toString()}-${date.year}";
+          break;
+
+        default:
+          return "${date.day.toString().length < 2 ? "0" + date.day.toString() : date.day.toString()}.${date.month.toString().length < 2 ? "0" + date.month.toString() : date.month.toString()}.${date.year}";
+      }
+    }
+  }
+}
+
 Widget termsAndConditions(BuildContext context) {
   return Container(
     width: ServiceProvider.instance.screenService

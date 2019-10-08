@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:minhund/helper/helper.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
@@ -78,30 +79,8 @@ class DateTimePickerController extends BaseController {
   }
 
   _setCtrlrText(DateTime date) {
-    if (time) {
-      _textCtrlr.text = "${date.hour}:${date.minute}";
-    } else {
-      String month;
-      date.month.toString().length == 1
-          ? month = "0" + date.month.toString()
-          : month = date.month.toString();
+    _textCtrlr.text = formatDate(time: time, date: date);
 
-      if (date == null) {
-        _textCtrlr.text = "";
-      } else {
-        switch (dateFormat) {
-          case ("dd-MM-yyyy"):
-            _textCtrlr.text = "${date.day}-$month-${date.year}";
-            break;
-          case ("MM-yyyy"):
-            _textCtrlr.text = "$month-${date.year}";
-            break;
-
-          default:
-            _textCtrlr.text = "${date.day}-$month-${date.year}";
-        }
-      }
-    }
     setState(() {});
   }
 

@@ -62,21 +62,20 @@ abstract class MasterPage extends BaseView {
           body: LayoutBuilder(
             builder: (context, con) {
               return Container(
-                  alignment: Alignment.center,
-                  child: Container(
+                height: con.maxHeight,
+                child: Container(
                     height: con.maxHeight,
-                    child: SingleChildScrollView(
-                        child: Container(
-                            height: con.maxHeight,
-                            child: Column(
-                              children: <Widget>[
-                                Container(
-                                  height: con.maxHeight * 0.02,
-                                ),
-                                Expanded(child: buildContent(context)),
-                              ],
-                            ))),
-                  ));
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          height: con.maxHeight * 0.02,
+                        ),
+                        Container(
+                            height: con.maxHeight * 0.98,
+                            child: buildContent(context)),
+                      ],
+                    )),
+              );
             },
           )),
     );

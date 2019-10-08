@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/journal_item.dart';
 import 'package:minhund/provider/crud_provider.dart';
+import 'package:minhund/provider/journal_provider.dart';
 
 class DogProvider extends CrudProvider {
   Firestore firestoreInstance = Firestore.instance;
@@ -14,9 +15,7 @@ class DogProvider extends CrudProvider {
     return super.create(model: model, id: path).then((docRef) {
       if (model.journalItems.isNotEmpty) {
         model.journalItems.forEach((item) {
-          firestoreInstance
-              .collection(path + "/${model.id}/journalItems")
-              .add(item.toJson());
+          JournalProvider().create(id: path + "/" + model.id, model: item);
         });
       }
       return docRef;
@@ -26,19 +25,6 @@ class DogProvider extends CrudProvider {
   @override
   Future delete({model}) {
     return super.delete(model: model);
-  }
-
-  Future<List<JournalItem>> getJournalItems(String path) async {
-    List<JournalItem> list = <JournalItem>[];
-    QuerySnapshot qSnap = await firestoreInstance
-        .collection(path + "/journalItems")
-        .getDocuments();
-    qSnap.documents.forEach((doc) {
-      JournalItem journalItem = JournalItem.fromJson(doc.data);
-      journalItem.docRef = doc.reference;
-      list.add(journalItem);
-    });
-    return list;
   }
 
   @override
@@ -51,7 +37,9 @@ class DogProvider extends CrudProvider {
         Dog dog = Dog.fromJson(doc.data);
         dog.docRef = doc.reference;
         list.add(dog);
-        dog.journalItems = await getJournalItems(path + "/${doc.documentID}");
+
+        dog.journalItems = await JournalProvider()
+            .getCollection(id: path + "/${doc.documentID}");
       });
     }
     return list;

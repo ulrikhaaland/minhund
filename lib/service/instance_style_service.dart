@@ -78,6 +78,14 @@ class InstanceStyleService {
       color: _appStyle.textGrey,
     );
 
+    _appStyle.descTitle = new TextStyle(
+      fontSize: screenHeight * 0.026 * factor,
+      fontFamily: 'Apercu',
+      fontWeight: FontWeight.bold,
+      fontStyle: FontStyle.italic,
+      color: _appStyle.textGrey,
+    );
+
     _appStyle.body1 = new TextStyle(
       fontFamily: "Apercu",
       fontSize: screenHeight * 0.024 * factor,

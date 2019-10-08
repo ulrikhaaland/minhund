@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
-import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
-import 'package:minhund/presentation/home/journal/journal-event/journal_add_event_dialog.dart';
 import 'package:minhund/presentation/widgets/bottom_nav.dart';
 import 'package:minhund/root_page.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
+import 'package:provider/provider.dart';
 
 import '../../../bottom_navigation.dart';
+import 'journal-event/journal_event_dialog.dart';
 import 'journal-items/journal_items.dart';
 import 'journal-items/journal_list_item.dart';
 
@@ -30,13 +30,10 @@ class JournalController extends BottomNavigationController {
         child: Icon(Icons.add),
         onPressed: () => showCustomDialog(
             context: context,
-            child: JournalAddEventDialog(
-              controller: JournalAddEventDialogController(
-                eventItem: JournalEventItem(),
+            child: JournalEventDialog(
+              controller: JournalEventDialogController(
                 journalItems: dog.journalItems,
-                dogDocRef: dog.docRef,
-                // onSaved: (item) => setState(() =>
-                //     controller.item.journalEventItems.add(item))
+                parentDocRef: dog.docRef,
               ),
             )),
       );
@@ -80,7 +77,7 @@ class Journal extends BottomNavigation {
     return SingleChildScrollView(
       child: Container(
         height: ServiceProvider.instance.screenService
-            .getHeightByPercentage(context, 85),
+            .getHeightByPercentage(context, 90),
         padding: EdgeInsets.all(getDefaultPadding(context) * 2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,12 +133,36 @@ class Journal extends BottomNavigation {
               height: getDefaultPadding(context) * 4,
             ),
             if (controller.dog.journalItems != null)
-              Column(
-                  children: controller.dog.journalItems.map((item) {
-                return JournalListItem(
-                  controller: JournalListItemController(item: item),
-                );
-              }).toList())
+              Container(
+                height: ServiceProvider.instance.screenService
+                    .getHeightByPercentage(context, 70),
+                child: ListView.builder(
+                  itemCount: controller.dog.journalItems.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    if (controller.dog.journalItems[index].title !=
+                        "Legg til ny")
+                      return Provider.value(
+                        value: controller.dog,
+                        child: JournalListItem(
+                          controller: JournalListItemController(
+                              item: controller.dog.journalItems[index]),
+                        ),
+                      );
+                    else
+                      return Container();
+                  },
+                ),
+              ),
+            // Column(
+            //     children: controller.dog.journalItems.map((item) {
+            //   if (item.title != "Legg til ny")
+            //     return JournalListItem(
+            //       controller: JournalListItemController(item: item),
+            //     );
+            //   else
+            //     return Container();
+            // }).toList())
           ],
         ),
       ),

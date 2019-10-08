@@ -51,6 +51,7 @@ class AppStyle {
     this.textFieldInput,
     this.borderRadius,
     this.elevation,
+    this.descTitle,
     this.transparentDisabledColoredText,
   });
 
@@ -79,6 +80,7 @@ class AppStyle {
   TextStyle cancel;
   TextStyle confirm;
   TextStyle smallTitle;
+  TextStyle descTitle;
   TextStyle body1Black;
   TextStyle pageTitle;
   TextStyle titleWhite;

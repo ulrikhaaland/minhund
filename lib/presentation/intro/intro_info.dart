@@ -145,21 +145,5 @@ class IntroInfoOwner extends MasterPage {
         ],
       ),
     );
-    // return Column(
-    //   children: <Widget>[
-    //     Text(
-    //       "Først trenger vi litt informasjon om deg",
-    //       style: ServiceProvider.instance.instanceStyleService.appStyle.body1,
-    //       textAlign: TextAlign.start,
-    //     ),
-    //     Container(
-    //       height: getDefaultPadding(context) * 4,
-    //     ),
-    //     PrimaryTextField(
-    //       hintText: "Ditt Navn",
-    //       onSaved: (val) => val = controller.user.name,
-    //     )
-    //   ],
-    // );
   }
 }
