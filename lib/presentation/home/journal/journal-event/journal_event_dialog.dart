@@ -449,6 +449,9 @@ class JournalEventDialog extends BaseView {
                                                               controller
                                                                   .journalItems[0];
                                                         } else {
+                                                          controller.eventItem
+                                                                  .category =
+                                                              newValue;
                                                           controller
                                                                   .selectedJournalItem =
                                                               controller
