@@ -73,6 +73,7 @@ class JournalListItem extends BaseView {
                   itemCount: controller.item.journalEventItems.length,
                   itemBuilder: (context, index) {
                     return JournalEvent(
+                        key: Key(controller.item.journalEventItems[index].id),
                         controller: JournalEventController(
                             eventItem:
                                 controller.item.journalEventItems[index]));

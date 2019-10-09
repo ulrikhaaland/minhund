@@ -5,6 +5,7 @@ import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
+import 'package:minhund/presentation/home/journal/journal.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -17,9 +18,10 @@ class JournalEventController extends BaseController {
 }
 
 class JournalEvent extends BaseView {
+  final Key key;
   final JournalEventController controller;
 
-  JournalEvent({this.controller});
+  JournalEvent({this.controller, this.key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +30,10 @@ class JournalEvent extends BaseView {
           context: context,
           child: JournalEventDialog(
             controller: JournalEventDialogController(
+              onSave: () => Provider.of<JournalController>(context).refresh(),
               eventItem: controller.eventItem,
               journalItems: Provider.of<Dog>(context).journalItems,
+              pageState: PageState.read,
             ),
           )),
       child: Card(

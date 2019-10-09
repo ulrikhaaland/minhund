@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
+import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/journal_item.dart';
 import 'package:minhund/presentation/base_controller.dart';
@@ -11,15 +12,22 @@ import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/service/service_provider.dart';
+import 'package:provider/provider.dart';
+
+enum PageState { create, edit, read }
 
 class JournalEventDialogController extends BaseController {
+  final VoidCallback onSave;
+
   JournalEventItem eventItem;
 
-  final List<JournalItem> journalItems;
+  JournalEventItem placeHolderEventItem;
+
+  List<JournalItem> journalItems;
 
   final DocumentReference parentDocRef;
 
-  String dropDownValue = "Ingen";
+  String reminderDropDownValue;
 
   JournalItem selectedJournalItem;
 
@@ -39,12 +47,25 @@ class JournalEventDialogController extends BaseController {
 
   bool hasFocus = true;
 
-  bool isEdit = true;
+  PageState pageState;
 
   Widget popIcon;
 
+  List<String> reminderItems = [
+    "Ingen",
+    '5 minutter før',
+    '30 minutter før',
+    '1 time før',
+    '2 timer før',
+    '1 dag før',
+  ];
+
   JournalEventDialogController(
-      {this.eventItem, this.journalItems, this.parentDocRef});
+      {this.eventItem,
+      this.journalItems,
+      this.parentDocRef,
+      this.onSave,
+      this.pageState});
 
   @override
   initState() {
@@ -60,16 +81,41 @@ class JournalEventDialogController extends BaseController {
       ),
     );
     if (eventItem == null) {
-      eventItem = JournalEventItem(title: "");
+      placeHolderEventItem = JournalEventItem(title: "");
+      if (journalItems.firstWhere((item) => item.title == "Legg til ny",
+              orElse: () => null) ==
+          null) journalItems.add(JournalItem(title: "Legg til ny"));
+
+      reminderDropDownValue = "Ingen";
+
+      selectedJournalItem = journalItems[0];
     } else {
-      isEdit = false;
+      firstBuild = false;
+      placeHolderEventItem = JournalEventItem(
+          docRef: eventItem.docRef,
+          title: eventItem.title,
+          timeStamp: eventItem.timeStamp,
+          note: eventItem.note,
+          reminder: eventItem.reminder,
+          reminderString: eventItem.reminderString);
+      reminderDropDownValue = placeHolderEventItem.reminderString ?? "Ingen";
+      journalItems.forEach((item) {
+        if (item.journalEventItems != null) if (item.journalEventItems
+            .contains(eventItem)) selectedJournalItem = item;
+      });
     }
-    if (journalItems.firstWhere((item) => item.title == "Legg til ny",
-            orElse: () => null) ==
-        null) journalItems.add(JournalItem(title: "Legg til ny"));
-    selectedJournalItem = journalItems[0];
 
     super.initState();
+  }
+
+  void deleteEventItem() {
+    JournalEventProvider().delete(model: eventItem);
+
+    journalItems.forEach((item) {
+      if (item.journalEventItems != null) {
+        item.journalEventItems.remove(eventItem);
+      }
+    });
   }
 
   Widget basicContainer({Widget child, double width}) {
@@ -100,7 +146,10 @@ class JournalEventDialog extends BaseView {
   Widget build(BuildContext context) {
     if (!mounted) return Container();
 
-    if (controller.isEdit) return buildEdit(context);
+    if (controller.journalItems == null)
+      controller.journalItems = Provider.of<Dog>(context).journalItems;
+
+    if (controller.pageState != PageState.read) return buildEdit(context);
     return buildRead(context);
   }
 
@@ -126,14 +175,15 @@ class JournalEventDialog extends BaseView {
     );
 
     PrimaryTextField titleTextField = PrimaryTextField(
-      initValue: controller.eventItem.title,
+      initValue: controller.placeHolderEventItem.title,
       textCapitalization: TextCapitalization.sentences,
       textInputType: TextInputType.text,
-      autoFocus:
-          controller.eventItem.title == "" ? controller.firstBuild : false,
+      autoFocus: controller.placeHolderEventItem.title == ""
+          ? controller.firstBuild
+          : false,
       // asTextField: true,
       hintText: "Tittel",
-      onSaved: (val) => controller.eventItem.title = val,
+      onSaved: (val) => controller.placeHolderEventItem.title = val,
       validate: true,
       textInputAction: TextInputAction.done,
       onFieldSubmitted: () => controller.hasFocus = false,
@@ -225,17 +275,42 @@ class JournalEventDialog extends BaseView {
                                       children: <Widget>[
                                         controller.popIcon,
                                         Text(
-                                          "Ny oppgave",
+                                          controller.pageState ==
+                                                  PageState.create
+                                              ? "Ny oppgave"
+                                              : "Rediger oppgave",
                                           style: ServiceProvider
                                               .instance
                                               .instanceStyleService
                                               .appStyle
                                               .title,
                                         ),
-                                        IconButton(
-                                          icon: Icon(Icons.close),
-                                          color: Colors.transparent,
-                                          onPressed: () => null,
+                                        InkWell(
+                                          child: Icon(
+                                            Icons.delete,
+                                            size: ServiceProvider
+                                                .instance
+                                                .instanceStyleService
+                                                .appStyle
+                                                .iconSizeBig,
+                                            color: controller.pageState ==
+                                                    PageState.create
+                                                ? Colors.transparent
+                                                : ServiceProvider
+                                                    .instance
+                                                    .instanceStyleService
+                                                    .appStyle
+                                                    .textGrey,
+                                          ),
+                                          onTap: () {
+                                            if (controller.pageState ==
+                                                PageState.edit) {
+                                              controller.deleteEventItem();
+
+                                              controller.onSave();
+                                              Navigator.pop(context);
+                                            }
+                                          },
                                         )
                                       ],
                                     ),
@@ -259,26 +334,26 @@ class JournalEventDialog extends BaseView {
                                                                 .maxWidth /
                                                             2.3,
                                                         overrideInitialDate:
-                                                            controller.eventItem
+                                                            controller.placeHolderEventItem
                                                                         .timeStamp ==
                                                                     null
                                                                 ? true
                                                                 : false,
                                                         onConfirmed: (date) {
-                                                          controller.eventItem
-                                                                  .timeStamp =
-                                                              DateTime(
+                                                          controller
+                                                              .placeHolderEventItem
+                                                              .timeStamp = DateTime(
                                                             date.year,
                                                             date.month,
                                                             date.day,
                                                             controller
-                                                                    .eventItem
+                                                                    .placeHolderEventItem
                                                                     .timeStamp
                                                                     ?.hour ??
                                                                 DateTime.now()
                                                                     .hour,
                                                             controller
-                                                                    .eventItem
+                                                                    .placeHolderEventItem
                                                                     .timeStamp
                                                                     ?.minute ??
                                                                 DateTime.now()
@@ -286,7 +361,7 @@ class JournalEventDialog extends BaseView {
                                                           );
                                                         },
                                                         initialDate: controller
-                                                                .eventItem
+                                                                .placeHolderEventItem
                                                                 .timeStamp ??
                                                             DateTime.now(),
                                                         title: "Dato",
@@ -355,27 +430,27 @@ class JournalEventDialog extends BaseView {
                                                                 .maxWidth /
                                                             2.27,
                                                         overrideInitialDate:
-                                                            controller.eventItem
+                                                            controller.placeHolderEventItem
                                                                         .timeStamp ==
                                                                     null
                                                                 ? true
                                                                 : false,
                                                         onConfirmed: (date) {
-                                                          controller.eventItem.timeStamp = DateTime(
+                                                          controller.placeHolderEventItem.timeStamp = DateTime(
                                                               controller
-                                                                      .eventItem
+                                                                      .placeHolderEventItem
                                                                       .timeStamp
                                                                       ?.year ??
                                                                   DateTime.now()
                                                                       .year,
                                                               controller
-                                                                      .eventItem
+                                                                      .placeHolderEventItem
                                                                       .timeStamp
                                                                       ?.month ??
                                                                   DateTime.now()
                                                                       .month,
                                                               controller
-                                                                      .eventItem
+                                                                      .placeHolderEventItem
                                                                       .timeStamp
                                                                       ?.day ??
                                                                   DateTime.now()
@@ -383,12 +458,12 @@ class JournalEventDialog extends BaseView {
                                                               date.hour,
                                                               date.minute);
                                                           print(controller
-                                                              .eventItem
+                                                              .placeHolderEventItem
                                                               .timeStamp
                                                               .toString());
                                                         },
                                                         initialDate: controller
-                                                                .eventItem
+                                                                .placeHolderEventItem
                                                                 .timeStamp ??
                                                             DateTime.now(),
                                                         title: "Tidspunkt",
@@ -449,9 +524,9 @@ class JournalEventDialog extends BaseView {
                                                               controller
                                                                   .journalItems[0];
                                                         } else {
-                                                          controller.eventItem
-                                                                  .category =
-                                                              newValue;
+                                                          controller
+                                                              .placeHolderEventItem
+                                                              .category = newValue;
                                                           controller
                                                                   .selectedJournalItem =
                                                               controller
@@ -518,7 +593,7 @@ class JournalEventDialog extends BaseView {
                                                         DropdownButton<String>(
                                                       isExpanded: true,
                                                       value: controller
-                                                          .dropDownValue,
+                                                          .reminderDropDownValue,
                                                       icon: Icon(Icons
                                                           .arrow_drop_down),
                                                       iconSize: ServiceProvider
@@ -540,11 +615,12 @@ class JournalEventDialog extends BaseView {
                                                         controller.firstBuild =
                                                             false;
 
-                                                        if (controller.eventItem
+                                                        if (controller
+                                                                .placeHolderEventItem
                                                                 .timeStamp !=
                                                             null) {
                                                           if (controller
-                                                              .eventItem
+                                                              .placeHolderEventItem
                                                               .timeStamp
                                                               .isBefore(DateTime
                                                                   .now())) {
@@ -560,12 +636,13 @@ class JournalEventDialog extends BaseView {
                                                                 false;
 
                                                             controller
-                                                                    .dropDownValue =
+                                                                    .reminderDropDownValue =
                                                                 newValue;
 
                                                             int add;
 
-                                                            controller.eventItem
+                                                            controller
+                                                                    .placeHolderEventItem
                                                                     .reminderString =
                                                                 newValue;
 
@@ -593,10 +670,10 @@ class JournalEventDialog extends BaseView {
                                                             }
                                                             if (add != null)
                                                               controller
-                                                                      .eventItem
+                                                                      .placeHolderEventItem
                                                                       .reminder =
                                                                   controller
-                                                                      .eventItem
+                                                                      .placeHolderEventItem
                                                                       .timeStamp
                                                                       .add(Duration(
                                                                           minutes:
@@ -613,17 +690,12 @@ class JournalEventDialog extends BaseView {
                                                         controller
                                                             .setState(() {});
                                                       },
-                                                      items: [
-                                                        "Ingen",
-                                                        '5 minutter før',
-                                                        '30 minutter før',
-                                                        '1 time før',
-                                                        '2 timer før',
-                                                        '1 dag før',
-                                                      ].map<
+                                                      items: controller
+                                                          .reminderItems
+                                                          .map<
                                                               DropdownMenuItem<
-                                                                  String>>(
-                                                          (String value) {
+                                                                  String>>((String
+                                                              value) {
                                                         return DropdownMenuItem<
                                                             String>(
                                                           value: value,
@@ -673,6 +745,8 @@ class JournalEventDialog extends BaseView {
                                     child: Container(
                                       width: constraints.maxWidth * 0.935,
                                       child: PrimaryTextField(
+                                        initValue: controller
+                                            .placeHolderEventItem.note,
                                         hintText: "Beskrivelse",
                                         textCapitalization:
                                             TextCapitalization.sentences,
@@ -680,8 +754,8 @@ class JournalEventDialog extends BaseView {
                                         textInputType: TextInputType.text,
                                         maxLines: 5,
                                         validate: false,
-                                        onSaved: (val) =>
-                                            controller.eventItem.note = val,
+                                        onSaved: (val) => controller
+                                            .placeHolderEventItem.note = val,
                                       ),
                                     ),
                                   ),
@@ -698,16 +772,37 @@ class JournalEventDialog extends BaseView {
                                   text: "Lagre",
                                   onPressed: () {
                                     controller._formKey.currentState.save();
-                                    if (controller.eventItem.title.length > 0) {
-                                      controller
-                                          .selectedJournalItem.journalEventItems
-                                          .add(controller.eventItem);
+                                    if (controller
+                                            .placeHolderEventItem.title.length >
+                                        0) {
+                                      if (controller.eventItem == null ||
+                                          controller.placeHolderEventItem
+                                                  .category !=
+                                              controller.eventItem.category) {
+                                        controller.selectedJournalItem
+                                            .journalEventItems
+                                            .add(controller
+                                                .placeHolderEventItem);
 
-                                      JournalEventProvider().create(
-                                          model: controller.eventItem,
-                                          id: controller
-                                              .selectedJournalItem.docRef.path);
-
+                                        JournalEventProvider().create(
+                                            model:
+                                                controller.placeHolderEventItem,
+                                            id: controller.selectedJournalItem
+                                                .docRef.path);
+                                        if (controller.eventItem !=
+                                            null) if (controller
+                                                .placeHolderEventItem
+                                                .category !=
+                                            controller.eventItem?.category) {
+                                          controller.deleteEventItem();
+                                        }
+                                      } else {
+                                        controller.eventItem =
+                                            controller.placeHolderEventItem;
+                                        JournalEventProvider().update(
+                                            model: controller.eventItem);
+                                      }
+                                      controller.onSave();
                                       Navigator.pop(context);
                                     }
                                   }),
@@ -717,7 +812,7 @@ class JournalEventDialog extends BaseView {
                       ),
                     ],
                     if (controller.hasFocus ||
-                        controller.firstBuild && !controller.addNewCategory)
+                        (controller.firstBuild && !controller.addNewCategory))
                       GestureDetector(
                         onTap: () => controller.setState(() {
                           controller.scopeNode.unfocus();
@@ -756,15 +851,15 @@ class JournalEventDialog extends BaseView {
                     controller.popIcon,
                     Flexible(
                       child: Text(
-                        controller.eventItem.title ?? "",
+                        controller.placeHolderEventItem.title ?? "",
                         style: ServiceProvider
                             .instance.instanceStyleService.appStyle.title,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     IconButton(
-                      onPressed: () =>
-                          controller.setState(() => controller.isEdit = true),
+                      onPressed: () => controller.setState(
+                          () => controller.pageState = PageState.edit),
                       icon: Icon(Icons.edit),
                       color: ServiceProvider
                           .instance.instanceStyleService.appStyle.textGrey,
@@ -783,9 +878,9 @@ class JournalEventDialog extends BaseView {
                   padding: EdgeInsets.all(padding),
                   child: Column(
                     children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          if (controller.eventItem.timeStamp != null)
+                      if (controller.placeHolderEventItem.timeStamp != null)
+                        Row(
+                          children: <Widget>[
                             controller.basicContainer2(
                               child: Text(
                                 "Dato:",
@@ -793,17 +888,18 @@ class JournalEventDialog extends BaseView {
                                     .instanceStyleService.appStyle.descTitle,
                               ),
                             ),
-                          Container(
-                            width: padding,
-                          ),
-                          Text(
-                            formatDate(date: controller.eventItem.timeStamp),
-                            style: ServiceProvider.instance.instanceStyleService
-                                .appStyle.smallTitle,
-                          ),
-                        ],
-                      ),
-                      if (controller.eventItem.timeStamp != null)
+                            Container(
+                              width: padding,
+                            ),
+                            Text(
+                                formatDate(
+                                    date: controller
+                                        .placeHolderEventItem.timeStamp),
+                                style: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.body1),
+                          ],
+                        ),
+                      if (controller.placeHolderEventItem.timeStamp != null)
                         Row(
                           children: <Widget>[
                             controller.basicContainer2(
@@ -818,14 +914,15 @@ class JournalEventDialog extends BaseView {
                             ),
                             Text(
                               formatDate(
-                                  date: controller.eventItem.timeStamp,
+                                  date:
+                                      controller.placeHolderEventItem.timeStamp,
                                   time: true),
-                              style: ServiceProvider.instance
-                                  .instanceStyleService.appStyle.smallTitle,
+                              style: ServiceProvider
+                                  .instance.instanceStyleService.appStyle.body1,
                             ),
                           ],
                         ),
-                      if (controller.eventItem.reminder != null)
+                      if (controller.placeHolderEventItem.reminder != null)
                         Row(
                           children: <Widget>[
                             controller.basicContainer2(
@@ -839,13 +936,13 @@ class JournalEventDialog extends BaseView {
                               width: padding,
                             ),
                             Text(
-                              controller.eventItem.reminderString,
-                              style: ServiceProvider.instance
-                                  .instanceStyleService.appStyle.smallTitle,
+                              controller.placeHolderEventItem.reminderString,
+                              style: ServiceProvider
+                                  .instance.instanceStyleService.appStyle.body1,
                             ),
                           ],
                         ),
-                      if (controller.eventItem.note != null)
+                      if (controller.placeHolderEventItem.note != null)
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
@@ -861,8 +958,7 @@ class JournalEventDialog extends BaseView {
                             ),
                             Flexible(
                               child: Text(
-                                controller.eventItem.note +
-                                    "ASdasd ahkjsdjkhsadhjksahjkd asd asd asd asd sasjhkd",
+                                controller.placeHolderEventItem.note,
                                 style: ServiceProvider.instance
                                     .instanceStyleService.appStyle.body1,
                                 overflow: TextOverflow.clip,

@@ -10,7 +10,8 @@ class JournalEventItem {
       this.timeStamp,
       this.note,
       this.reminder,
-      this.reminderString});
+      this.reminderString,
+      this.docRef});
 
   String id;
   String title;

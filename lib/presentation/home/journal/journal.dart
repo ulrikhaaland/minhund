@@ -34,6 +34,8 @@ class JournalController extends BottomNavigationController {
               controller: JournalEventDialogController(
                 journalItems: dog.journalItems,
                 parentDocRef: dog.docRef,
+                pageState: PageState.create,
+                onSave: () => refresh(),
               ),
             )),
       );
@@ -142,8 +144,15 @@ class Journal extends BottomNavigation {
                   itemBuilder: (context, index) {
                     if (controller.dog.journalItems[index].title !=
                         "Legg til ny")
-                      return Provider.value(
-                        value: controller.dog,
+                      return MultiProvider(
+                        providers: [
+                          Provider<Dog>.value(
+                            value: controller.dog,
+                          ),
+                          Provider<JournalController>.value(
+                            value: controller,
+                          )
+                        ],
                         child: JournalListItem(
                           controller: JournalListItemController(
                               item: controller.dog.journalItems[index]),
