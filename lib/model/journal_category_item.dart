@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:minhund/model/journal_event_item.dart';
 
-part 'journal_item.g.dart';
+part 'journal_category_item.g.dart';
 
 @JsonSerializable()
-class JournalItem {
-  JournalItem({this.title, this.journalEventItems, this.sortIndex});
+class JournalCategoryItem {
+  JournalCategoryItem({this.title, this.journalEventItems, this.sortIndex});
 
   String id;
   String title;
@@ -16,8 +16,8 @@ class JournalItem {
   @JsonKey(ignore: true)
   DocumentReference docRef;
 
-  factory JournalItem.fromJson(Map<String, dynamic> json) =>
-      _$JournalItemFromJson(json);
+  factory JournalCategoryItem.fromJson(Map<String, dynamic> json) =>
+      _$JournalCategoryItemFromJson(json);
 
-  Map<String, dynamic> toJson() => _$JournalItemToJson(this);
+  Map<String, dynamic> toJson() => _$JournalCategoryItemToJson(this);
 }

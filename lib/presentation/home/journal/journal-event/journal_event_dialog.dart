@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
+import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/model/journal_event_item.dart';
-import 'package:minhund/model/journal_item.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
@@ -17,19 +17,19 @@ import 'package:provider/provider.dart';
 enum PageState { create, edit, read }
 
 class JournalEventDialogController extends BaseController {
-  final VoidCallback onSave;
+  final void Function(JournalEventItem eventItem) onSave;
 
   JournalEventItem eventItem;
 
   JournalEventItem placeHolderEventItem;
 
-  List<JournalItem> journalItems;
+  List<JournalCategoryItem> journalItems;
 
   final DocumentReference parentDocRef;
 
   String reminderDropDownValue;
 
-  JournalItem selectedJournalItem;
+  JournalCategoryItem selectedJournalItem;
 
   double height;
 
@@ -81,10 +81,10 @@ class JournalEventDialogController extends BaseController {
       ),
     );
     if (eventItem == null) {
-      placeHolderEventItem = JournalEventItem(title: "");
+      placeHolderEventItem = JournalEventItem(title: "", completed: false);
       if (journalItems.firstWhere((item) => item.title == "Legg til ny",
               orElse: () => null) ==
-          null) journalItems.add(JournalItem(title: "Legg til ny"));
+          null) journalItems.add(JournalCategoryItem(title: "Legg til ny"));
 
       reminderDropDownValue = "Ingen";
 
@@ -97,7 +97,8 @@ class JournalEventDialogController extends BaseController {
           timeStamp: eventItem.timeStamp,
           note: eventItem.note,
           reminder: eventItem.reminder,
-          reminderString: eventItem.reminderString);
+          reminderString: eventItem.reminderString,
+          completed: eventItem.completed);
       reminderDropDownValue = placeHolderEventItem.reminderString ?? "Ingen";
       journalItems.forEach((item) {
         if (item.journalEventItems != null) if (item.journalEventItems
@@ -161,7 +162,7 @@ class JournalEventDialog extends BaseView {
         if (val != "Legg til ny") {
           controller.journalItems.insert(
             controller.journalItems.length - 1,
-            JournalItem(
+            JournalCategoryItem(
                 title: val,
                 journalEventItems: [],
                 sortIndex: controller.journalItems.length - 1),
@@ -307,7 +308,7 @@ class JournalEventDialog extends BaseView {
                                                 PageState.edit) {
                                               controller.deleteEventItem();
 
-                                              controller.onSave();
+                                              controller.onSave(null);
                                               Navigator.pop(context);
                                             }
                                           },
@@ -745,18 +746,20 @@ class JournalEventDialog extends BaseView {
                                     child: Container(
                                       width: constraints.maxWidth * 0.935,
                                       child: PrimaryTextField(
-                                        initValue: controller
-                                            .placeHolderEventItem.note,
-                                        hintText: "Beskrivelse",
-                                        textCapitalization:
-                                            TextCapitalization.sentences,
-                                        textInputAction: TextInputAction.done,
-                                        textInputType: TextInputType.text,
-                                        maxLines: 5,
-                                        validate: false,
-                                        onSaved: (val) => controller
-                                            .placeHolderEventItem.note = val,
-                                      ),
+                                          initValue: controller
+                                              .placeHolderEventItem.note,
+                                          hintText: "Beskrivelse",
+                                          textCapitalization:
+                                              TextCapitalization.sentences,
+                                          textInputAction: TextInputAction.done,
+                                          textInputType: TextInputType.text,
+                                          maxLines: 5,
+                                          validate: false,
+                                          onSaved: (val) {
+                                            if (val != "")
+                                              controller.placeHolderEventItem
+                                                  .note = val;
+                                          }),
                                     ),
                                   ),
                                 ],
@@ -802,7 +805,8 @@ class JournalEventDialog extends BaseView {
                                         JournalEventProvider().update(
                                             model: controller.eventItem);
                                       }
-                                      controller.onSave();
+                                      controller.onSave(
+                                          controller.placeHolderEventItem);
                                       Navigator.pop(context);
                                     }
                                   }),

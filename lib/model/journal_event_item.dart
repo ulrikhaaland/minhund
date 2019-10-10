@@ -11,7 +11,8 @@ class JournalEventItem {
       this.note,
       this.reminder,
       this.reminderString,
-      this.docRef});
+      this.docRef,
+      this.completed});
 
   String id;
   String title;
@@ -20,6 +21,7 @@ class JournalEventItem {
   String reminderString;
   String note;
   String category;
+  bool completed;
   @JsonKey(ignore: true)
   DocumentReference docRef;
 

@@ -1,5 +1,4 @@
 import 'package:minhund/model/journal_event_item.dart';
-import 'package:minhund/model/journal_item.dart';
 import 'package:minhund/provider/crud_provider.dart';
 
 class JournalEventProvider extends CrudProvider {

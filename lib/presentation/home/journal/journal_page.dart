@@ -2,25 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/user.dart';
-import 'package:minhund/presentation/base_controller.dart';
-import 'package:minhund/presentation/base_view.dart';
-import 'package:minhund/presentation/widgets/bottom_nav.dart';
-import 'package:minhund/root_page.dart';
 import 'package:minhund/service/service_provider.dart';
-import 'package:minhund/utilities/master_page.dart';
 import 'package:provider/provider.dart';
-
 import '../../../bottom_navigation.dart';
 import 'journal-event/journal_event_dialog.dart';
-import 'journal-items/journal_items.dart';
-import 'journal-items/journal_list_item.dart';
+import 'journal-items/journal_category_list_item.dart';
 
-class JournalController extends BottomNavigationController {
+class JournalPageController extends BottomNavigationController {
   final User user;
 
   Dog dog;
 
-  JournalController({this.user});
+  JournalPageController({this.user});
 
   @override
   FloatingActionButton get fab => FloatingActionButton(
@@ -35,7 +28,7 @@ class JournalController extends BottomNavigationController {
                 journalItems: dog.journalItems,
                 parentDocRef: dog.docRef,
                 pageState: PageState.create,
-                onSave: () => refresh(),
+                onSave: (item) => refresh(),
               ),
             )),
       );
@@ -65,10 +58,10 @@ class JournalController extends BottomNavigationController {
   }
 }
 
-class Journal extends BottomNavigation {
-  final JournalController controller;
+class JournalPage extends BottomNavigation {
+  final JournalPageController controller;
 
-  Journal({this.controller});
+  JournalPage({this.controller});
 
   @override
   Widget buildContent(BuildContext context) {
@@ -149,12 +142,13 @@ class Journal extends BottomNavigation {
                           Provider<Dog>.value(
                             value: controller.dog,
                           ),
-                          Provider<JournalController>.value(
+                          Provider<JournalPageController>.value(
                             value: controller,
                           )
                         ],
-                        child: JournalListItem(
-                          controller: JournalListItemController(
+                        child: JournalCategoryListItem(
+                          controller: JournalCategoryListItemController(
+                              dog: controller.dog,
                               item: controller.dog.journalItems[index]),
                         ),
                       );

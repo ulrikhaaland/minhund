@@ -5,7 +5,7 @@ import 'package:minhund/model/course.dart';
 import 'package:minhund/model/veterinary_visit.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 
-import 'journal_item.dart';
+import 'journal_category_item.dart';
 
 part 'dog.g.dart';
 
@@ -30,7 +30,7 @@ class Dog {
   DateTime birthDate;
   String race;
   @JsonKey(ignore: true)
-  List<JournalItem> journalItems;
+  List<JournalCategoryItem> journalItems;
 
   @JsonKey(ignore: true)
   DocumentReference docRef;

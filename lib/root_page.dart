@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/presentation/animation/intro.dart';
 import 'package:minhund/presentation/base_controller.dart';
-import 'package:minhund/presentation/home/journal/journal.dart';
 import 'package:minhund/presentation/home/leverage/leverage.dart';
 import 'package:minhund/presentation/home/profile/profile.dart';
 import 'package:minhund/presentation/intro/user_intro.dart';

@@ -1,4 +1,4 @@
-import 'package:minhund/model/journal_item.dart';
+import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/provider/crud_provider.dart';
 import 'package:minhund/provider/journal_event_provider.dart';
 
@@ -20,12 +20,13 @@ class JournalProvider extends CrudProvider {
   }
 
   @override
-  Future<List<JournalItem>> getCollection({String id}) {
+  Future<List<JournalCategoryItem>> getCollection({String id}) {
     return super.getCollection(id: id + path).then((qSnap) {
-      List<JournalItem> list = <JournalItem>[];
+      List<JournalCategoryItem> list = <JournalCategoryItem>[];
 
       qSnap.documents.forEach((doc) async {
-        JournalItem journalItem = JournalItem.fromJson(doc.data);
+        JournalCategoryItem journalItem =
+            JournalCategoryItem.fromJson(doc.data);
         journalItem.docRef = doc.reference;
         list.add(journalItem);
         journalItem.journalEventItems = await JournalEventProvider()

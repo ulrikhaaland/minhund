@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:minhund/model/dog.dart';
-import 'package:minhund/model/journal_item.dart';
 import 'package:minhund/provider/crud_provider.dart';
 import 'package:minhund/provider/journal_provider.dart';
 

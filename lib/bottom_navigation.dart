@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
-import 'package:minhund/presentation/home/journal/journal.dart';
+import 'package:minhund/presentation/home/journal/journal_page.dart';
 import 'package:minhund/presentation/home/leverage/leverage.dart';
 import 'package:minhund/presentation/home/map/map_location.dart';
 import 'package:minhund/presentation/home/profile/profile.dart';
@@ -20,7 +20,7 @@ class BottomNavigationController extends MasterPageController {
 
   BottomNavigationController({this.user});
 
-  Journal journal;
+  JournalPage journal;
   MapLocation mapLocation;
   Leverage leverage;
   Profile profile;
@@ -34,8 +34,8 @@ class BottomNavigationController extends MasterPageController {
         refresh();
       },
     );
-    journal = Journal(
-      controller: JournalController(
+    journal = JournalPage(
+      controller: JournalPageController(
         user: user,
       ),
     );

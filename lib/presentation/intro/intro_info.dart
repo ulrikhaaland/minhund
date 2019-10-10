@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/helper/image_picker.dart';
 import 'package:minhund/model/dog.dart';
-import 'package:minhund/model/journal_item.dart';
+import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
@@ -68,16 +68,16 @@ class IntroInfoOwnerController extends MasterPageController {
       user.dogs.add(dog);
     }
 
-    dog.journalItems = <JournalItem>[
-      JournalItem(
+    dog.journalItems = <JournalCategoryItem>[
+      JournalCategoryItem(
         title: "Veterinær",
         sortIndex: 0,
       ),
-      JournalItem(
+      JournalCategoryItem(
         title: "Kurs",
         sortIndex: 1,
       ),
-      JournalItem(
+      JournalCategoryItem(
         title: "Annet",
         sortIndex: 2,
       ),
