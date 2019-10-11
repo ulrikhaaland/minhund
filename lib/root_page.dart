@@ -1,4 +1,3 @@
-import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/auth.dart';
@@ -6,18 +5,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/presentation/animation/intro.dart';
 import 'package:minhund/presentation/base_controller.dart';
-import 'package:minhund/presentation/home/leverage/leverage.dart';
-import 'package:minhund/presentation/home/profile/profile.dart';
 import 'package:minhund/presentation/intro/user_intro.dart';
 import 'package:minhund/presentation/login/login_page.dart';
-import 'package:minhund/presentation/widgets/bottom_nav.dart';
 import 'package:minhund/provider/user_provider.dart';
-import 'package:provider/provider.dart';
 import 'model/user.dart';
 import 'presentation/base_view.dart';
 import 'service/service_provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/services.dart';
 
 enum AuthState {
   notAuthenticated,
@@ -167,5 +161,6 @@ class RootPage extends BaseView {
         ),
       );
     }
+    return Container();
   }
 }

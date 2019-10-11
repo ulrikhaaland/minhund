@@ -110,7 +110,6 @@ class CustomImage extends BaseView {
         break;
       default:
     }
-    // TODO: implement build
     return null;
   }
 }

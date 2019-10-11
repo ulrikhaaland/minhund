@@ -16,23 +16,18 @@ class UserIntroController extends MasterPageController {
   UserIntroController({this.onIntroFinished, this.user});
 
   @override
-  // TODO: implement fab
   FloatingActionButton get fab => null;
 
   @override
-  // TODO: implement title
   String get title => "Velkommen";
 
   @override
-  // TODO: implement bottomNav
   Widget get bottomNav => null;
 
   @override
-  // TODO: implement actionOne
   Widget get actionOne => null;
 
   @override
-  // TODO: implement actionTwo
   Widget get actionTwo => null;
 }
 

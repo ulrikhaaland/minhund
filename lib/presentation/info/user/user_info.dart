@@ -1,14 +1,9 @@
-import 'dart:io';
 import 'package:minhund/helper/helper.dart';
-import 'package:minhund/helper/image_picker.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
-import 'package:minhund/presentation/info/dog/dog_info.dart';
-import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
-import 'package:minhund/service/service_provider.dart';
 import 'package:flutter/material.dart';
 
 class UserInfoController extends BaseController {

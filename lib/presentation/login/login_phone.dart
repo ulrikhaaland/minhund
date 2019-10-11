@@ -1,11 +1,8 @@
 import 'package:minhund/helper/auth.dart';
 import 'package:minhund/helper/helper.dart';
-import 'package:minhund/presentation/base_controller.dart';
-import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/root_page.dart';
-import 'package:minhund/service/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/utilities/master_page.dart';
 
@@ -119,23 +116,18 @@ class PhoneLoginController extends MasterPageController {
   }
 
   @override
-  // TODO: implement actionOne
   Widget get actionOne => null;
 
   @override
-  // TODO: implement actionTwo
   Widget get actionTwo => null;
 
   @override
-  // TODO: implement bottomNav
   Widget get bottomNav => null;
 
   @override
-  // TODO: implement fab
   FloatingActionButton get fab => null;
 
   @override
-  // TODO: implement title
   String get title => "Logg inn";
 }
 

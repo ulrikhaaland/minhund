@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/color_formatter.dart';
 
-enum BusinessFlowType { order, actor, product, resource, meeting, campaign }
-
 enum ProgressStatus {
   undefined,
   veryGood,
@@ -23,7 +21,7 @@ enum DashboardType {
 }
 
 class ThemeService {
-  ThemeService() {}
+  ThemeService();
 
   static Map<ProgressStatus, Color> _progressStatusColors = {
     ProgressStatus.undefined: Color(ColorFormatter.hexToInt("#CCCCCC")),

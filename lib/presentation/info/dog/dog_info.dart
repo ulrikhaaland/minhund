@@ -1,11 +1,7 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:minhund/helper/helper.dart';
-import 'package:minhund/helper/image_cropper.dart';
-import 'package:minhund/helper/image_picker.dart';
 import 'package:minhund/model/address.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/user.dart';
@@ -13,11 +9,8 @@ import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
-import 'package:minhund/presentation/widgets/circular_progress_indicator.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
-import 'package:minhund/provider/crud_provider.dart';
-import 'package:minhund/provider/user_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 
 enum CreateOrUpdateDog { create, update }

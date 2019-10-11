@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:minhund/helper/auth.dart';
 import 'package:minhund/helper/helper.dart';
-import 'package:minhund/presentation/base_controller.dart';
-import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/login/reset_password.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
@@ -119,23 +117,18 @@ class EmailLoginController extends MasterPageController {
   }
 
   @override
-  // TODO: implement actionOne
   Widget get actionOne => null;
 
   @override
-  // TODO: implement actionTwo
   Widget get actionTwo => null;
 
   @override
-  // TODO: implement bottomNav
   Widget get bottomNav => null;
 
   @override
-  // TODO: implement fab
   FloatingActionButton get fab => null;
 
   @override
-  // TODO: implement title
   String get title => isLogin ? "Logg inn" : "Registrer";
 }
 

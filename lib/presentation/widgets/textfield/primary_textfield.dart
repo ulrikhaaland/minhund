@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:flutter/material.dart';

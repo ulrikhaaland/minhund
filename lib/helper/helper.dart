@@ -1,7 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/service/theme_service.dart';
 
@@ -21,6 +19,8 @@ double getAppBarIconSize(BuildContext context) {
 }
 
 double _appBarIconSize;
+
+enum PageState { create, edit, read }
 
 double getContainerSize({GlobalKey key, bool width}) {
   final RenderBox renderBoxRed = key.currentContext.findRenderObject();

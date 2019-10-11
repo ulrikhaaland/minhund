@@ -1,14 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/provider/crud_provider.dart';
 import 'package:minhund/provider/dog_provider.dart';
 
 class UserProvider extends CrudProvider {
   String path = "users";
-  Firestore _firestoreInstance = Firestore.instance;
 
   Future updateFcmToken(User user, FirebaseMessaging firebaseMessaging) =>
       firebaseMessaging.getToken().then((token) {

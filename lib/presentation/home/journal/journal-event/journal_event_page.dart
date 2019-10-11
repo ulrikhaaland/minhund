@@ -1,11 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/src/material/floating_action_button.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/model/journal_event_item.dart';
+import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
 import 'package:minhund/presentation/home/journal/journal-event/journal_event_list_item.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
@@ -18,7 +19,7 @@ class JournalEventPageController extends MasterPageController {
   List<JournalEventItem> upcomingEvents = [];
   List<JournalEventItem> completedEvents = [];
 
-  final VoidCallback onUpdate;
+  final void Function(bool refreshParent) onUpdate;
 
   final Dog dog;
 
@@ -28,7 +29,28 @@ class JournalEventPageController extends MasterPageController {
   Widget get actionOne => null;
 
   @override
-  Widget get actionTwo => null;
+  Widget get actionTwo => IconButton(
+        onPressed: () => showCustomDialog(
+            context: context,
+            child: JournalAddCategory(
+              controller: JournalAddCategoryController(
+                singleCategoryItem: categoryItem,
+                childOnSaved: () => refresh(),
+                childOnDelete: () {
+                  dog.journalItems
+                      .removeWhere((item) => item.id == categoryItem.id);
+                  onUpdate(true);
+                  Navigator.of(context)..pop()..pop();
+                },
+                pageState: PageState.edit,
+                dogDocRefPath: dog.docRef.path,
+              ),
+            )),
+        icon: Icon(Icons.edit),
+        color: ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
+        iconSize: ServiceProvider
+            .instance.instanceStyleService.appStyle.iconSizeStandard,
+      );
 
   @override
   Widget get bottomNav => null;
@@ -43,16 +65,11 @@ class JournalEventPageController extends MasterPageController {
             context: context,
             child: JournalEventDialog(
               controller: JournalEventDialogController(
-                journalItems: dog.journalItems,
+                categoryItem: categoryItem,
                 parentDocRef: dog.docRef,
                 pageState: PageState.create,
                 onSave: (item) {
-                  if (item != null) {
-                    categoryItem.journalEventItems.add(item);
-                    upcomingEvents.add(item);
-                    sortListByDate(eventItemList: upcomingEvents);
-                  }
-                  setState(() {});
+                  refresh();
                 },
               ),
             )),
@@ -63,20 +80,17 @@ class JournalEventPageController extends MasterPageController {
 
   @override
   void initState() {
-    if (categoryItem.journalEventItems.isNotEmpty) {
-      upcomingEvents = categoryItem.journalEventItems
-          .where((item) => item.completed != true)
-          .toList();
-      completedEvents = categoryItem.journalEventItems
-          .where((item) => item.completed == true)
-          .toList();
-    }
-
     super.initState();
   }
 
   void sortListByDate({@required List<JournalEventItem> eventItemList}) {
-    eventItemList.sort((a, b) => a.timeStamp.compareTo(b.timeStamp));
+    if (eventItemList.isNotEmpty)
+      eventItemList.sort((a, b) {
+        if (a.timeStamp != null && b.timeStamp != null)
+          a.timeStamp.compareTo(b.timeStamp);
+        else
+          return 0;
+      });
   }
 
   ListView listBuilder({@required List<JournalEventItem> list}) {
@@ -84,21 +98,11 @@ class JournalEventPageController extends MasterPageController {
       itemCount: list.length,
       itemBuilder: (context, index) {
         return JournalEventListItem(
+          key: Key(list[index].id ?? Random().nextInt(99999999).toString()),
           controller: JournalEventListItemController(
+            categoryItem: categoryItem,
             dog: dog,
             onChanged: (item) {
-              if (item != null) {
-                if (item.completed) {
-                  completedEvents.add(item);
-                  upcomingEvents.remove(item);
-                } else {
-                  upcomingEvents.add(item);
-                  completedEvents.remove(item);
-                }
-              }
-              sortListByDate(eventItemList: completedEvents);
-              sortListByDate(eventItemList: upcomingEvents);
-
               refresh();
             },
             eventItem: list[index],
@@ -117,60 +121,82 @@ class JournalEventPage extends MasterPage {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    return DefaultTabController(
-      length: 2,
-      initialIndex: 0,
-      child: Column(
-        children: <Widget>[
-          Container(
-            height: ServiceProvider
-                    .instance.instanceStyleService.appStyle.iconSizeBig *
-                2,
-            child: Card(
-              color: Colors.white,
-              elevation: ServiceProvider
-                  .instance.instanceStyleService.appStyle.elevation,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(ServiceProvider
-                    .instance.instanceStyleService.appStyle.borderRadius),
-              ),
-              child: TabBar(
-                indicatorColor: ServiceProvider
-                    .instance.instanceStyleService.appStyle.skyBlue,
-                indicatorWeight: 5,
-                indicatorPadding: EdgeInsets.all(
-                  getDefaultPadding(context),
+    if (controller.categoryItem.journalEventItems.isNotEmpty) {
+      controller.upcomingEvents = controller.categoryItem.journalEventItems
+          .where((item) => item.completed != true)
+          .toList();
+      controller.completedEvents = controller.categoryItem.journalEventItems
+          .where((item) => item.completed == true)
+          .toList();
+    } else {
+      controller.upcomingEvents = [];
+      controller.completedEvents = [];
+    }
+
+    controller.sortListByDate(eventItemList: controller.completedEvents);
+    controller.sortListByDate(eventItemList: controller.upcomingEvents);
+
+    double padding = getDefaultPadding(context);
+
+    return Container(
+      padding: EdgeInsets.only(left: padding * 2, right: padding * 2),
+      child: DefaultTabController(
+        length: 2,
+        initialIndex: 0,
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: ServiceProvider
+                      .instance.instanceStyleService.appStyle.iconSizeBig *
+                  2,
+              child: Card(
+                color: Colors.white,
+                elevation: ServiceProvider
+                    .instance.instanceStyleService.appStyle.elevation,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ServiceProvider
+                      .instance.instanceStyleService.appStyle.borderRadius),
                 ),
-                tabs: <Widget>[
-                  Tab(
-                      icon: Icon(
-                    Icons.timer,
-                    color: ServiceProvider
-                        .instance.instanceStyleService.appStyle.pink,
-                    size: ServiceProvider
-                        .instance.instanceStyleService.appStyle.iconSizeBig,
-                  )),
-                  Tab(
-                      icon: Icon(
-                    Icons.check,
-                    color: ServiceProvider
-                        .instance.instanceStyleService.appStyle.green,
-                    size: ServiceProvider
-                        .instance.instanceStyleService.appStyle.iconSizeBig,
-                  )),
+                child: TabBar(
+                  indicatorColor: ServiceProvider
+                      .instance.instanceStyleService.appStyle.skyBlue,
+                  indicatorWeight: 3,
+                  indicatorPadding: EdgeInsets.only(
+                    left: padding * 2,
+                    right: padding * 2,
+                    bottom: padding,
+                  ),
+                  tabs: <Widget>[
+                    Tab(
+                        icon: Icon(
+                      Icons.timer,
+                      color: ServiceProvider
+                          .instance.instanceStyleService.appStyle.pink,
+                      size: ServiceProvider
+                          .instance.instanceStyleService.appStyle.iconSizeBig,
+                    )),
+                    Tab(
+                        icon: Icon(
+                      Icons.check,
+                      color: ServiceProvider
+                          .instance.instanceStyleService.appStyle.green,
+                      size: ServiceProvider
+                          .instance.instanceStyleService.appStyle.iconSizeBig,
+                    )),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                children: <Widget>[
+                  controller.listBuilder(list: controller.upcomingEvents),
+                  controller.listBuilder(list: controller.completedEvents),
                 ],
               ),
-            ),
-          ),
-          Expanded(
-            child: TabBarView(
-              children: <Widget>[
-                controller.listBuilder(list: controller.upcomingEvents),
-                controller.listBuilder(list: controller.completedEvents),
-              ],
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

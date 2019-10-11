@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
+import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/model/user.dart';
+import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
+import 'package:minhund/presentation/widgets/reorderable_list.dart';
 import 'package:minhund/service/service_provider.dart';
-import 'package:provider/provider.dart';
 import '../../../bottom_navigation.dart';
-import 'journal-event/journal_event_dialog.dart';
-import 'journal-items/journal_category_list_item.dart';
+import 'journal-category/journal_category_list_item.dart';
 
 class JournalPageController extends BottomNavigationController {
   final User user;
@@ -22,31 +23,28 @@ class JournalPageController extends BottomNavigationController {
         foregroundColor: Colors.white,
         child: Icon(Icons.add),
         onPressed: () => showCustomDialog(
-            context: context,
-            child: JournalEventDialog(
-              controller: JournalEventDialogController(
-                journalItems: dog.journalItems,
-                parentDocRef: dog.docRef,
-                pageState: PageState.create,
-                onSave: (item) => refresh(),
-              ),
-            )),
+          context: context,
+          child: JournalAddCategory(
+            controller: JournalAddCategoryController(
+              journalCategoryItems: dog.journalItems,
+              childOnSaved: () => refresh(),
+              dogDocRefPath: dog.docRef.path,
+              pageState: PageState.create,
+            ),
+          ),
+        ),
       );
 
   @override
-  // TODO: implement title
   String get title => null;
 
   @override
-  // TODO: implement actionOne
   Widget get actionOne => null;
 
   @override
-  // TODO: implement actionTwo
   Widget get actionTwo => null;
 
   @override
-  // TODO: implement bottomNav
   Widget get bottomNav => null;
 
   @override
@@ -73,7 +71,9 @@ class JournalPage extends BottomNavigation {
       child: Container(
         height: ServiceProvider.instance.screenService
             .getHeightByPercentage(context, 90),
-        padding: EdgeInsets.all(getDefaultPadding(context) * 2),
+        padding: EdgeInsets.only(
+            left: getDefaultPadding(context) * 2,
+            right: getDefaultPadding(context) * 2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -131,41 +131,25 @@ class JournalPage extends BottomNavigation {
               Container(
                 height: ServiceProvider.instance.screenService
                     .getHeightByPercentage(context, 70),
-                child: ListView.builder(
-                  itemCount: controller.dog.journalItems.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    if (controller.dog.journalItems[index].title !=
-                        "Legg til ny")
-                      return MultiProvider(
-                        providers: [
-                          Provider<Dog>.value(
-                            value: controller.dog,
+                child: ReorderableList(
+                    onReorder: (oldIndex, newIndex) {
+                      JournalCategoryItem cItem =
+                          controller.dog.journalItems.removeAt(oldIndex);
+                      cItem.sortIndex = newIndex;
+                      controller.dog.journalItems.insert(newIndex, cItem);
+                    },
+                    widgetList: controller.dog.journalItems
+                        .map(
+                          (item) => JournalCategoryListItem(
+                            key: Key(item.id),
+                            controller: JournalCategoryListItemController(
+                                onUpdate: () => controller.setState(() {}),
+                                dog: controller.dog,
+                                item: item),
                           ),
-                          Provider<JournalPageController>.value(
-                            value: controller,
-                          )
-                        ],
-                        child: JournalCategoryListItem(
-                          controller: JournalCategoryListItemController(
-                              dog: controller.dog,
-                              item: controller.dog.journalItems[index]),
-                        ),
-                      );
-                    else
-                      return Container();
-                  },
-                ),
+                        )
+                        .toList()),
               ),
-            // Column(
-            //     children: controller.dog.journalItems.map((item) {
-            //   if (item.title != "Legg til ny")
-            //     return JournalListItem(
-            //       controller: JournalListItemController(item: item),
-            //     );
-            //   else
-            //     return Container();
-            // }).toList())
           ],
         ),
       ),

@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/material/floating_action_button.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:minhund/helper/auth.dart';
 import 'package:minhund/helper/helper.dart';
-import 'package:minhund/presentation/base_controller.dart';
-import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/service/service_provider.dart';
@@ -17,23 +13,18 @@ class ResetPasswordController extends MasterPageController {
 
   ResetPasswordController({this.auth});
   @override
-  // TODO: implement actionOne
   Widget get actionOne => null;
 
   @override
-  // TODO: implement actionTwo
   Widget get actionTwo => null;
 
   @override
-  // TODO: implement bottomNav
   Widget get bottomNav => null;
 
   @override
-  // TODO: implement fab
   FloatingActionButton get fab => null;
 
   @override
-  // TODO: implement title
   String get title {
     if (resetPasswordState == ResetPasswordState.init) {
       return "Glemt Passord";

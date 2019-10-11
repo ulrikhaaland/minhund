@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/model/app_style.dart';
 
-import '../service/service_provider.dart';
-
 class InstanceStyleService {
   AppStyle _appStyle = AppStyle();
 
@@ -82,7 +80,7 @@ class InstanceStyleService {
       fontSize: screenHeight * 0.026 * factor,
       fontFamily: 'Apercu',
       fontWeight: FontWeight.bold,
-      fontStyle: FontStyle.italic,
+      fontStyle: FontStyle.normal,
       color: _appStyle.textGrey,
     );
 

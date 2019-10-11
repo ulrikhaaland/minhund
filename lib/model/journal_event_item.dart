@@ -9,6 +9,7 @@ class JournalEventItem {
       {this.title,
       this.timeStamp,
       this.note,
+      this.id,
       this.reminder,
       this.reminderString,
       this.docRef,
