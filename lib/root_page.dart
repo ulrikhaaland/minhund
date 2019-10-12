@@ -32,7 +32,7 @@ class RootPageController extends BaseController {
   User _user;
   bool introDone = false;
 
-  bool newUser = true;
+  bool newUser = false;
 
   @override
   void initState() {
@@ -126,7 +126,7 @@ class RootPage extends BaseView {
       ServiceProvider.instance.screenService.getBambooFactor(context),
     );
 
-    controller.auth.signOut();
+    // controller.auth.signOut();
 
     if (!controller.introDone) {
       return Intro(

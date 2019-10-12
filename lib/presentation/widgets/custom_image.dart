@@ -57,23 +57,18 @@ class CustomImage extends BaseView {
 
     Widget icon;
 
-    if (controller.imageFile == null && controller.init) {
-      icon = Icon(
-        Icons.add_a_photo,
-        size:
-            ServiceProvider.instance.instanceStyleService.appStyle.iconSizeBig,
-        color: Colors.white,
-      );
-    }
+    icon = Icon(
+      Icons.add_a_photo,
+      size: ServiceProvider.instance.instanceStyleService.appStyle.iconSizeBig,
+      color: Colors.white,
+    );
 
     switch (controller.customImageType) {
       case CustomImageType.circle:
         return Column(
           children: <Widget>[
             InkWell(
-              onTap: () async {
-                if (controller.init) controller.getImage();
-              },
+              onTap: () async => controller.init ? controller.getImage() : null,
               child: CircleAvatar(
                 radius: ServiceProvider.instance.screenService
                     .getHeightByPercentage(
