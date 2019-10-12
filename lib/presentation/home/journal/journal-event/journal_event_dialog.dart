@@ -65,8 +65,8 @@ class JournalEventDialogController extends BaseController {
       child: Icon(
         Icons.close,
         color: ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
-        size:
-            ServiceProvider.instance.instanceStyleService.appStyle.iconSizeBig,
+        size: ServiceProvider
+            .instance.instanceStyleService.appStyle.iconSizeStandard,
       ),
     );
     if (eventItem == null) {
@@ -103,7 +103,10 @@ class JournalEventDialogController extends BaseController {
         .removeWhere((item) => item.id == placeHolderEventItem.id);
   }
 
-  Widget basicContainer({Widget child, double width}) {
+  Widget basicContainer({
+    Widget child,
+    double width,
+  }) {
     return Container(
       alignment: Alignment.centerLeft,
       height: height * 0.1,
@@ -112,7 +115,10 @@ class JournalEventDialogController extends BaseController {
     );
   }
 
-  Widget basicContainer2({Widget child, double width}) {
+  Widget basicContainer2({
+    Widget child,
+    double width,
+  }) {
     return Container(
       alignment: Alignment.centerLeft,
       height: height * 0.05,
@@ -199,7 +205,7 @@ class JournalEventDialog extends BaseView {
                                               .instance
                                               .instanceStyleService
                                               .appStyle
-                                              .iconSizeBig,
+                                              .iconSizeStandard,
                                           color: controller.pageState ==
                                                   PageState.create
                                               ? Colors.transparent
@@ -546,6 +552,9 @@ class JournalEventDialog extends BaseView {
                                           if (val != "")
                                             controller.placeHolderEventItem
                                                 .note = val;
+                                          else
+                                            controller.placeHolderEventItem
+                                                .note = null;
                                         }),
                                   ),
                                 ),
@@ -639,8 +648,8 @@ class JournalEventDialog extends BaseView {
                       icon: Icon(Icons.edit),
                       color: ServiceProvider
                           .instance.instanceStyleService.appStyle.textGrey,
-                      iconSize: ServiceProvider
-                          .instance.instanceStyleService.appStyle.iconSizeBig,
+                      iconSize: ServiceProvider.instance.instanceStyleService
+                          .appStyle.iconSizeStandard,
                     ),
                   ],
                 ),
@@ -650,12 +659,12 @@ class JournalEventDialog extends BaseView {
                   borderRadius: BorderRadius.circular(ServiceProvider
                       .instance.instanceStyleService.appStyle.borderRadius),
                 ),
-                child: Padding(
-                  padding: EdgeInsets.all(padding),
-                  child: Column(
-                    children: <Widget>[
-                      if (controller.placeHolderEventItem.timeStamp != null)
-                        Row(
+                child: Column(
+                  children: <Widget>[
+                    if (controller.placeHolderEventItem.timeStamp != null)
+                      Padding(
+                        padding: EdgeInsets.all(padding * 2),
+                        child: Row(
                           children: <Widget>[
                             controller.basicContainer2(
                               child: Text(
@@ -675,8 +684,11 @@ class JournalEventDialog extends BaseView {
                                     .instanceStyleService.appStyle.body1),
                           ],
                         ),
-                      if (controller.placeHolderEventItem.timeStamp != null)
-                        Row(
+                      ),
+                    if (controller.placeHolderEventItem.timeStamp != null)
+                      Padding(
+                        padding: EdgeInsets.all(padding * 2),
+                        child: Row(
                           children: <Widget>[
                             controller.basicContainer2(
                               child: Text(
@@ -698,8 +710,11 @@ class JournalEventDialog extends BaseView {
                             ),
                           ],
                         ),
-                      if (controller.placeHolderEventItem.reminder != null)
-                        Row(
+                      ),
+                    if (controller.placeHolderEventItem.reminder != null)
+                      Padding(
+                        padding: EdgeInsets.all(padding * 2),
+                        child: Row(
                           children: <Widget>[
                             controller.basicContainer2(
                               child: Text(
@@ -718,8 +733,11 @@ class JournalEventDialog extends BaseView {
                             ),
                           ],
                         ),
-                      if (controller.placeHolderEventItem.note != null)
-                        Row(
+                      ),
+                    if (controller.placeHolderEventItem.note != null)
+                      Padding(
+                        padding: EdgeInsets.all(padding * 2),
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             controller.basicContainer2(
@@ -733,17 +751,20 @@ class JournalEventDialog extends BaseView {
                               width: padding,
                             ),
                             Flexible(
-                              child: Text(
-                                controller.placeHolderEventItem.note,
-                                style: ServiceProvider.instance
-                                    .instanceStyleService.appStyle.body1,
-                                overflow: TextOverflow.clip,
+                              child: Padding(
+                                padding: EdgeInsets.only(top: padding * 0.6),
+                                child: Text(
+                                  controller.placeHolderEventItem.note,
+                                  style: ServiceProvider.instance
+                                      .instanceStyleService.appStyle.body1,
+                                  overflow: TextOverflow.clip,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                    ],
-                  ),
+                      ),
+                  ],
                 ),
               ),
             ],

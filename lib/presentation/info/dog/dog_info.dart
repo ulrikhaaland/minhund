@@ -39,6 +39,8 @@ class DogInfoController extends BaseController {
 
   File imageFile;
 
+  DateTimePickerController dateTimePickerController;
+
   DogInfoController(
       {this.onDone,
       this.user,
@@ -48,6 +50,11 @@ class DogInfoController extends BaseController {
 
   @override
   void initState() {
+    dateTimePickerController = DateTimePickerController(
+        onConfirmed: (date) => dog?.birthDate = date,
+        initialDate: dog?.birthDate,
+        title: "Fødselsdato",
+        label: "Fødselsdato");
     if (dog.address == null) dog.address = Address();
     textFields = <Widget>[
       PrimaryTextField(
@@ -102,18 +109,14 @@ class DogInfoController extends BaseController {
         initValue: dog?.address?.address,
         onSaved: (val) => dog?.address?.address = val.trim(),
         hintText: "Adresse",
-        onFieldSubmitted: () => _node.unfocus(),
+        onFieldSubmitted: () => dateTimePickerController.openDatePicker(),
         autocorrect: false,
         textInputType: TextInputType.text,
         textInputAction: TextInputAction.next,
         textCapitalization: TextCapitalization.words,
       ),
       DateTimePicker(
-        controller: DateTimePickerController(
-            onConfirmed: (date) => dog?.birthDate = date,
-            initialDate: dog?.birthDate,
-            title: "Fødselsdato",
-            label: "Fødselsdato"),
+        controller: dateTimePickerController,
       ),
       PrimaryTextField(
         initValue: dog?.chipNumber,
@@ -173,6 +176,7 @@ class DogInfo extends BaseView {
   DogInfo({this.controller});
   @override
   Widget build(BuildContext context) {
+    if (!mounted) return Container();
     return Form(
       key: controller._formKey,
       child: FocusScope(

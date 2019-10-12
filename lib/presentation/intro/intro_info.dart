@@ -70,7 +70,6 @@ class IntroInfoOwnerController extends MasterPageController {
         sortIndex: 2,
       ),
     ];
-    await UserProvider().update(model: user);
 
     await DogProvider().create(id: user.id, model: dog);
 
@@ -115,6 +114,8 @@ class IntroInfoOwner extends MasterPage {
                         controller.infoInfo =
                             "Fyll inn informasjon om din hund";
                         controller.pageTitle = "Hund";
+                        if (controller.user.dogs == null)
+                          controller.user.dogs = [];
                       })),
             ),
           if (!controller.editingOwner)

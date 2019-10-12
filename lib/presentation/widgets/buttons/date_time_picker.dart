@@ -71,7 +71,7 @@ class DateTimePickerController extends BaseController {
     super.dispose();
   }
 
-  void openDatePicker({TextEditingController ctrlr}) {
+  void openDatePicker() {
     FocusScope.of(context).unfocus();
     _birthDialog(
       context: context,

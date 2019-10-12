@@ -32,7 +32,7 @@ class RootPageController extends BaseController {
   User _user;
   bool introDone = false;
 
-  bool newUser = false;
+  bool newUser = true;
 
   @override
   void initState() {
@@ -57,10 +57,6 @@ class RootPageController extends BaseController {
       _user = await UserProvider().get(
         id: firebaseUser.uid,
       );
-      DogProvider().getCollection(id: firebaseUser.uid).then((dogs) {
-        _user.dogs = dogs;
-        refresh();
-      });
 
       if (_user == null) {
         _user = User(
@@ -78,8 +74,12 @@ class RootPageController extends BaseController {
         _user = await UserProvider().get(
           id: _user.id,
         );
+        refresh();
       } else {
-        if (_user.dogs == null) _user.dogs = [];
+        DogProvider().getCollection(id: firebaseUser.uid).then((dogs) {
+          _user.dogs = dogs ?? [];
+          refresh();
+        });
       }
       UserProvider().updateFcmToken(_user, firebaseMessaging);
     }
@@ -126,7 +126,7 @@ class RootPage extends BaseView {
       ServiceProvider.instance.screenService.getBambooFactor(context),
     );
 
-    // controller.auth.signOut();
+    controller.auth.signOut();
 
     if (!controller.introDone) {
       return Intro(

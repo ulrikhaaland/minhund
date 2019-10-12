@@ -5,6 +5,7 @@ import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:flutter/material.dart';
+import 'package:minhund/provider/user_provider.dart';
 
 class UserInfoController extends BaseController {
   final User user;
@@ -84,6 +85,7 @@ class UserInfo extends BaseView {
                 onPressed: () {
                   controller._formKey.currentState.save();
                   if (validateTextFields(textFields: controller.textFields)) {
+                    UserProvider().update(model: controller.user);
                     controller.onDone();
                   }
                 },

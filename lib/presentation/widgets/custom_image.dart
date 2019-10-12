@@ -37,9 +37,12 @@ class CustomImageController extends BaseController {
       this.init = false});
 
   Future<void> getImage() async {
-    setState(() => isLoading = true);
-    imageFile = await CustomImageCropper().cropImage(FileProvider().getFile());
-    if (imageFile != null) getImageFile(imageFile);
+    try {
+      setState(() => isLoading = true);
+      imageFile =
+          await CustomImageCropper().cropImage(FileProvider().getFile());
+      if (imageFile != null) getImageFile(imageFile);
+    } catch (e) {}
     setState(() => isLoading = false);
   }
 }
@@ -69,7 +72,7 @@ class CustomImage extends BaseView {
           children: <Widget>[
             InkWell(
               onTap: () async {
-                controller.getImage();
+                if (controller.init) controller.getImage();
               },
               child: CircleAvatar(
                 radius: ServiceProvider.instance.screenService
@@ -77,9 +80,7 @@ class CustomImage extends BaseView {
                         context, controller.imageSizePercentage ?? 7.5),
                 backgroundColor: ServiceProvider
                     .instance.instanceStyleService.appStyle.green,
-                child: controller.isLoading
-                    ? CPI(false)
-                    : controller.imageFile == null ? icon : null,
+                child: controller.isLoading ? CPI(false) : icon,
                 backgroundImage: controller.imgUrl != null
                     ? AdvancedNetworkImage(controller.imgUrl)
                     : controller.imageFile != null
