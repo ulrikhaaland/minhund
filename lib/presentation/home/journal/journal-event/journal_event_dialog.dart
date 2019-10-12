@@ -575,12 +575,12 @@ class JournalEventDialog extends BaseView {
                                           id: controller
                                               .categoryItem.docRef.path);
                                     } else {
-                                      controller.eventItem =
-                                          controller.placeHolderEventItem;
-                                      JournalEventProvider()
-                                          .update(model: controller.eventItem);
+                                      JournalEventProvider().update(
+                                          model:
+                                              controller.placeHolderEventItem);
                                     }
-                                    controller.onSave(controller.eventItem);
+                                    controller.onSave(
+                                        controller.placeHolderEventItem);
                                     Navigator.pop(context);
                                   }
                                 }),

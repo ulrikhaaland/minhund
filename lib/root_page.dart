@@ -7,6 +7,7 @@ import 'package:minhund/presentation/animation/intro.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/intro/user_intro.dart';
 import 'package:minhund/presentation/login/login_page.dart';
+import 'package:minhund/provider/dog_provider.dart';
 import 'package:minhund/provider/user_provider.dart';
 import 'model/user.dart';
 import 'presentation/base_view.dart';
@@ -56,6 +57,10 @@ class RootPageController extends BaseController {
       _user = await UserProvider().get(
         id: firebaseUser.uid,
       );
+      DogProvider().getCollection(id: firebaseUser.uid).then((dogs) {
+        _user.dogs = dogs;
+        refresh();
+      });
 
       if (_user == null) {
         _user = User(
@@ -79,7 +84,7 @@ class RootPageController extends BaseController {
       UserProvider().updateFcmToken(_user, firebaseMessaging);
     }
 
-    this.refresh();
+    refresh();
     return;
   }
 

@@ -8,6 +8,7 @@ import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
 import 'package:minhund/presentation/home/journal/journal-event/journal_event_list_item.dart';
+import 'package:minhund/presentation/widgets/reorderable_list.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 
@@ -83,33 +84,31 @@ class JournalEventPageController extends MasterPageController {
     super.initState();
   }
 
+  onSaveItem(JournalEventItem item) {
+    if (item != null) {
+      JournalEventItem journalEventItem =
+          categoryItem.journalEventItems.firstWhere((i) => i.id == item.id);
+      if (journalEventItem == null) {
+        categoryItem.journalEventItems.add(item);
+      } else {
+        int index =
+            categoryItem.journalEventItems.indexWhere((j) => j.id == item.id);
+        categoryItem.journalEventItems.removeWhere((k) => k.id == item.id);
+        categoryItem.journalEventItems.insert(index, item);
+        print(categoryItem.journalEventItems[index].title);
+      }
+    }
+    refresh();
+  }
+
   void sortListByDate({@required List<JournalEventItem> eventItemList}) {
     if (eventItemList.isNotEmpty)
       eventItemList.sort((a, b) {
         if (a.timeStamp != null && b.timeStamp != null)
-          a.timeStamp.compareTo(b.timeStamp);
+          return a.timeStamp.compareTo(b.timeStamp);
         else
           return 0;
       });
-  }
-
-  ListView listBuilder({@required List<JournalEventItem> list}) {
-    return ListView.builder(
-      itemCount: list.length,
-      itemBuilder: (context, index) {
-        return JournalEventListItem(
-          key: Key(list[index].id ?? Random().nextInt(99999999).toString()),
-          controller: JournalEventListItemController(
-            categoryItem: categoryItem,
-            dog: dog,
-            onChanged: (item) {
-              refresh();
-            },
-            eventItem: list[index],
-          ),
-        );
-      },
-    );
   }
 }
 
@@ -189,9 +188,58 @@ class JournalEventPage extends MasterPage {
             ),
             Expanded(
               child: TabBarView(
+                key: Key(Random().nextInt(999999999).toString()),
                 children: <Widget>[
-                  controller.listBuilder(list: controller.upcomingEvents),
-                  controller.listBuilder(list: controller.completedEvents),
+                  ReorderableList(
+                    onReorder: (oldIndex, newIndex) {
+                      JournalEventItem cItem = controller
+                          .categoryItem.journalEventItems
+                          .removeAt(oldIndex);
+                      controller.categoryItem.journalEventItems
+                          .insert(newIndex, cItem);
+                    },
+                    widgetList: controller.upcomingEvents
+                        .map(
+                          (item) => JournalEventListItem(
+                            key: Key(item.id ??
+                                Random().nextInt(99999999).toString()),
+                            controller: JournalEventListItemController(
+                              categoryItem: controller.categoryItem,
+                              dog: controller.dog,
+                              onChanged: (item) {
+                                controller.onSaveItem(item);
+                              },
+                              eventItem: item,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  ReorderableList(
+                    onReorder: (oldIndex, newIndex) {
+                      JournalEventItem cItem = controller
+                          .categoryItem.journalEventItems
+                          .removeAt(oldIndex);
+                      controller.categoryItem.journalEventItems
+                          .insert(newIndex, cItem);
+                    },
+                    widgetList: controller.completedEvents
+                        .map(
+                          (item) => JournalEventListItem(
+                            key: Key(item.id ??
+                                Random().nextInt(99999999).toString()),
+                            controller: JournalEventListItemController(
+                              categoryItem: controller.categoryItem,
+                              dog: controller.dog,
+                              onChanged: (item) {
+                                controller.onSaveItem(item);
+                              },
+                              eventItem: item,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
                 ],
               ),
             )

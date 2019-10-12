@@ -36,7 +36,7 @@ class JournalEventListItem extends BaseView {
         context: context,
         child: JournalEventDialog(
           controller: JournalEventDialogController(
-            onSave: (item) => controller.onChanged(null),
+            onSave: (item) => controller.onChanged(item),
             eventItem: controller.eventItem,
             categoryItem: controller.categoryItem,
             parentDocRef: controller.dog.docRef,

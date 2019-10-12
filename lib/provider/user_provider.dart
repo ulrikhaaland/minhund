@@ -21,7 +21,6 @@ class UserProvider extends CrudProvider {
     if (docSnap.exists) {
       user = User.fromJson(docSnap.data);
       user.docRef = docSnap.reference;
-      user.dogs = await DogProvider().getCollection(id: id);
     }
 
     return user;

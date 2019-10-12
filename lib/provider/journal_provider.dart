@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/provider/crud_provider.dart';
 import 'package:minhund/provider/journal_event_provider.dart';
@@ -20,21 +21,19 @@ class JournalProvider extends CrudProvider {
   }
 
   @override
-  Future<List<JournalCategoryItem>> getCollection({String id}) {
-    return super.getCollection(id: id + path).then((qSnap) {
-      List<JournalCategoryItem> list = <JournalCategoryItem>[];
+  Future<List<JournalCategoryItem>> getCollection({String id}) async {
+    QuerySnapshot qSnap = await super.getCollection(id: id + path);
+    List<JournalCategoryItem> list = <JournalCategoryItem>[];
 
-      qSnap.documents.forEach((doc) async {
-        JournalCategoryItem journalItem =
-            JournalCategoryItem.fromJson(doc.data);
-        journalItem.docRef = doc.reference;
-        list.add(journalItem);
-        journalItem.journalEventItems = await JournalEventProvider()
-            .getCollection(id: id + path + "/${doc.documentID}");
-      });
-
-      return list;
+    qSnap.documents.forEach((doc) async {
+      JournalCategoryItem journalItem = JournalCategoryItem.fromJson(doc.data);
+      journalItem.docRef = doc.reference;
+      list.add(journalItem);
+      journalItem.journalEventItems = await JournalEventProvider()
+          .getCollection(id: id + path + "/${doc.documentID}");
     });
+
+    return list;
   }
 
   @override
