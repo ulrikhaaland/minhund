@@ -29,6 +29,10 @@
 .pub/
 /build/
 
+.GoogleService-Info.plist
+
+.ios
+
 # Android related
 **/android/**/gradle-wrapper.jar
 **/android/.gradle
