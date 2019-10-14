@@ -11,7 +11,11 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
+<<<<<<< HEAD
 	<string>asd</string>
+=======
+	<string>minhund</string>
+>>>>>>> b799a5ee126aa215f18fb21f490f4cfd402e78e5
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -29,6 +33,14 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+>>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
+>>>>>>> b799a5ee126aa215f18fb21f490f4cfd402e78e5
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>

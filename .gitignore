@@ -20,6 +20,14 @@
 # is commented out by default.
 #.vscode/
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+./GoogleService-Info.plist
+
+=======
+>>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
+>>>>>>> b799a5ee126aa215f18fb21f490f4cfd402e78e5
 # Flutter/Dart/Pub related
 **/doc/api/
 .dart_tool/
@@ -29,6 +37,7 @@
 .pub/
 /build/
 
+<<<<<<< HEAD
 .GoogleService-Info.plist
 
 .ios
@@ -73,4 +82,10 @@
 !**/ios/**/default.mode2v3
 !**/ios/**/default.pbxuser
 !**/ios/**/default.perspectivev3
+=======
+# Web related
+lib/generated_plugin_registrant.dart
+
+# Exceptions to above rules.
+>>>>>>> b799a5ee126aa215f18fb21f490f4cfd402e78e5
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
