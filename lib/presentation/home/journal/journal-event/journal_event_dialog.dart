@@ -1,13 +1,21 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
+import 'package:minhund/model/fcm/reminder.dart';
 import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/model/journal_event_item.dart';
+import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
+import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
+import 'package:minhund/provider/crud_provider.dart';
+import 'package:minhund/provider/fcm_provider.dart';
 import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 
@@ -38,9 +46,19 @@ class JournalEventDialogController extends BaseController {
 
   bool hasFocus = true;
 
+  final FirebaseMessaging _fcm = FirebaseMessaging();
+
   PageState pageState;
 
+  final User user;
+
   Widget popIcon;
+
+  bool canSave = false;
+
+  DateTimePickerController datePickerController;
+
+  DateTimePickerController timePickerController;
 
   List<String> reminderItems = [
     "Ingen",
@@ -53,6 +71,7 @@ class JournalEventDialogController extends BaseController {
 
   JournalEventDialogController(
       {this.eventItem,
+      this.user,
       this.parentDocRef,
       this.onSave,
       this.pageState,
@@ -60,15 +79,6 @@ class JournalEventDialogController extends BaseController {
 
   @override
   initState() {
-    popIcon = InkWell(
-      onTap: () => Navigator.pop(context),
-      child: Icon(
-        Icons.close,
-        color: ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
-        size: ServiceProvider
-            .instance.instanceStyleService.appStyle.iconSizeStandard,
-      ),
-    );
     if (eventItem == null) {
       placeHolderEventItem = JournalEventItem(title: "", completed: false);
 
@@ -87,6 +97,10 @@ class JournalEventDialogController extends BaseController {
       reminderDropDownValue = placeHolderEventItem.reminderString ?? "Ingen";
     }
 
+    if (placeHolderEventItem.title.length > 0) {
+      canSave = true;
+    }
+
     super.initState();
   }
 
@@ -101,6 +115,33 @@ class JournalEventDialogController extends BaseController {
 
     categoryItem.journalEventItems
         .removeWhere((item) => item.id == placeHolderEventItem.id);
+
+    onSave(null);
+
+    Navigator.pop(context);
+  }
+
+  void saveEventItem() {
+    if (canSave) {
+      if (eventItem == null) {
+        categoryItem.journalEventItems.add(placeHolderEventItem);
+
+        FCMProvider().create(
+            id: "reminders",
+            model: Reminder(
+                title: "Påminnelse",
+                body: "Din time blalbla",
+                fcm: user.fcm,
+                timestamp: DateTime.now()));
+
+        JournalEventProvider()
+            .create(model: placeHolderEventItem, id: categoryItem.docRef.path);
+      } else {
+        JournalEventProvider().update(model: placeHolderEventItem);
+      }
+      onSave(placeHolderEventItem);
+      Navigator.pop(context);
+    }
   }
 
   Widget basicContainer({
@@ -137,25 +178,29 @@ class JournalEventDialog extends BaseView {
   Widget build(BuildContext context) {
     if (!mounted) return Container();
 
+    controller.popIcon = InkWell(
+      onTap: () => Navigator.pop(context),
+      child: Container(
+        width: ServiceProvider.instance.screenService
+            .getWidthByPercentage(context, 15),
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: Icon(
+            Icons.close,
+            color:
+                ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
+            size: ServiceProvider
+                .instance.instanceStyleService.appStyle.iconSizeStandard,
+          ),
+        ),
+      ),
+    );
+
     if (controller.pageState != PageState.read) return buildEdit(context);
     return buildRead(context);
   }
 
   Widget buildEdit(BuildContext context) {
-    PrimaryTextField titleTextField = PrimaryTextField(
-      initValue: controller.placeHolderEventItem.title,
-      textCapitalization: TextCapitalization.sentences,
-      textInputType: TextInputType.text,
-      autoFocus: controller.placeHolderEventItem.title == ""
-          ? controller.firstBuild
-          : false,
-      hintText: "Tittel",
-      onSaved: (val) => controller.placeHolderEventItem.title = val,
-      validate: true,
-      textInputAction: TextInputAction.done,
-      onFieldSubmitted: () => controller.hasFocus = false,
-    );
-
     double padding = getDefaultPadding(context);
 
     controller.hasFocus = controller.scopeNode.hasFocus;
@@ -171,6 +216,60 @@ class JournalEventDialog extends BaseView {
             key: controller._formKey,
             child: LayoutBuilder(
               builder: (context, constraints) {
+                controller.datePickerController = DateTimePickerController(
+                    validate: false,
+                    width: constraints.maxWidth / 2.3,
+                    overrideInitialDate:
+                        controller.placeHolderEventItem.timeStamp == null
+                            ? true
+                            : false,
+                    onConfirmed: (date) {
+                      controller.placeHolderEventItem.timeStamp = DateTime(
+                        date.year,
+                        date.month,
+                        date.day,
+                        controller.placeHolderEventItem.timeStamp?.hour ??
+                            DateTime.now().hour,
+                        controller.placeHolderEventItem.timeStamp?.minute ??
+                            DateTime.now().minute,
+                      );
+                      Timer(
+                          Duration(milliseconds: 50),
+                          () => controller.timePickerController
+                              .openDatePicker(context));
+                    },
+                    initialDate: controller.placeHolderEventItem.timeStamp ??
+                        DateTime.now(),
+                    title: "Dato",
+                    label: "Dato");
+
+                controller.timePickerController = DateTimePickerController(
+                    validate: false,
+                    time: true,
+                    dateFormat: "HH-mm",
+                    width: constraints.maxWidth / 2.27,
+                    overrideInitialDate:
+                        controller.placeHolderEventItem.timeStamp == null
+                            ? true
+                            : false,
+                    onConfirmed: (date) {
+                      controller.placeHolderEventItem.timeStamp = DateTime(
+                          controller.placeHolderEventItem.timeStamp?.year ??
+                              DateTime.now().year,
+                          controller.placeHolderEventItem.timeStamp?.month ??
+                              DateTime.now().month,
+                          controller.placeHolderEventItem.timeStamp?.day ??
+                              DateTime.now().day,
+                          date.hour,
+                          date.minute);
+                      print(
+                          controller.placeHolderEventItem.timeStamp.toString());
+                    },
+                    initialDate: controller.placeHolderEventItem.timeStamp ??
+                        DateTime.now(),
+                    title: "Tidspunkt",
+                    label: "Tidspunkt");
+
                 controller.height = constraints.maxHeight;
                 return Stack(
                   children: <Widget>[
@@ -199,38 +298,106 @@ class JournalEventDialog extends BaseView {
                                             .smallTitle,
                                       ),
                                       InkWell(
-                                        child: Icon(
-                                          Icons.delete,
-                                          size: ServiceProvider
-                                              .instance
-                                              .instanceStyleService
-                                              .appStyle
-                                              .iconSizeStandard,
-                                          color: controller.pageState ==
-                                                  PageState.create
-                                              ? Colors.transparent
-                                              : ServiceProvider
+                                        onTap: () => controller.saveEventItem(),
+                                        child: Container(
+                                          width: ServiceProvider
+                                              .instance.screenService
+                                              .getWidthByPercentage(
+                                                  context, 15),
+                                          decoration: BoxDecoration(
+                                              color: controller.canSave
+                                                  ? ServiceProvider
+                                                      .instance
+                                                      .instanceStyleService
+                                                      .appStyle
+                                                      .green
+                                                  : Colors.grey[400],
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(
+                                                      ServiceProvider
+                                                          .instance
+                                                          .instanceStyleService
+                                                          .appStyle
+                                                          .borderRadius))),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Text(
+                                              "Lagre",
+                                              style: ServiceProvider
                                                   .instance
                                                   .instanceStyleService
                                                   .appStyle
-                                                  .textGrey,
+                                                  .body1
+                                                  .copyWith(
+                                                color: Colors.white,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
                                         ),
-                                        onTap: () {
-                                          if (controller.pageState ==
-                                              PageState.edit) {
-                                            controller.deleteEventItem();
+                                      ),
+                                      // InkWell(
+                                      //   child: Icon(
+                                      //     Icons.delete,
+                                      //     size: ServiceProvider
+                                      //         .instance
+                                      //         .instanceStyleService
+                                      //         .appStyle
+                                      //         .iconSizeStandard,
+                                      //     color: controller.pageState ==
+                                      //             PageState.create
+                                      //         ? Colors.transparent
+                                      //         : ServiceProvider
+                                      //             .instance
+                                      //             .instanceStyleService
+                                      //             .appStyle
+                                      //             .textGrey,
+                                      //   ),
+                                      //   onTap: () {
+                                      //     if (controller.pageState ==
+                                      //         PageState.edit) {
+                                      //       controller.deleteEventItem();
 
-                                            controller.onSave(null);
-                                            Navigator.pop(context);
-                                          }
-                                        },
-                                      )
+                                      //       controller.onSave(null);
+                                      //       Navigator.pop(context);
+                                      //     }
+                                      //   },
+                                      // ),
                                     ],
                                   ),
                                 ),
                                 Container(
-                                    width: constraints.maxWidth * 0.935,
-                                    child: titleTextField),
+                                  width: constraints.maxWidth * 0.935,
+                                  child: PrimaryTextField(
+                                    initValue:
+                                        controller.placeHolderEventItem.title,
+                                    textCapitalization:
+                                        TextCapitalization.sentences,
+                                    textInputType: TextInputType.text,
+                                    autoFocus:
+                                        controller.placeHolderEventItem.title ==
+                                                ""
+                                            ? controller.firstBuild
+                                            : false,
+                                    asTextField: true,
+                                    hintText: "Tittel",
+                                    onChanged: (val) {
+                                      if (val.isNotEmpty)
+                                        controller.canSave = true;
+                                      else
+                                        controller.canSave = false;
+                                      controller.placeHolderEventItem.title =
+                                          val;
+                                      controller.setState(() {});
+                                    },
+                                    textInputAction: TextInputAction.next,
+                                    onFieldSubmitted: () {
+                                      controller.hasFocus = false;
+                                      controller.datePickerController
+                                          .openDatePicker(context);
+                                    },
+                                  ),
+                                ),
                                 Divider(),
                                 Row(
                                   children: <Widget>[
@@ -240,45 +407,8 @@ class JournalEventDialog extends BaseView {
                                         children: <Widget>[
                                           controller.basicContainer(
                                             child: DateTimePicker(
-                                              controller:
-                                                  DateTimePickerController(
-                                                      validate: false,
-                                                      width:
-                                                          constraints.maxWidth /
-                                                              2.3,
-                                                      overrideInitialDate: controller
-                                                                  .placeHolderEventItem
-                                                                  .timeStamp ==
-                                                              null
-                                                          ? true
-                                                          : false,
-                                                      onConfirmed: (date) {
-                                                        controller
-                                                            .placeHolderEventItem
-                                                            .timeStamp = DateTime(
-                                                          date.year,
-                                                          date.month,
-                                                          date.day,
-                                                          controller
-                                                                  .placeHolderEventItem
-                                                                  .timeStamp
-                                                                  ?.hour ??
-                                                              DateTime.now()
-                                                                  .hour,
-                                                          controller
-                                                                  .placeHolderEventItem
-                                                                  .timeStamp
-                                                                  ?.minute ??
-                                                              DateTime.now()
-                                                                  .minute,
-                                                        );
-                                                      },
-                                                      initialDate: controller
-                                                              .placeHolderEventItem
-                                                              .timeStamp ??
-                                                          DateTime.now(),
-                                                      title: "Dato",
-                                                      label: "Dato"),
+                                              controller: controller
+                                                  .datePickerController,
                                             ),
                                           ),
                                           Divider(),
@@ -319,72 +449,32 @@ class JournalEventDialog extends BaseView {
                                         children: <Widget>[
                                           controller.basicContainer(
                                             child: DateTimePicker(
-                                              controller:
-                                                  DateTimePickerController(
-                                                      validate: false,
-                                                      time: true,
-                                                      dateFormat: "HH-mm",
-                                                      width:
-                                                          constraints.maxWidth /
-                                                              2.27,
-                                                      overrideInitialDate: controller
-                                                                  .placeHolderEventItem
-                                                                  .timeStamp ==
-                                                              null
-                                                          ? true
-                                                          : false,
-                                                      onConfirmed: (date) {
-                                                        controller.placeHolderEventItem.timeStamp = DateTime(
-                                                            controller
-                                                                    .placeHolderEventItem
-                                                                    .timeStamp
-                                                                    ?.year ??
-                                                                DateTime.now()
-                                                                    .year,
-                                                            controller
-                                                                    .placeHolderEventItem
-                                                                    .timeStamp
-                                                                    ?.month ??
-                                                                DateTime.now()
-                                                                    .month,
-                                                            controller
-                                                                    .placeHolderEventItem
-                                                                    .timeStamp
-                                                                    ?.day ??
-                                                                DateTime.now()
-                                                                    .day,
-                                                            date.hour,
-                                                            date.minute);
-                                                        print(controller
-                                                            .placeHolderEventItem
-                                                            .timeStamp
-                                                            .toString());
-                                                      },
-                                                      initialDate: controller
-                                                              .placeHolderEventItem
-                                                              .timeStamp ??
-                                                          DateTime.now(),
-                                                      title: "Tidspunkt",
-                                                      label: "Tidspunkt"),
-                                            ),
+                                                controller: controller
+                                                    .timePickerController),
                                           ),
                                           Divider(),
                                           controller.basicContainer(
-                                            child: Card(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius: BorderRadius
-                                                    .circular(ServiceProvider
-                                                        .instance
-                                                        .instanceStyleService
-                                                        .appStyle
-                                                        .borderRadius),
-                                              ),
-                                              child: Padding(
-                                                padding: EdgeInsets.all(
-                                                    getDefaultPadding(context)),
-                                                child: Container(
-                                                  width: constraints.maxWidth /
-                                                      2.5,
+                                            child: Container(
+                                              width:
+                                                  constraints.maxWidth / 2.25,
+                                              height: ServiceProvider
+                                                  .instance.screenService
+                                                  .getHeightByPercentage(
+                                                      context, 9.5),
+                                              child: Card(
+                                                elevation: 0,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius
+                                                      .circular(ServiceProvider
+                                                          .instance
+                                                          .instanceStyleService
+                                                          .appStyle
+                                                          .borderRadius),
+                                                ),
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(
+                                                      getDefaultPadding(
+                                                          context)),
                                                   child: DropdownButton<String>(
                                                     isExpanded: true,
                                                     value: controller
@@ -396,7 +486,7 @@ class JournalEventDialog extends BaseView {
                                                         .instanceStyleService
                                                         .appStyle
                                                         .iconSizeStandard,
-                                                    elevation: 16,
+                                                    elevation: 0,
                                                     style: ServiceProvider
                                                         .instance
                                                         .instanceStyleService
@@ -407,6 +497,12 @@ class JournalEventDialog extends BaseView {
                                                     ),
                                                     onChanged:
                                                         (String newValue) {
+                                                      if (!controller.user
+                                                          .allowsNotifications) {
+                                                        controller._fcm
+                                                            .requestNotificationPermissions(
+                                                                IosNotificationSettings());
+                                                      }
                                                       controller.firstBuild =
                                                           false;
 
@@ -470,7 +566,7 @@ class JournalEventDialog extends BaseView {
                                                                 controller
                                                                     .placeHolderEventItem
                                                                     .timeStamp
-                                                                    .add(Duration(
+                                                                    .subtract(Duration(
                                                                         minutes:
                                                                             add));
                                                         }
@@ -499,11 +595,19 @@ class JournalEventDialog extends BaseView {
                                                               left: getDefaultPadding(
                                                                       context) *
                                                                   3),
-                                                          child: Text(
-                                                            value,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
+                                                          child: Container(
+                                                            width: ServiceProvider
+                                                                .instance
+                                                                .screenService
+                                                                .getWidthByPercentage(
+                                                                    context,
+                                                                    80),
+                                                            child: Text(
+                                                              value,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                            ),
                                                           ),
                                                         ),
                                                       );
@@ -535,66 +639,39 @@ class JournalEventDialog extends BaseView {
                                     ),
                                   ],
                                 ),
-                                Expanded(
-                                  child: Container(
-                                    width: constraints.maxWidth * 0.935,
-                                    child: PrimaryTextField(
-                                        initValue: controller
-                                            .placeHolderEventItem.note,
-                                        hintText: "Beskrivelse",
-                                        textCapitalization:
-                                            TextCapitalization.sentences,
-                                        textInputAction: TextInputAction.done,
-                                        textInputType: TextInputType.text,
-                                        maxLines: 5,
-                                        validate: false,
-                                        onSaved: (val) {
-                                          if (val != "")
-                                            controller.placeHolderEventItem
-                                                .note = val;
-                                          else
-                                            controller.placeHolderEventItem
-                                                .note = null;
-                                        }),
-                                  ),
+                                Container(
+                                  width: constraints.maxWidth * 0.935,
+                                  child: PrimaryTextField(
+                                      initValue:
+                                          controller.placeHolderEventItem.note,
+                                      hintText: "Beskrivelse",
+                                      textCapitalization:
+                                          TextCapitalization.sentences,
+                                      textInputAction: TextInputAction.done,
+                                      textInputType: TextInputType.text,
+                                      maxLines: 5,
+                                      validate: false,
+                                      onSaved: (val) {
+                                        if (val != "")
+                                          controller.placeHolderEventItem.note =
+                                              val;
+                                        else
+                                          controller.placeHolderEventItem.note =
+                                              null;
+                                      }),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                        Container(
-                          alignment: Alignment.bottomLeft,
-                          child: PrimaryButton(
-                            controller: PrimaryButtonController(
-                                color: ServiceProvider.instance
-                                    .instanceStyleService.appStyle.green,
-                                text: "Lagre",
-                                onPressed: () {
-                                  controller._formKey.currentState.save();
-                                  if (controller
-                                          .placeHolderEventItem.title.length >
-                                      0) {
-                                    if (controller.eventItem == null) {
-                                      controller.categoryItem.journalEventItems
-                                          .add(controller.placeHolderEventItem);
-
-                                      JournalEventProvider().create(
-                                          model:
-                                              controller.placeHolderEventItem,
-                                          id: controller
-                                              .categoryItem.docRef.path);
-                                    } else {
-                                      JournalEventProvider().update(
-                                          model:
-                                              controller.placeHolderEventItem);
-                                    }
-                                    controller.onSave(
-                                        controller.placeHolderEventItem);
-                                    Navigator.pop(context);
-                                  }
-                                }),
+                        if (controller.pageState == PageState.edit)
+                          SecondaryButton(
+                            topPadding: 0,
+                            text: "Slett",
+                            color: ServiceProvider
+                                .instance.instanceStyleService.appStyle.pink,
+                            onPressed: () => controller.deleteEventItem(),
                           ),
-                        ),
                       ],
                     ),
                     if (controller.hasFocus || controller.firstBuild)
@@ -642,14 +719,21 @@ class JournalEventDialog extends BaseView {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    IconButton(
-                      onPressed: () => controller.setState(
-                          () => controller.pageState = PageState.edit),
-                      icon: Icon(Icons.edit),
-                      color: ServiceProvider
-                          .instance.instanceStyleService.appStyle.textGrey,
-                      iconSize: ServiceProvider.instance.instanceStyleService
-                          .appStyle.iconSizeStandard,
+                    Container(
+                      width: ServiceProvider.instance.screenService
+                          .getWidthByPercentage(context, 15),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                          onPressed: () => controller.setState(
+                              () => controller.pageState = PageState.edit),
+                          icon: Icon(Icons.edit),
+                          color: ServiceProvider
+                              .instance.instanceStyleService.appStyle.textGrey,
+                          iconSize: ServiceProvider.instance
+                              .instanceStyleService.appStyle.iconSizeStandard,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -676,12 +760,16 @@ class JournalEventDialog extends BaseView {
                             Container(
                               width: padding,
                             ),
-                            Text(
+                            Flexible(
+                              child: Text(
                                 formatDate(
                                     date: controller
                                         .placeHolderEventItem.timeStamp),
                                 style: ServiceProvider.instance
-                                    .instanceStyleService.appStyle.body1),
+                                    .instanceStyleService.appStyle.body1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -700,13 +788,16 @@ class JournalEventDialog extends BaseView {
                             Container(
                               width: padding,
                             ),
-                            Text(
-                              formatDate(
-                                  date:
-                                      controller.placeHolderEventItem.timeStamp,
-                                  time: true),
-                              style: ServiceProvider
-                                  .instance.instanceStyleService.appStyle.body1,
+                            Flexible(
+                              child: Text(
+                                formatDate(
+                                    date: controller
+                                        .placeHolderEventItem.timeStamp,
+                                    time: true),
+                                style: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.body1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                         ),
@@ -726,10 +817,13 @@ class JournalEventDialog extends BaseView {
                             Container(
                               width: padding,
                             ),
-                            Text(
-                              controller.placeHolderEventItem.reminderString,
-                              style: ServiceProvider
-                                  .instance.instanceStyleService.appStyle.body1,
+                            Flexible(
+                              child: Text(
+                                controller.placeHolderEventItem.reminderString,
+                                style: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.body1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           ],
                         ),

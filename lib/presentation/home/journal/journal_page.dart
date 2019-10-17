@@ -14,9 +14,9 @@ class JournalPageController extends BottomNavigationController {
 
   Dog dog;
 
-  final VoidCallback moveToProfile;
-
-  JournalPageController({this.user, this.moveToProfile});
+  JournalPageController({
+    this.user,
+  });
 
   @override
   FloatingActionButton get fab => FloatingActionButton(
@@ -83,47 +83,44 @@ class JournalPage extends BottomNavigation {
               child: Container(
                 height: ServiceProvider.instance.screenService
                     .getHeightByPercentage(context, 7.5 * 1.8),
-                child: GestureDetector(
-                  onTap: () => controller.moveToProfile(),
-                  child: Card(
-                    color: Colors.white,
-                    elevation: ServiceProvider
-                        .instance.instanceStyleService.appStyle.elevation,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(ServiceProvider
-                          .instance.instanceStyleService.appStyle.borderRadius),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(getDefaultPadding(context)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Flexible(
-                                child: Text(
-                                  controller.dog.name,
-                                  style: ServiceProvider.instance
-                                      .instanceStyleService.appStyle.title,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                child: Card(
+                  color: Colors.white,
+                  elevation: ServiceProvider
+                      .instance.instanceStyleService.appStyle.elevation,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(ServiceProvider
+                        .instance.instanceStyleService.appStyle.borderRadius),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(getDefaultPadding(context)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Flexible(
+                              child: Text(
+                                controller.dog.name,
+                                style: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.title,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              Flexible(
-                                child: Text(
-                                  "${controller.dog.race}, ${getTimeDifference(time: controller.dog.birthDate, daysMonthsYears: true)}, ${controller.dog.weigth} kilo",
-                                  style: ServiceProvider.instance
-                                      .instanceStyleService.appStyle.body1,
-                                  overflow: TextOverflow.clip,
-                                ),
+                            ),
+                            Flexible(
+                              child: Text(
+                                "${controller.dog.race}, ${getTimeDifference(time: controller.dog.birthDate, daysMonthsYears: true)}, ${controller.dog.weigth} kilo",
+                                style: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.body1,
+                                overflow: TextOverflow.clip,
                               ),
-                            ],
-                          ),
-                          controller.user.dog.profileImage
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                        controller.user.dog.profileImage
+                      ],
                     ),
                   ),
                 ),
@@ -148,6 +145,7 @@ class JournalPage extends BottomNavigation {
                           (item) => JournalCategoryListItem(
                             key: Key(item.id),
                             controller: JournalCategoryListItemController(
+                                user: controller.user,
                                 onUpdate: () => controller.setState(() {}),
                                 dog: controller.dog,
                                 item: item),

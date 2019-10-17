@@ -16,6 +16,7 @@ User _$UserFromJson(Map<String, dynamic> json) {
     name: json['name'] as String,
     phoneNumber: json['phoneNumber'] as String,
     currentDogIndex: json['currentDogIndex'] as int,
+    allowsNotifications: json['allowsNotifications'] as bool,
   );
 }
 
@@ -27,5 +28,6 @@ Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
       'currentDogIndex': instance.currentDogIndex,
       'fcm': instance.fcm,
       'appVersion': instance.appVersion,
+      'allowsNotifications': instance.allowsNotifications,
       'notifications': instance.notifications,
     };

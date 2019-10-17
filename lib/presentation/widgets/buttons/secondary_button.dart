@@ -23,29 +23,31 @@ class SecondaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-          top: topPadding ?? getDefaultPadding(context) * 2,
-          bottom: bottomPadding ?? getDefaultPadding(context) * 2),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-            minWidth: width ??
-                ServiceProvider.instance.screenService
-                    .getPortraitWidthByPercentage(context, 50),
-            minHeight: ServiceProvider.instance.screenService
-                .getPortraitHeightByPercentage(context, 5)),
-        child: RaisedButton(
-            child: Text(text ?? "N/A",
-                style: ServiceProvider
-                    .instance.instanceStyleService.appStyle.buttonText),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(ServiceProvider
-                    .instance.instanceStyleService.appStyle.borderRadius))),
-            color: color ??
-                ServiceProvider.instance.instanceStyleService.appStyle.green,
-            textColor: Colors.black,
-            elevation: 0,
-            onPressed: onPressed),
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.only(
+            top: topPadding ?? getDefaultPadding(context) * 2,
+            bottom: bottomPadding ?? getDefaultPadding(context) * 2),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+              minWidth: width ??
+                  ServiceProvider.instance.screenService
+                      .getPortraitWidthByPercentage(context, 50),
+              minHeight: ServiceProvider.instance.screenService
+                  .getPortraitHeightByPercentage(context, 5)),
+          child: RaisedButton(
+              child: Text(text ?? "N/A",
+                  style: ServiceProvider
+                      .instance.instanceStyleService.appStyle.buttonText),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(ServiceProvider
+                      .instance.instanceStyleService.appStyle.borderRadius))),
+              color: color ??
+                  ServiceProvider.instance.instanceStyleService.appStyle.green,
+              textColor: Colors.black,
+              elevation: 3,
+              onPressed: onPressed),
+        ),
       ),
     );
   }

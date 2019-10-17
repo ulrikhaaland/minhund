@@ -58,7 +58,7 @@ class DateTimePickerController extends BaseController {
           .instance.instanceStyleService.appStyle.iconSizeStandard,
     );
     super.initState();
-    _textNode.addListener(() => openDatePicker());
+    _textNode.addListener(() => openDatePicker(context));
     if (initialDate != null && overrideInitialDate != true)
       _setCtrlrText(initialDate);
     if (_textCtrlr.text != "" && _textCtrlr.text != null) canSave = true;
@@ -71,7 +71,7 @@ class DateTimePickerController extends BaseController {
     super.dispose();
   }
 
-  void openDatePicker() {
+  void openDatePicker(BuildContext context) {
     FocusScope.of(context).unfocus();
     _birthDialog(
       context: context,

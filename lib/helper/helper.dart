@@ -355,6 +355,14 @@ Future<void> showCustomDialog({
   );
 }
 
+dynamic fromMap({Map<String, dynamic> map, String key}) {
+  var result;
+  map.forEach((k, value) {
+    if (k == key) result = value;
+  });
+  return result;
+}
+
 void showSizableDialog({
   BuildContext context,
   double height,

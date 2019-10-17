@@ -13,9 +13,12 @@ abstract class CrudProvider {
   Future create({@required model, @required String id}) async {
     DocumentReference ref =
         await firestoreInstance.collection(id).add(model.toJson());
-    model.id = ref.documentID;
-    model.docRef = ref;
-    update(model: model);
+    try {
+      model.id = ref.documentID;
+      model.docRef = ref;
+      update(model: model);
+    } catch (e) {}
+
     return ref;
   }
 

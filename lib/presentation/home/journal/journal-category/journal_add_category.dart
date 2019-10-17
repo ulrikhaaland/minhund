@@ -4,6 +4,7 @@ import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
+import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/service/service_provider.dart';
@@ -23,7 +24,7 @@ class JournalAddCategoryController extends BaseController {
 
   PageState pageState;
 
-  final _formKey = GlobalKey<FormState>();
+  bool canSave = false;
 
   JournalAddCategoryController(
       {this.journalCategoryItems,
@@ -33,8 +34,6 @@ class JournalAddCategoryController extends BaseController {
       this.pageState,
       this.singleCategoryItem});
 
-  PrimaryTextField addTextField;
-
   @override
   void initState() {
     if (singleCategoryItem == null)
@@ -42,22 +41,13 @@ class JournalAddCategoryController extends BaseController {
           title: "",
           journalEventItems: [],
           sortIndex: journalCategoryItems.length);
-    addTextField = PrimaryTextField(
-      initValue: singleCategoryItem.title,
-      textCapitalization: TextCapitalization.sentences,
-      validate: true,
-      onSaved: (val) => singleCategoryItem.title = val,
-      textInputType: TextInputType.text,
-      textInputAction: TextInputAction.done,
-      hintText: "Kategori-navn",
-      onFieldSubmitted: () => onSaved(),
-    );
+
+    if (singleCategoryItem.title.length > 0) canSave = true;
     super.initState();
   }
 
   void onSaved() {
-    _formKey.currentState.save();
-    if (validateTextFields(singleTextField: addTextField)) {
+    if (canSave) {
       if (pageState == PageState.create) {
         journalCategoryItems.add(singleCategoryItem);
         JournalProvider().create(model: singleCategoryItem, id: dogDocRefPath);
@@ -95,82 +85,132 @@ class JournalAddCategory extends BaseView {
   Widget build(BuildContext context) {
     if (!mounted) return Container();
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        controller.height = constraints.maxHeight;
-        return Container(
-          padding: EdgeInsets.all(getDefaultPadding(context) * 2),
-          child: Form(
-            key: controller._formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  height: constraints.maxHeight * 0.1,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      InkWell(
-                        onTap: () => Navigator.pop(context),
-                        child: Icon(
-                          Icons.close,
-                          color: ServiceProvider
-                              .instance.instanceStyleService.appStyle.textGrey,
-                          size: ServiceProvider.instance.instanceStyleService
-                              .appStyle.iconSizeBig,
-                        ),
-                      ),
-                      Text(
-                        controller.pageState == PageState.create
-                            ? "Legg til ny"
-                            : "Rediger",
-                        style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.title,
-                      ),
-                      if (controller.pageState == PageState.create)
-                        IconButton(
-                          icon: Icon(
-                            Icons.close,
-                            size: ServiceProvider.instance.instanceStyleService
-                                .appStyle.iconSizeBig,
-                            color: Colors.transparent,
-                          ),
-                          onPressed: () => null,
-                        )
-                      else
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Container(
+        color: Colors.transparent,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            controller.height = constraints.maxHeight;
+            return Container(
+              padding: EdgeInsets.all(getDefaultPadding(context) * 2),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    height: constraints.maxHeight * 0.1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
                         InkWell(
-                          onTap: () => controller.onDelete(),
-                          child: Icon(
-                            Icons.delete,
-                            size: ServiceProvider.instance.instanceStyleService
-                                .appStyle.iconSizeBig,
-                            color: controller.pageState == PageState.create
-                                ? Colors.transparent
-                                : ServiceProvider.instance.instanceStyleService
-                                    .appStyle.textGrey,
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            width: ServiceProvider.instance.screenService
+                                .getWidthByPercentage(context, 15),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Icon(
+                                Icons.close,
+                                color: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.textGrey,
+                                size: ServiceProvider
+                                    .instance
+                                    .instanceStyleService
+                                    .appStyle
+                                    .iconSizeStandard,
+                              ),
+                            ),
                           ),
                         ),
-                    ],
+                        Text(
+                          controller.pageState == PageState.create
+                              ? "Legg til ny"
+                              : "Rediger",
+                          style: ServiceProvider
+                              .instance.instanceStyleService.appStyle.title,
+                        ),
+
+                        InkWell(
+                          onTap: () => controller.onSaved(),
+                          child: Container(
+                            width: ServiceProvider.instance.screenService
+                                .getWidthByPercentage(context, 15),
+                            decoration: BoxDecoration(
+                                color: controller.canSave
+                                    ? ServiceProvider.instance
+                                        .instanceStyleService.appStyle.green
+                                    : ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .inactiveIconColor,
+                                borderRadius: BorderRadius.all(Radius.circular(
+                                    ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .borderRadius))),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "Lagre",
+                                style: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.body1
+                                    .copyWith(
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                        // InkWell(
+                        //   onTap: () => controller.onDelete(),
+                        //   child: Icon(
+                        //     Icons.delete,
+                        //     size: ServiceProvider.instance.instanceStyleService
+                        //         .appStyle.iconSizeStandard,
+                        //     color: controller.pageState == PageState.create
+                        //         ? Colors.transparent
+                        //         : ServiceProvider.instance.instanceStyleService
+                        //             .appStyle.textGrey,
+                        //   ),
+                        // ),
+                      ],
+                    ),
                   ),
-                ),
-                controller.addTextField,
-                PrimaryButton(
-                  controller: PrimaryButtonController(
-                    text: controller.pageState == PageState.create
-                        ? "Legg til"
-                        : "Bekreft",
-                    color: ServiceProvider
-                        .instance.instanceStyleService.appStyle.green,
-                    onPressed: () {
-                      controller.onSaved();
+                  PrimaryTextField(
+                    autoFocus: true,
+                    initValue: controller.singleCategoryItem.title,
+                    textCapitalization: TextCapitalization.sentences,
+                    asTextField: true,
+                    onChanged: (val) {
+                      if (val.length > 0)
+                        controller.canSave = true;
+                      else
+                        controller.canSave = false;
+                      controller.singleCategoryItem.title = val;
+                      controller.setState(() {});
                     },
+                    textInputType: TextInputType.text,
+                    textInputAction: TextInputAction.done,
+                    hintText: "Kategori-navn",
+                    onFieldSubmitted: () => controller.onSaved(),
                   ),
-                )
-              ],
-            ),
-          ),
-        );
-      },
+                  if (controller.pageState == PageState.edit)
+                    SecondaryButton(
+                      topPadding: 0,
+                      text: "Slett",
+                      color: ServiceProvider
+                          .instance.instanceStyleService.appStyle.pink,
+                      onPressed: () => controller.onDelete(),
+                    ),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/model/journal_event_item.dart';
+import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
 import 'package:minhund/presentation/home/journal/journal-event/journal_event_list_item.dart';
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
@@ -24,7 +25,10 @@ class JournalEventPageController extends MasterPageController {
 
   final Dog dog;
 
-  JournalEventPageController({this.dog, this.categoryItem, this.onUpdate});
+  final User user;
+
+  JournalEventPageController(
+      {this.dog, this.user, this.categoryItem, this.onUpdate});
 
   @override
   Widget get actionOne => null;
@@ -66,6 +70,7 @@ class JournalEventPageController extends MasterPageController {
             context: context,
             child: JournalEventDialog(
               controller: JournalEventDialogController(
+                user: user,
                 categoryItem: categoryItem,
                 parentDocRef: dog.docRef,
                 pageState: PageState.create,
@@ -170,7 +175,7 @@ class JournalEventPage extends MasterPage {
                         icon: Icon(
                       Icons.timer,
                       color: ServiceProvider
-                          .instance.instanceStyleService.appStyle.pink,
+                          .instance.instanceStyleService.appStyle.imperial,
                       size: ServiceProvider
                           .instance.instanceStyleService.appStyle.iconSizeBig,
                     )),
@@ -204,6 +209,7 @@ class JournalEventPage extends MasterPage {
                             key: Key(item.id ??
                                 Random().nextInt(99999999).toString()),
                             controller: JournalEventListItemController(
+                              user: controller.user,
                               categoryItem: controller.categoryItem,
                               dog: controller.dog,
                               onChanged: (item) {
@@ -229,6 +235,7 @@ class JournalEventPage extends MasterPage {
                             key: Key(item.id ??
                                 Random().nextInt(99999999).toString()),
                             controller: JournalEventListItemController(
+                              user: controller.user,
                               categoryItem: controller.categoryItem,
                               dog: controller.dog,
                               onChanged: (item) {

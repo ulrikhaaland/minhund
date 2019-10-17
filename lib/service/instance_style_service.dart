@@ -86,7 +86,7 @@ class InstanceStyleService {
 
     _appStyle.body1 = new TextStyle(
       fontFamily: "Apercu",
-      fontSize: screenHeight * 0.024 * factor,
+      fontSize: screenHeight * 0.020 * factor,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
       color: appStyle.textGrey,
@@ -268,7 +268,7 @@ class InstanceStyleService {
 
     _appStyle.activeIconColor = _appStyle.green;
 
-    _appStyle.inactiveIconColor = Colors.grey;
+    _appStyle.inactiveIconColor = Colors.grey[400];
 
     _appStyle.borderRadius = 15;
 

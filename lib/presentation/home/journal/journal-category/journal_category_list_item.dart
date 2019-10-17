@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/journal_category_item.dart';
+import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/home/journal/journal-event/journal_event_page.dart';
@@ -13,7 +14,10 @@ class JournalCategoryListItemController extends BaseController {
 
   final VoidCallback onUpdate;
 
-  JournalCategoryListItemController({this.item, this.dog, this.onUpdate});
+  final User user;
+
+  JournalCategoryListItemController(
+      {this.item, this.dog, this.onUpdate, this.user});
 
   @override
   void initState() {
@@ -40,6 +44,7 @@ class JournalCategoryListItem extends BaseView {
               MaterialPageRoute(
                 builder: (context) => JournalEventPage(
                   controller: JournalEventPageController(
+                    user: controller.user,
                     categoryItem: controller.item,
                     dog: controller.dog,
                     onUpdate: (refreshParent) {
@@ -72,13 +77,21 @@ class JournalCategoryListItem extends BaseView {
                     ),
                     Flexible(
                       child: Text(
-                        controller.item.journalEventItems.length == 0
+                        controller.item.journalEventItems
+                                    .where((item) => item.completed == false)
+                                    .length ==
+                                0
                             ? ""
-                            : controller.item.journalEventItems.length
+                            : controller.item.journalEventItems
+                                    .where((item) => item.completed == false)
+                                    .length
                                     .toString() ??
                                 "",
                         style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.body1,
+                            .instance.instanceStyleService.appStyle.body1
+                            .copyWith(
+                                color: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.imperial),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),

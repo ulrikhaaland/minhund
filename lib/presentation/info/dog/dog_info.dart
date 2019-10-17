@@ -109,7 +109,8 @@ class DogInfoController extends BaseController {
         initValue: dog?.address?.address,
         onSaved: (val) => dog?.address?.address = val.trim(),
         hintText: "Adresse",
-        onFieldSubmitted: () => dateTimePickerController.openDatePicker(),
+        onFieldSubmitted: () =>
+            dateTimePickerController.openDatePicker(context),
         autocorrect: false,
         textInputType: TextInputType.text,
         textInputAction: TextInputAction.next,

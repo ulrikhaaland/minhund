@@ -18,6 +18,7 @@ class User {
     this.dogs,
     this.phoneNumber,
     this.currentDogIndex,
+    this.allowsNotifications,
   });
 
   String id;
@@ -27,6 +28,7 @@ class User {
   int currentDogIndex;
   String fcm;
   double appVersion;
+  bool allowsNotifications;
   int notifications;
   @JsonKey(ignore: true)
   List<Dog> dogs;

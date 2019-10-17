@@ -6,6 +6,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import './service/service_provider.dart';
 import './service/screen_service.dart';
+import 'package:bot_toast/bot_toast.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,23 +41,29 @@ class _AppState extends State<App> {
     }
 
     print('App: build');
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // brightness: Brightness.light,
-        backgroundColor: ServiceProvider
-            .instance.instanceStyleService.appStyle.backgroundColor,
-        primarySwatch: Colors.grey,
+    return BotToastInit(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        navigatorObservers: [BotToastNavigatorObserver()],
+        theme: ThemeData(
+          iconTheme: IconThemeData(
+              color: ServiceProvider
+                  .instance.instanceStyleService.appStyle.textGrey),
+          // brightness: Brightness.light,
+          backgroundColor: ServiceProvider
+              .instance.instanceStyleService.appStyle.backgroundColor,
+          primarySwatch: Colors.grey,
+        ),
+        home: RootPage(
+          controller: widget._rootController,
+        ),
+        routes: {
+          "/home": (BuildContext c) => RootPage(
+                controller: widget._rootController,
+              ),
+        },
       ),
-      home: RootPage(
-        controller: widget._rootController,
-      ),
-      routes: {
-        "/home": (BuildContext c) => RootPage(
-              controller: widget._rootController,
-            ),
-      },
     );
   }
 }

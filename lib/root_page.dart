@@ -1,8 +1,10 @@
+import 'package:bot_toast/bot_toast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:minhund/helper/helper.dart';
 import 'package:minhund/presentation/animation/intro.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/intro/user_intro.dart';
@@ -36,7 +38,72 @@ class RootPageController extends BaseController {
 
   @override
   void initState() {
-    print('RootPage: initState');
+    firebaseMessaging.configure(onLaunch: (Map<String, dynamic> msg) {
+      print("onLaunch called");
+      // handleMessage(msg);
+    }, onResume: (Map<String, dynamic> msg) {
+      print("onResume called");
+      // handleMessage(msg);
+    }, onMessage: (Map<String, dynamic> msg) {
+      var values = msg["notification"];
+      BotToast.showAttachedWidget(
+          attachedBuilder: (_) => Align(
+                alignment: Alignment.topCenter,
+                child: Column(
+                  children: <Widget>[
+                    Card(
+                      color: ServiceProvider
+                          .instance.instanceStyleService.appStyle.lightBlue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(ServiceProvider
+                            .instance
+                            .instanceStyleService
+                            .appStyle
+                            .borderRadius),
+                      ),
+                      child: Container(
+                        width: ServiceProvider.instance.screenService
+                            .getWidthByPercentage(context, 80),
+                        height: ServiceProvider.instance.screenService
+                            .getHeightByPercentage(context, 15),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                values["title"],
+                                style: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.smallTitle,
+                              ),
+                              Text(
+                                values["body"],
+                                style: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.body1,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          duration: Duration(seconds: 2),
+          target: Offset(520, 520));
+      print("onMessage DASD");
+    });
+    firebaseMessaging
+        .requestNotificationPermissions(const IosNotificationSettings(
+      sound: true,
+      alert: true,
+      badge: true,
+    ));
+    firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings setting) {
+      print("IOS Setting Registered");
+    });
     getUser();
 
     super.initState();
@@ -57,12 +124,12 @@ class RootPageController extends BaseController {
       _user = await UserProvider().get(
         id: firebaseUser.uid,
       );
-
       if (_user == null) {
         _user = User(
             email: firebaseUser.email == "" ? null : firebaseUser.email,
             id: firebaseUser.uid == "" ? null : firebaseUser.uid,
             fcm: null,
+            allowsNotifications: false,
             appVersion: 1,
             notifications: 0,
             phoneNumber: firebaseUser.phoneNumber,

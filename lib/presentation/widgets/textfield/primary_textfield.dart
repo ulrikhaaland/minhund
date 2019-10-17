@@ -157,6 +157,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                   .getHeightByPercentage(
                       context, widget.maxLines > 1 ? 15 : 7.5),
               child: Card(
+                elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(ServiceProvider
                       .instance.instanceStyleService.appStyle.borderRadius),
@@ -190,6 +191,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                                   ServiceProvider.instance.instanceStyleService
                                       .appStyle.textFieldInput,
                               onChanged: (val) => widget.onChanged(val),
+                              onSubmitted: (val) => widget.onFieldSubmitted(),
                               decoration: InputDecoration(
                                 hintText: widget.hintText ?? null,
                                 labelText: widget.labelText ?? null,
