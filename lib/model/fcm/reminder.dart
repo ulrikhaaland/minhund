@@ -4,10 +4,18 @@ part 'reminder.g.dart';
 
 @JsonSerializable()
 class Reminder {
-  Reminder({this.title, this.body, this.fcm, this.timestamp});
+  Reminder(
+      {this.eventId,
+      this.title,
+      this.body,
+      this.timestamp,
+      this.userId,
+      this.note});
+  String eventId;
   String title;
   String body;
-  String fcm;
+  String userId;
+  String note;
   DateTime timestamp;
 
   factory Reminder.fromJson(Map<String, dynamic> json) =>

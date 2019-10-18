@@ -45,7 +45,9 @@ class RootPageController extends BaseController {
       print("onResume called");
       // handleMessage(msg);
     }, onMessage: (Map<String, dynamic> msg) {
-      var values = msg["notification"];
+      print("onMessage DASD");
+
+      var data = msg["data"];
       BotToast.showAttachedWidget(
           attachedBuilder: (_) => Align(
                 alignment: Alignment.topCenter,
@@ -73,12 +75,12 @@ class RootPageController extends BaseController {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                values["title"],
+                                data["timestamp"],
                                 style: ServiceProvider.instance
                                     .instanceStyleService.appStyle.smallTitle,
                               ),
                               Text(
-                                values["body"],
+                                data["body"],
                                 style: ServiceProvider.instance
                                     .instanceStyleService.appStyle.body1,
                               ),
@@ -92,7 +94,6 @@ class RootPageController extends BaseController {
               ),
           duration: Duration(seconds: 2),
           target: Offset(520, 520));
-      print("onMessage DASD");
     });
     firebaseMessaging
         .requestNotificationPermissions(const IosNotificationSettings(

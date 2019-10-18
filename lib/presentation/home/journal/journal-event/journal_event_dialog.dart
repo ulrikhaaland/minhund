@@ -62,11 +62,9 @@ class JournalEventDialogController extends BaseController {
 
   List<String> reminderItems = [
     "Ingen",
-    '5 minutter før',
-    '30 minutter før',
-    '1 time før',
-    '2 timer før',
     '1 dag før',
+    '2 dager før',
+    '1 uke før',
   ];
 
   JournalEventDialogController(
@@ -123,21 +121,39 @@ class JournalEventDialogController extends BaseController {
 
   void saveEventItem() {
     if (canSave) {
+      Reminder reminder;
+
+      if (placeHolderEventItem.reminder != null) {
+        reminder = Reminder(
+            title: "Påminnelse",
+            body:
+                "${placeHolderEventItem.title} starter om ${placeHolderEventItem.reminderString.split("f")[0]}",
+            note: placeHolderEventItem.note,
+            userId: user.id,
+            timestamp:
+                placeHolderEventItem.reminder.subtract(Duration(hours: 2)));
+      }
       if (eventItem == null) {
         categoryItem.journalEventItems.add(placeHolderEventItem);
 
-        FCMProvider().create(
-            id: "reminders",
-            model: Reminder(
-                title: "Påminnelse",
-                body: "Din time blalbla",
-                fcm: user.fcm,
-                timestamp: DateTime.now()));
-
         JournalEventProvider()
-            .create(model: placeHolderEventItem, id: categoryItem.docRef.path);
+            .create(model: placeHolderEventItem, id: categoryItem.docRef.path)
+            .then((item) {
+          if (reminder != null) {
+            reminder.eventId = item.documentID;
+            FCMProvider()
+                .set(id: "reminders/${reminder.eventId}", model: reminder);
+          }
+        });
       } else {
-        JournalEventProvider().update(model: placeHolderEventItem);
+        JournalEventProvider().update(model: placeHolderEventItem).then((_) {
+          if (reminder != null) {
+            reminder.eventId = placeHolderEventItem.id;
+            Firestore.instance
+                .document("reminders/${reminder.eventId}")
+                .setData(reminder.toJson());
+          }
+        });
       }
       onSave(placeHolderEventItem);
       Navigator.pop(context);
@@ -225,18 +241,20 @@ class JournalEventDialog extends BaseView {
                             : false,
                     onConfirmed: (date) {
                       controller.placeHolderEventItem.timeStamp = DateTime(
-                        date.year,
-                        date.month,
-                        date.day,
-                        controller.placeHolderEventItem.timeStamp?.hour ??
-                            DateTime.now().hour,
-                        controller.placeHolderEventItem.timeStamp?.minute ??
-                            DateTime.now().minute,
-                      );
-                      Timer(
-                          Duration(milliseconds: 50),
-                          () => controller.timePickerController
-                              .openDatePicker(context));
+                          date.year,
+                          date.month,
+                          date.day,
+                          controller.placeHolderEventItem.timeStamp?.hour ?? 11,
+                          controller.placeHolderEventItem.timeStamp?.minute ??
+                              11,
+                          11);
+
+                      // if (controller.placeHolderEventItem.timeStamp.second ==
+                      //     11)
+                      //   Timer(
+                      //       Duration(milliseconds: 50),
+                      //       () => controller.timePickerController
+                      //           .openDatePicker(context));
                     },
                     initialDate: controller.placeHolderEventItem.timeStamp ??
                         DateTime.now(),
@@ -261,7 +279,8 @@ class JournalEventDialog extends BaseView {
                           controller.placeHolderEventItem.timeStamp?.day ??
                               DateTime.now().day,
                           date.hour,
-                          date.minute);
+                          date.minute,
+                          0);
                       print(
                           controller.placeHolderEventItem.timeStamp.toString());
                     },
@@ -491,12 +510,20 @@ class JournalEventDialog extends BaseView {
                                                         .instance
                                                         .instanceStyleService
                                                         .appStyle
-                                                        .body1,
+                                                        .textFieldInput,
                                                     underline: Container(
                                                       height: 0,
                                                     ),
                                                     onChanged:
                                                         (String newValue) {
+                                                      FirebaseMessaging()
+                                                          .requestNotificationPermissions(
+                                                              const IosNotificationSettings(
+                                                        sound: true,
+                                                        alert: true,
+                                                        badge: true,
+                                                      ));
+
                                                       if (!controller.user
                                                           .allowsNotifications) {
                                                         controller._fcm
@@ -540,24 +567,19 @@ class JournalEventDialog extends BaseView {
                                                           switch (newValue) {
                                                             case "ingen":
                                                               break;
-                                                            case "5 minutter før":
-                                                              add = 5;
-                                                              break;
-                                                            case "30 minutter før":
-                                                              add = 30;
-                                                              break;
-                                                            case "1 time før":
-                                                              add = 60;
-                                                              break;
-                                                            case "2 timer før":
-                                                              add = 120;
-                                                              break;
                                                             case "1 dag før":
                                                               add = 60 * 24;
-                                                              print("dasd");
+                                                              break;
+                                                            case "2 dager før":
+                                                              add = 60 * 48;
+                                                              break;
+                                                            case "1 uke før":
+                                                              add = 60 * 24 * 7;
                                                               break;
 
                                                             default:
+                                                              add = 60 * 24;
+                                                              break;
                                                           }
                                                           if (add != null)
                                                             controller
@@ -651,11 +673,12 @@ class JournalEventDialog extends BaseView {
                                       textInputType: TextInputType.text,
                                       maxLines: 5,
                                       validate: false,
-                                      onSaved: (val) {
-                                        if (val != "")
+                                      asTextField: true,
+                                      onChanged: (val) {
+                                        if (val.isNotEmpty) {
                                           controller.placeHolderEventItem.note =
                                               val;
-                                        else
+                                        } else
                                           controller.placeHolderEventItem.note =
                                               null;
                                       }),

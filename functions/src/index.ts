@@ -2,8 +2,6 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 admin.initializeApp();
 
-const db = admin.firestore();
-
 // const db = admin.firestore();
 const fcm = admin.messaging();
 
@@ -22,17 +20,26 @@ export const sendToDevice = functions.firestore
 
       data: {
         title: reminder.title,
-        body: reminder.body
+        body: reminder.body,
+        timestamp: admin.firestore.Timestamp.fromDate(new Date())
+          .toDate()
+          .toISOString()
+          .split(":")[0]
       }
     };
     return fcm.sendToDevice(reminder.fcm, payload);
   });
 
-export const scheduledFunctionPlainEnglish = functions.pubsub
-  .schedule("every 1 minutes")
-  .onRun(context => {
-    db.collection("reminders")
-      .where("timestamp", "==", Date.prototype.getDate)
-      .get()
-      .then(snapshot => {});
-  });
+// export const scheduledFunctionPlainEnglish = functions.pubsub
+//   .schedule("every 1 minutes")
+//   .onRun(context => {
+//     const compareDateString = admin.firestore.Timestamp.fromDate(new Date())
+//       .toDate()
+//       .toISOString()
+//       .split(":")[0];
+
+//     db.collection("reminders")
+//       .where("timestamp", "==", compareDateString)
+//       .get()
+//       .then(snapshot => {});
+//   });
