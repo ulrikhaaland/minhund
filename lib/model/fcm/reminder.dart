@@ -16,6 +16,7 @@ class Reminder {
   String body;
   String userId;
   String note;
+  String timestampAsIso;
   DateTime timestamp;
 
   factory Reminder.fromJson(Map<String, dynamic> json) =>

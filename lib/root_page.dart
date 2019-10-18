@@ -75,7 +75,7 @@ class RootPageController extends BaseController {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                data["timestamp"],
+                                data["title"],
                                 style: ServiceProvider.instance
                                     .instanceStyleService.appStyle.smallTitle,
                               ),
@@ -144,7 +144,7 @@ class RootPageController extends BaseController {
         );
         refresh();
       } else {
-        DogProvider().getCollection(id: firebaseUser.uid).then((dogs) {
+        await DogProvider().getCollection(id: firebaseUser.uid).then((dogs) {
           _user.dogs = dogs ?? [];
           refresh();
         });

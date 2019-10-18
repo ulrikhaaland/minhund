@@ -132,6 +132,9 @@ class JournalEventDialogController extends BaseController {
             userId: user.id,
             timestamp:
                 placeHolderEventItem.reminder.subtract(Duration(hours: 2)));
+
+        reminder.timestampAsIso =
+            reminder.timestamp.toIso8601String().split("T")[0];
       }
       if (eventItem == null) {
         categoryItem.journalEventItems.add(placeHolderEventItem);

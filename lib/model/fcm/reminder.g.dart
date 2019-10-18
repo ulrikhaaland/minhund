@@ -16,7 +16,7 @@ Reminder _$ReminderFromJson(Map<String, dynamic> json) {
         : DateTime.parse(json['timestamp'] as String),
     userId: json['userId'] as String,
     note: json['note'] as String,
-  );
+  )..timestampAsIso = json['timestampAsIso'] as String;
 }
 
 Map<String, dynamic> _$ReminderToJson(Reminder instance) => <String, dynamic>{
@@ -25,5 +25,6 @@ Map<String, dynamic> _$ReminderToJson(Reminder instance) => <String, dynamic>{
       'body': instance.body,
       'userId': instance.userId,
       'note': instance.note,
+      'timestampAsIso': instance.timestampAsIso,
       'timestamp': instance.timestamp?.toIso8601String(),
     };

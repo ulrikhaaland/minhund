@@ -6,6 +6,7 @@ import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
+import 'package:minhund/provider/cloud_functions_provider.dart';
 import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 
@@ -62,7 +63,10 @@ class JournalAddCategoryController extends BaseController {
 
   void onDelete() {
     //  Parent deletes from list
-    JournalProvider().delete(model: singleCategoryItem);
+    String pathFromDog = singleCategoryItem.docRef.path.split("dogs")[1];
+    print(pathFromDog);
+    CloudFunctionsProvider().recursiveDelete("dogs$pathFromDog");
+    // JournalProvider().delete(model: singleCategoryItem);
     childOnDelete();
   }
 
