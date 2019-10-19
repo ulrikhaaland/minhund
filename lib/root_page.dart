@@ -10,7 +10,9 @@ import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/intro/user_intro.dart';
 import 'package:minhund/presentation/login/login_page.dart';
 import 'package:minhund/provider/dog_provider.dart';
+import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/provider/user_provider.dart';
+import 'model/dog.dart';
 import 'model/user.dart';
 import 'presentation/base_view.dart';
 import 'service/service_provider.dart';
@@ -144,10 +146,15 @@ class RootPageController extends BaseController {
         );
         refresh();
       } else {
-        await DogProvider().getCollection(id: firebaseUser.uid).then((dogs) {
-          _user.dogs = dogs ?? [];
-          refresh();
+        List<Dog> dogs =
+            await DogProvider().getCollection(id: firebaseUser.uid);
+        dogs.forEach((dog) async {
+          dog.journalItems =
+              await JournalProvider().getCollection(id: dog.docRef.path);
         });
+
+        _user.dogs = dogs ?? [];
+        refresh();
       }
       UserProvider().updateFcmToken(_user, firebaseMessaging);
     }

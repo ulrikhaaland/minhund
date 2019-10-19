@@ -18,6 +18,7 @@ JournalEventItem _$JournalEventItemFromJson(Map<String, dynamic> json) {
         ? null
         : DateTime.parse(json['reminder'] as String),
     reminderString: json['reminderString'] as String,
+    sortIndex: json['sortIndex'] as int,
     completed: json['completed'] as bool,
   )..category = json['category'] as String;
 }
@@ -32,4 +33,5 @@ Map<String, dynamic> _$JournalEventItemToJson(JournalEventItem instance) =>
       'note': instance.note,
       'category': instance.category,
       'completed': instance.completed,
+      'sortIndex': instance.sortIndex,
     };

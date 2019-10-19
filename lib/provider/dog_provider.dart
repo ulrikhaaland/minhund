@@ -36,9 +36,6 @@ class DogProvider extends CrudProvider {
         Dog dog = Dog.fromJson(doc.data);
         dog.docRef = doc.reference;
         list.add(dog);
-
-        dog.journalItems = await JournalProvider()
-            .getCollection(id: path + "/${doc.documentID}");
       });
     }
     return list;

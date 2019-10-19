@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:minhund/helper/helper.dart';
@@ -10,6 +11,8 @@ import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
 import 'package:minhund/presentation/home/journal/journal-event/journal_event_list_item.dart';
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
+import 'package:minhund/provider/crud_provider.dart';
+import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 
@@ -107,13 +110,50 @@ class JournalEventPageController extends MasterPageController {
   }
 
   void sortListByDate({@required List<JournalEventItem> eventItemList}) {
-    if (eventItemList.isNotEmpty)
+    if (eventItemList.isNotEmpty) {
       eventItemList.sort((a, b) {
         if (a.timeStamp != null && b.timeStamp != null)
           return a.timeStamp.compareTo(b.timeStamp);
         else
           return 0;
       });
+      eventItemList.sort((a, b) {
+        if (a.sortIndex != null && b.sortIndex != null) {
+          return a.sortIndex.compareTo(b.sortIndex);
+        } else
+          return 0;
+      });
+
+      // eventItemList.forEach((item) {
+      //   if (item.sortIndex != null) {
+      //     int insertIndex = item.sortIndex;
+
+      //     JournalEventItem reItem = item;
+      //     eventItemList.eventItemList.remove(item);
+      //     if (insertIndex <= eventItemList.length)
+      //       eventItemList.insert(item.sortIndex, reItem);
+      //   }
+      // });
+    }
+  }
+
+  void reOrder(int oldIndex, int newIndex, List<JournalEventItem> list) {
+    JournalEventItem cItem = list.removeAt(oldIndex);
+
+    JournalEventItem oldItem =
+        list.firstWhere((i) => i.sortIndex == newIndex, orElse: () => null);
+
+    cItem.sortIndex = newIndex;
+
+    JournalEventProvider().update(model: cItem);
+
+    list.insert(newIndex, cItem);
+
+    if (oldItem != null) {
+      oldItem.sortIndex = list.indexOf(oldItem);
+
+      JournalEventProvider().update(model: oldItem);
+    }
   }
 }
 
@@ -196,13 +236,8 @@ class JournalEventPage extends MasterPage {
                 key: Key(Random().nextInt(999999999).toString()),
                 children: <Widget>[
                   ReorderableList(
-                    onReorder: (oldIndex, newIndex) {
-                      JournalEventItem cItem = controller
-                          .categoryItem.journalEventItems
-                          .removeAt(oldIndex);
-                      controller.categoryItem.journalEventItems
-                          .insert(newIndex, cItem);
-                    },
+                    onReorder: (oldIndex, newIndex) => controller.reOrder(
+                        oldIndex, newIndex, controller.upcomingEvents),
                     widgetList: controller.upcomingEvents
                         .map(
                           (item) => JournalEventListItem(
@@ -222,13 +257,8 @@ class JournalEventPage extends MasterPage {
                         .toList(),
                   ),
                   ReorderableList(
-                    onReorder: (oldIndex, newIndex) {
-                      JournalEventItem cItem = controller
-                          .categoryItem.journalEventItems
-                          .removeAt(oldIndex);
-                      controller.categoryItem.journalEventItems
-                          .insert(newIndex, cItem);
-                    },
+                    onReorder: (oldIndex, newIndex) => controller.reOrder(
+                        oldIndex, newIndex, controller.completedEvents),
                     widgetList: controller.completedEvents
                         .map(
                           (item) => JournalEventListItem(

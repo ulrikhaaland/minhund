@@ -1,8 +1,14 @@
+import 'dart:io';
+
 import 'package:minhund/helper/helper.dart';
+import 'package:minhund/helper/image_picker.dart';
+import 'package:minhund/model/dog.dart';
+import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/intro/intro_info.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
+import 'package:minhund/provider/dog_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -29,6 +35,46 @@ class UserIntroController extends MasterPageController {
 
   @override
   Widget get actionTwo => null;
+
+  Future<void> saveInfo({Dog dog, File imageFile}) async {
+    if (user.dogs == null) {
+      user.dogs = [];
+    }
+
+    if (!user.dogs.contains(dog)) {
+      user.dogs.add(dog);
+    }
+
+    dog.journalItems = <JournalCategoryItem>[
+      JournalCategoryItem(
+        title: "Veterinær",
+        sortIndex: 0,
+      ),
+      JournalCategoryItem(
+        title: "Kurs",
+        sortIndex: 1,
+      ),
+      JournalCategoryItem(
+        title: "Annet",
+        sortIndex: 2,
+      ),
+    ];
+
+    await DogProvider().create(id: user.id, model: dog);
+
+    onIntroFinished();
+
+    if (imageFile != null) {
+      try {
+        dog.imgUrl = await FileProvider()
+            .uploadFile(file: imageFile, path: "dogs/${dog.id}/${dog.id}");
+      } catch (e) {
+        print(e.toString());
+      }
+
+      DogProvider().update(model: dog);
+    }
+  }
 }
 
 class UserIntro extends MasterPage {
@@ -71,14 +117,28 @@ class UserIntro extends MasterPage {
                     builder: (context) => IntroInfoOwner(
                         controller: IntroInfoOwnerController(
                       user: controller.user,
-                      onDone: () => controller.onIntroFinished(),
+                      onDone: (dog, imageFile) =>
+                          controller.saveInfo(dog: dog, imageFile: imageFile),
                     )),
                   ),
                 ),
               ),
             ),
             SecondaryButton(
-              onPressed: () => controller.onIntroFinished(),
+              onPressed: () {
+                controller.saveInfo(
+                    dog: Dog(
+                      name: "Min Hund",
+                      weigth: "12",
+                      birthDate: DateTime(
+                        2015,
+                        5,
+                        15,
+                      ),
+                      race: "Beagle",
+                    ),
+                    imageFile: null);
+              },
               text: "Jeg gjør det senere",
             ),
           ],

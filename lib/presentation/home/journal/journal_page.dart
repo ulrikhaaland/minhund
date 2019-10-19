@@ -5,6 +5,7 @@ import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
+import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import '../../../bottom_navigation.dart';
 import 'journal-category/journal_category_list_item.dart';
@@ -137,8 +138,23 @@ class JournalPage extends BottomNavigation {
                     onReorder: (oldIndex, newIndex) {
                       JournalCategoryItem cItem =
                           controller.dog.journalItems.removeAt(oldIndex);
+
+                      JournalCategoryItem oldItem = controller.dog.journalItems
+                          .firstWhere((i) => i.sortIndex == newIndex,
+                              orElse: () => null);
+
                       cItem.sortIndex = newIndex;
+
+                      JournalProvider().update(model: cItem);
+
                       controller.dog.journalItems.insert(newIndex, cItem);
+
+                      if (oldItem != null) {
+                        oldItem.sortIndex =
+                            controller.dog.journalItems.indexOf(oldItem);
+
+                        JournalProvider().update(model: oldItem);
+                      }
                     },
                     widgetList: controller.dog.journalItems
                         .map(

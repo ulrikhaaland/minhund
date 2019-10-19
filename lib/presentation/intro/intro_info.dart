@@ -19,7 +19,7 @@ class IntroInfoOwnerController extends MasterPageController {
 
   String pageTitle = "Eier";
 
-  final VoidCallback onDone;
+  final void Function(Dog dog, File imageFile) onDone;
 
   File imageFile;
 
@@ -46,43 +46,6 @@ class IntroInfoOwnerController extends MasterPageController {
 
   @override
   Widget get actionTwo => null;
-
-  Future<void> saveInfo(Dog dog) async {
-    if (user.dogs == null) {
-      user.dogs = [];
-    }
-
-    if (!user.dogs.contains(dog)) {
-      user.dogs.add(dog);
-    }
-
-    dog.journalItems = <JournalCategoryItem>[
-      JournalCategoryItem(
-        title: "Veterinær",
-        sortIndex: 0,
-      ),
-      JournalCategoryItem(
-        title: "Kurs",
-        sortIndex: 1,
-      ),
-      JournalCategoryItem(
-        title: "Annet",
-        sortIndex: 2,
-      ),
-    ];
-
-    await DogProvider().create(id: user.id, model: dog);
-
-    onDone();
-
-    if (imageFile != null) {
-      dog.imgUrl = await FileProvider()
-          .uploadFile(file: imageFile, path: "dogs/${dog.id}/${dog.id}");
-      DogProvider().update(model: dog);
-    }
-
-    Navigator.pop(context);
-  }
 }
 
 class IntroInfoOwner extends MasterPage {
@@ -128,7 +91,8 @@ class IntroInfoOwner extends MasterPage {
                           .user.dogs[controller.user.currentDogIndex ?? 0]
                       : Dog(),
                   onDone: (dog) async {
-                    controller.saveInfo(dog);
+                    controller.onDone(dog, controller.imageFile);
+                    Navigator.pop(context);
                   }),
             )
         ],
