@@ -17,7 +17,9 @@ class JournalPageController extends BottomNavigationController {
 
   JournalPageController({
     this.user,
-  });
+  }) {
+    print("Journal Page built");
+  }
 
   @override
   FloatingActionButton get fab => FloatingActionButton(

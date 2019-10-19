@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../../bottom_navigation.dart';
 
-class ProfileController extends BottomNavigationController {
-  ProfileController();
+class ProfilePageController extends BottomNavigationController {
+  ProfileController() {
+    print("Profile Page built");
+  }
+
   @override
   FloatingActionButton get fab => null;
 
@@ -19,10 +22,10 @@ class ProfileController extends BottomNavigationController {
   Widget get actionTwo => null;
 }
 
-class Profile extends BottomNavigation {
-  final ProfileController controller;
+class ProfilePage extends BottomNavigation {
+  final ProfilePageController controller;
 
-  Profile({this.controller});
+  ProfilePage({this.controller});
 
   @override
   Widget buildContent(BuildContext context) {

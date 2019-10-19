@@ -25,10 +25,11 @@ abstract class MasterPage extends BaseView {
     if (!mounted) return Container();
 
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Color.fromARGB(255, 233, 242, 248), //top bar color
+      statusBarColor: Colors.white,
+      //  Color.fromARGB(255, 233, 242, 248), //top bar color
       statusBarIconBrightness: Brightness.dark, //top bar icons
-      systemNavigationBarColor:
-          Color.fromARGB(255, 233, 242, 248), //bottom bar color
+      systemNavigationBarColor: Colors.white,
+      // Color.fromARGB(255, 233, 242, 248), //bottom bar color
       systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
     ));
 
@@ -53,8 +54,9 @@ abstract class MasterPage extends BaseView {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-          backgroundColor: ServiceProvider
-              .instance.instanceStyleService.appStyle.backgroundColor,
+          backgroundColor: Colors.white,
+          //  ServiceProvider
+          //     .instance.instanceStyleService.appStyle.backgroundColor,
           appBar: appBar,
           bottomNavigationBar: controller.bottomNav,
           floatingActionButton: controller.fab,

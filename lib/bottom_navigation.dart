@@ -20,7 +20,7 @@ class BottomNavigationController extends MasterPageController {
   JournalPage journal;
   MapLocation mapLocation;
   Leverage leverage;
-  Profile profile;
+  ProfilePage profile;
 
   List<BottomNavigation> pages;
   @override
@@ -39,8 +39,8 @@ class BottomNavigationController extends MasterPageController {
     mapLocation = MapLocation(
       controller: MapLocationController(),
     );
-    profile = Profile(
-      controller: ProfileController(),
+    profile = ProfilePage(
+      controller: ProfilePageController(),
     );
     leverage = Leverage(
       controller: LeverageController(),
