@@ -13,13 +13,16 @@ import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
+import 'package:minhund/presentation/widgets/dialog/dialog_pop_button.dart';
+import 'package:minhund/presentation/widgets/dialog/dialog_save_button.dart';
+import 'package:minhund/presentation/widgets/dialog/dialog_template.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/crud_provider.dart';
 import 'package:minhund/provider/fcm_provider.dart';
 import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 
-class JournalEventDialogController extends BaseController {
+class JournalEventDialogController extends DialogTemplateController {
   final void Function(JournalEventItem eventItem) onSave;
 
   JournalEventItem eventItem;
@@ -60,6 +63,8 @@ class JournalEventDialogController extends BaseController {
 
   DateTimePickerController timePickerController;
 
+  DialogSaveButtonController saveBtnCtrlr;
+
   List<String> reminderItems = [
     "Ingen",
     '1 dag før',
@@ -74,6 +79,42 @@ class JournalEventDialogController extends BaseController {
       this.onSave,
       this.pageState,
       this.categoryItem});
+
+  @override
+  Widget get actionOne => PopButton();
+
+  @override
+  Widget get actionTwo => pageState != PageState.read
+      ? DialogSaveButton(
+          controller: saveBtnCtrlr,
+        )
+      : IconButton(
+          onPressed: () => setState(() => pageState = PageState.edit),
+          icon: Icon(Icons.edit),
+          color:
+              ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
+          iconSize: ServiceProvider
+              .instance.instanceStyleService.appStyle.iconSizeStandard,
+        );
+
+  @override
+  String get title {
+    switch (pageState) {
+      case PageState.create:
+        return "Ny oppgave";
+        break;
+      case PageState.edit:
+        return "Rediger oppgave";
+
+        break;
+      case PageState.read:
+        return placeHolderEventItem.title ?? "N/A";
+
+        break;
+      default:
+        return "Ny oppgave";
+    }
+  }
 
   @override
   initState() {
@@ -99,6 +140,9 @@ class JournalEventDialogController extends BaseController {
       canSave = true;
     }
 
+    saveBtnCtrlr = DialogSaveButtonController(
+        canSave: canSave, onPressed: () => saveEventItem());
+
     super.initState();
   }
 
@@ -110,6 +154,11 @@ class JournalEventDialogController extends BaseController {
 
   void deleteEventItem() {
     JournalEventProvider().delete(model: placeHolderEventItem);
+
+    if (placeHolderEventItem.reminder != null)
+      Firestore.instance
+          .document("reminders/${placeHolderEventItem.id}")
+          .delete();
 
     categoryItem.journalEventItems
         .removeWhere((item) => item.id == placeHolderEventItem.id);
@@ -188,13 +237,13 @@ class JournalEventDialogController extends BaseController {
   }
 }
 
-class JournalEventDialog extends BaseView {
+class JournalEventDialog extends DialogTemplate {
   final JournalEventDialogController controller;
 
   JournalEventDialog({this.controller});
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildDialogContent(BuildContext context) {
     if (!mounted) return Container();
 
     controller.popIcon = InkWell(
@@ -304,92 +353,6 @@ class JournalEventDialog extends BaseView {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 controller.basicContainer(
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      controller.popIcon,
-                                      Text(
-                                        controller.pageState == PageState.create
-                                            ? "Ny oppgave"
-                                            : "Rediger oppgave",
-                                        style: ServiceProvider
-                                            .instance
-                                            .instanceStyleService
-                                            .appStyle
-                                            .smallTitle,
-                                      ),
-                                      InkWell(
-                                        onTap: () => controller.saveEventItem(),
-                                        child: Container(
-                                          width: ServiceProvider
-                                              .instance.screenService
-                                              .getWidthByPercentage(
-                                                  context, 15),
-                                          decoration: BoxDecoration(
-                                              color: controller.canSave
-                                                  ? ServiceProvider
-                                                      .instance
-                                                      .instanceStyleService
-                                                      .appStyle
-                                                      .green
-                                                  : Colors.grey[400],
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(
-                                                      ServiceProvider
-                                                          .instance
-                                                          .instanceStyleService
-                                                          .appStyle
-                                                          .borderRadius))),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Text(
-                                              "Lagre",
-                                              style: ServiceProvider
-                                                  .instance
-                                                  .instanceStyleService
-                                                  .appStyle
-                                                  .body1
-                                                  .copyWith(
-                                                color: Colors.white,
-                                              ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      // InkWell(
-                                      //   child: Icon(
-                                      //     Icons.delete,
-                                      //     size: ServiceProvider
-                                      //         .instance
-                                      //         .instanceStyleService
-                                      //         .appStyle
-                                      //         .iconSizeStandard,
-                                      //     color: controller.pageState ==
-                                      //             PageState.create
-                                      //         ? Colors.transparent
-                                      //         : ServiceProvider
-                                      //             .instance
-                                      //             .instanceStyleService
-                                      //             .appStyle
-                                      //             .textGrey,
-                                      //   ),
-                                      //   onTap: () {
-                                      //     if (controller.pageState ==
-                                      //         PageState.edit) {
-                                      //       controller.deleteEventItem();
-
-                                      //       controller.onSave(null);
-                                      //       Navigator.pop(context);
-                                      //     }
-                                      //   },
-                                      // ),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  width: constraints.maxWidth * 0.935,
                                   child: PrimaryTextField(
                                     initValue:
                                         controller.placeHolderEventItem.title,
@@ -410,7 +373,10 @@ class JournalEventDialog extends BaseView {
                                         controller.canSave = false;
                                       controller.placeHolderEventItem.title =
                                           val;
-                                      controller.setState(() {});
+                                      controller.setState(() {
+                                        controller.saveBtnCtrlr.canSave =
+                                            controller.canSave;
+                                      });
                                     },
                                     textInputAction: TextInputAction.next,
                                     onFieldSubmitted: () {
@@ -422,34 +388,215 @@ class JournalEventDialog extends BaseView {
                                 ),
                                 Divider(),
                                 Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
-                                    Container(
-                                      width: constraints.maxWidth * 0.5,
-                                      child: Column(
-                                        children: <Widget>[
-                                          controller.basicContainer(
-                                            child: DateTimePicker(
-                                              controller: controller
-                                                  .datePickerController,
-                                            ),
-                                          ),
-                                          Divider(),
-                                          controller.basicContainer(
-                                            child: Padding(
-                                              padding: EdgeInsets.only(
-                                                  left: padding * 1.6),
-                                              child: Text(
-                                                "Påminnelse",
-                                                style: ServiceProvider
-                                                    .instance
-                                                    .instanceStyleService
-                                                    .appStyle
-                                                    .descTitle,
+                                    controller.basicContainer(
+                                      child: DateTimePicker(
+                                        controller:
+                                            controller.datePickerController,
+                                      ),
+                                    ),
+                                    controller.basicContainer(
+                                      child: DateTimePicker(
+                                          controller:
+                                              controller.timePickerController),
+                                    ),
+                                  ],
+                                ),
+                                Divider(),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    controller.basicContainer(
+                                      width: constraints.maxWidth,
+                                      child: Padding(
+                                        padding: EdgeInsets.only(
+                                            left: padding * 1.6),
+                                        child: Text(
+                                          "Påminnelse",
+                                          style: ServiceProvider
+                                              .instance
+                                              .instanceStyleService
+                                              .appStyle
+                                              .descTitle,
+                                        ),
+                                      ),
+                                    ),
+                                    Column(
+                                      children: <Widget>[
+                                        controller.basicContainer(
+                                          child: Container(
+                                            width: constraints.maxWidth / 2.25,
+                                            height: ServiceProvider
+                                                .instance.screenService
+                                                .getHeightByPercentage(
+                                                    context, 9.5),
+                                            child: Card(
+                                              elevation: 0,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius
+                                                    .circular(ServiceProvider
+                                                        .instance
+                                                        .instanceStyleService
+                                                        .appStyle
+                                                        .borderRadius),
+                                              ),
+                                              child: Padding(
+                                                padding: EdgeInsets.all(
+                                                    getDefaultPadding(context)),
+                                                child: DropdownButton<String>(
+                                                  isExpanded: true,
+                                                  value: controller
+                                                      .reminderDropDownValue,
+                                                  icon: Icon(
+                                                      Icons.arrow_drop_down),
+                                                  iconSize: ServiceProvider
+                                                      .instance
+                                                      .instanceStyleService
+                                                      .appStyle
+                                                      .iconSizeStandard,
+                                                  elevation: 0,
+                                                  style: ServiceProvider
+                                                      .instance
+                                                      .instanceStyleService
+                                                      .appStyle
+                                                      .textFieldInput,
+                                                  underline: Container(
+                                                    height: 0,
+                                                  ),
+                                                  onChanged: (String newValue) {
+                                                    FirebaseMessaging()
+                                                        .requestNotificationPermissions(
+                                                            const IosNotificationSettings(
+                                                      sound: true,
+                                                      alert: true,
+                                                      badge: true,
+                                                    ));
+
+                                                    controller.firstBuild =
+                                                        false;
+
+                                                    if (controller
+                                                            .placeHolderEventItem
+                                                            .timeStamp !=
+                                                        null) {
+                                                      if (controller
+                                                          .placeHolderEventItem
+                                                          .timeStamp
+                                                          .isBefore(
+                                                              DateTime.now())) {
+                                                        controller
+                                                                .reminderError =
+                                                            true;
+                                                        controller
+                                                                .reminderErrorText =
+                                                            "Påminnelse er ikke mulig når datoen er i fortid";
+                                                      } else {
+                                                        controller
+                                                                .reminderError =
+                                                            false;
+
+                                                        controller
+                                                                .reminderDropDownValue =
+                                                            newValue;
+
+                                                        int add;
+
+                                                        controller
+                                                                .placeHolderEventItem
+                                                                .reminderString =
+                                                            newValue;
+
+                                                        switch (newValue) {
+                                                          case "ingen":
+                                                            break;
+                                                          case "1 dag før":
+                                                            add = 60 * 24;
+                                                            break;
+                                                          case "2 dager før":
+                                                            add = 60 * 48;
+                                                            break;
+                                                          case "1 uke før":
+                                                            add = 60 * 24 * 7;
+                                                            break;
+
+                                                          default:
+                                                            add = 60 * 24;
+                                                            break;
+                                                        }
+                                                        if (add != null)
+                                                          controller
+                                                                  .placeHolderEventItem
+                                                                  .reminder =
+                                                              controller
+                                                                  .placeHolderEventItem
+                                                                  .timeStamp
+                                                                  .subtract(Duration(
+                                                                      minutes:
+                                                                          add));
+                                                      }
+                                                    } else {
+                                                      controller.reminderError =
+                                                          true;
+                                                      controller
+                                                        ..reminderErrorText =
+                                                            "Vennligst velg en dato først";
+                                                    }
+                                                    controller.setState(() {});
+                                                  },
+                                                  items: controller
+                                                      .reminderItems
+                                                      .map<
+                                                              DropdownMenuItem<
+                                                                  String>>(
+                                                          (String value) {
+                                                    return DropdownMenuItem<
+                                                        String>(
+                                                      value: value,
+                                                      child: Padding(
+                                                        padding: EdgeInsets.only(
+                                                            left: getDefaultPadding(
+                                                                    context) *
+                                                                3),
+                                                        child: Container(
+                                                          width: ServiceProvider
+                                                              .instance
+                                                              .screenService
+                                                              .getWidthByPercentage(
+                                                                  context, 80),
+                                                          child: Text(
+                                                            value,
+                                                            style: value ==
+                                                                    "Ingen"
+                                                                ? ServiceProvider
+                                                                    .instance
+                                                                    .instanceStyleService
+                                                                    .appStyle
+                                                                    .body1
+                                                                : ServiceProvider
+                                                                    .instance
+                                                                    .instanceStyleService
+                                                                    .appStyle
+                                                                    .textFieldInput,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                                ),
                                               ),
                                             ),
                                           ),
-                                          if (controller.reminderError)
-                                            Padding(
+                                        ),
+                                        if (controller.reminderError)
+                                          Container(
+                                            alignment: Alignment.centerLeft,
+                                            child: Padding(
                                               padding: EdgeInsets.only(
                                                   left: padding * 2),
                                               child: Text(
@@ -458,234 +605,47 @@ class JournalEventDialog extends BaseView {
                                                     .instance
                                                     .instanceStyleService
                                                     .appStyle
-                                                    .transparentDisabledColoredText,
-                                              ),
-                                            ),
-                                          Divider(),
-                                        ],
-                                      ),
-                                    ),
-                                    Container(
-                                      width: constraints.maxWidth * 0.5,
-                                      child: Column(
-                                        children: <Widget>[
-                                          controller.basicContainer(
-                                            child: DateTimePicker(
-                                                controller: controller
-                                                    .timePickerController),
-                                          ),
-                                          Divider(),
-                                          controller.basicContainer(
-                                            child: Container(
-                                              width:
-                                                  constraints.maxWidth / 2.25,
-                                              height: ServiceProvider
-                                                  .instance.screenService
-                                                  .getHeightByPercentage(
-                                                      context, 9.5),
-                                              child: Card(
-                                                elevation: 0,
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius: BorderRadius
-                                                      .circular(ServiceProvider
-                                                          .instance
-                                                          .instanceStyleService
-                                                          .appStyle
-                                                          .borderRadius),
-                                                ),
-                                                child: Padding(
-                                                  padding: EdgeInsets.all(
-                                                      getDefaultPadding(
-                                                          context)),
-                                                  child: DropdownButton<String>(
-                                                    isExpanded: true,
-                                                    value: controller
-                                                        .reminderDropDownValue,
-                                                    icon: Icon(
-                                                        Icons.arrow_drop_down),
-                                                    iconSize: ServiceProvider
-                                                        .instance
-                                                        .instanceStyleService
-                                                        .appStyle
-                                                        .iconSizeStandard,
-                                                    elevation: 0,
-                                                    style: ServiceProvider
-                                                        .instance
-                                                        .instanceStyleService
-                                                        .appStyle
-                                                        .textFieldInput,
-                                                    underline: Container(
-                                                      height: 0,
-                                                    ),
-                                                    onChanged:
-                                                        (String newValue) {
-                                                      FirebaseMessaging()
-                                                          .requestNotificationPermissions(
-                                                              const IosNotificationSettings(
-                                                        sound: true,
-                                                        alert: true,
-                                                        badge: true,
-                                                      ));
-
-                                                      if (!controller.user
-                                                          .allowsNotifications) {
-                                                        controller._fcm
-                                                            .requestNotificationPermissions(
-                                                                IosNotificationSettings());
-                                                      }
-                                                      controller.firstBuild =
-                                                          false;
-
-                                                      if (controller
-                                                              .placeHolderEventItem
-                                                              .timeStamp !=
-                                                          null) {
-                                                        if (controller
-                                                            .placeHolderEventItem
-                                                            .timeStamp
-                                                            .isBefore(DateTime
-                                                                .now())) {
-                                                          controller
-                                                                  .reminderError =
-                                                              true;
-                                                          controller
-                                                                  .reminderErrorText =
-                                                              "Påminnelse er ikke mulig når datoen er i fortid";
-                                                        } else {
-                                                          controller
-                                                                  .reminderError =
-                                                              false;
-
-                                                          controller
-                                                                  .reminderDropDownValue =
-                                                              newValue;
-
-                                                          int add;
-
-                                                          controller
-                                                                  .placeHolderEventItem
-                                                                  .reminderString =
-                                                              newValue;
-
-                                                          switch (newValue) {
-                                                            case "ingen":
-                                                              break;
-                                                            case "1 dag før":
-                                                              add = 60 * 24;
-                                                              break;
-                                                            case "2 dager før":
-                                                              add = 60 * 48;
-                                                              break;
-                                                            case "1 uke før":
-                                                              add = 60 * 24 * 7;
-                                                              break;
-
-                                                            default:
-                                                              add = 60 * 24;
-                                                              break;
-                                                          }
-                                                          if (add != null)
-                                                            controller
-                                                                    .placeHolderEventItem
-                                                                    .reminder =
-                                                                controller
-                                                                    .placeHolderEventItem
-                                                                    .timeStamp
-                                                                    .subtract(Duration(
-                                                                        minutes:
-                                                                            add));
-                                                        }
-                                                      } else {
-                                                        controller
-                                                                .reminderError =
-                                                            true;
-                                                        controller
-                                                          ..reminderErrorText =
-                                                              "Vennligst velg en dato først";
-                                                      }
-                                                      controller
-                                                          .setState(() {});
-                                                    },
-                                                    items: controller
-                                                        .reminderItems
-                                                        .map<
-                                                            DropdownMenuItem<
-                                                                String>>((String
-                                                            value) {
-                                                      return DropdownMenuItem<
-                                                          String>(
-                                                        value: value,
-                                                        child: Padding(
-                                                          padding: EdgeInsets.only(
-                                                              left: getDefaultPadding(
-                                                                      context) *
-                                                                  3),
-                                                          child: Container(
-                                                            width: ServiceProvider
-                                                                .instance
-                                                                .screenService
-                                                                .getWidthByPercentage(
-                                                                    context,
-                                                                    80),
-                                                            child: Text(
-                                                              value,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      );
-                                                    }).toList(),
-                                                  ),
-                                                ),
+                                                    .disabledColoredText,
+                                                textAlign: TextAlign.start,
                                               ),
                                             ),
                                           ),
-                                          if (controller.reminderError)
-                                            Container(
-                                              alignment: Alignment.centerLeft,
-                                              child: Padding(
-                                                padding: EdgeInsets.only(
-                                                    left: padding * 2),
-                                                child: Text(
-                                                  controller.reminderErrorText,
-                                                  style: ServiceProvider
-                                                      .instance
-                                                      .instanceStyleService
-                                                      .appStyle
-                                                      .disabledColoredText,
-                                                ),
-                                              ),
-                                            ),
-                                          Divider(),
-                                        ],
-                                      ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                                Container(
-                                  width: constraints.maxWidth * 0.935,
-                                  child: PrimaryTextField(
-                                      initValue:
-                                          controller.placeHolderEventItem.note,
-                                      hintText: "Beskrivelse",
-                                      textCapitalization:
-                                          TextCapitalization.sentences,
-                                      textInputAction: TextInputAction.done,
-                                      textInputType: TextInputType.text,
-                                      maxLines: 5,
-                                      validate: false,
-                                      asTextField: true,
-                                      onChanged: (val) {
-                                        if (val.isNotEmpty) {
-                                          controller.placeHolderEventItem.note =
-                                              val;
-                                        } else
-                                          controller.placeHolderEventItem.note =
-                                              null;
-                                      }),
-                                ),
+                                if (controller.reminderError)
+                                  Padding(
+                                    padding: EdgeInsets.only(left: padding * 2),
+                                    child: Text(
+                                      controller.reminderErrorText,
+                                      style: ServiceProvider
+                                          .instance
+                                          .instanceStyleService
+                                          .appStyle
+                                          .transparentDisabledColoredText,
+                                    ),
+                                  ),
+                                Divider(),
+                                PrimaryTextField(
+                                    initValue:
+                                        controller.placeHolderEventItem.note,
+                                    hintText: "Beskrivelse",
+                                    textCapitalization:
+                                        TextCapitalization.sentences,
+                                    textInputAction: TextInputAction.done,
+                                    textInputType: TextInputType.text,
+                                    maxLines: 5,
+                                    validate: false,
+                                    asTextField: true,
+                                    onChanged: (val) {
+                                      if (val.isNotEmpty) {
+                                        controller.placeHolderEventItem.note =
+                                            val;
+                                      } else
+                                        controller.placeHolderEventItem.note =
+                                            null;
+                                    }),
                               ],
                             ),
                           ),
@@ -732,38 +692,6 @@ class JournalEventDialog extends BaseView {
           padding: EdgeInsets.all(padding * 2),
           child: Column(
             children: <Widget>[
-              controller.basicContainer(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    controller.popIcon,
-                    Flexible(
-                      child: Text(
-                        controller.placeHolderEventItem.title ?? "",
-                        style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.title,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Container(
-                      width: ServiceProvider.instance.screenService
-                          .getWidthByPercentage(context, 15),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: IconButton(
-                          onPressed: () => controller.setState(
-                              () => controller.pageState = PageState.edit),
-                          icon: Icon(Icons.edit),
-                          color: ServiceProvider
-                              .instance.instanceStyleService.appStyle.textGrey,
-                          iconSize: ServiceProvider.instance
-                              .instanceStyleService.appStyle.iconSizeStandard,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
               Card(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(ServiceProvider

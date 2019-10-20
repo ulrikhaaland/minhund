@@ -47,6 +47,13 @@ class _AppState extends State<App> {
         title: 'Flutter Demo',
         navigatorObservers: [BotToastNavigatorObserver()],
         theme: ThemeData(
+          appBarTheme: AppBarTheme(
+            iconTheme: IconThemeData(
+                color: ServiceProvider
+                    .instance.instanceStyleService.appStyle.textGrey,
+                size: ServiceProvider
+                    .instance.instanceStyleService.appStyle.iconSizeBig),
+          ),
           iconTheme: IconThemeData(
               color: ServiceProvider
                   .instance.instanceStyleService.appStyle.textGrey),

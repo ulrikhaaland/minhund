@@ -18,37 +18,22 @@ class DialogSaveButton extends BaseView {
   DialogSaveButton({this.controller});
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => controller.onPressed(),
-      child: CircleAvatar(
-        backgroundColor: controller.canSave
-            ? ServiceProvider.instance.instanceStyleService.appStyle.green
-            : ServiceProvider
-                .instance.instanceStyleService.appStyle.inactiveIconColor,
-        // decoration: BoxDecoration(
-        //     color: controller.canSave
-        //         ? Colors.white
-        //         : ServiceProvider
-        //             .instance.instanceStyleService.appStyle.inactiveIconColor,
-        //     borderRadius: BorderRadius.all(Radius.circular(200))),
-        radius: 30,
+    return CircleAvatar(
+      backgroundColor: controller.canSave
+          ? ServiceProvider.instance.instanceStyleService.appStyle.green
+          : ServiceProvider
+              .instance.instanceStyleService.appStyle.inactiveIconColor,
+      radius: ServiceProvider
+              .instance.instanceStyleService.appStyle.iconSizeStandard *
+          0.8,
+      child: InkWell(
+        onTap: () => controller.onPressed(),
         child: Center(
-            child: IconButton(
-                icon: Icon(Icons.check),
-                onPressed: () => null,
-                iconSize: ServiceProvider
-                    .instance.instanceStyleService.appStyle.iconSizeStandard,
-                color: Colors.white)
-            // Text(
-            //   controller.buttonText,
-            //   style: ServiceProvider
-            //       .instance.instanceStyleService.appStyle.body1
-            //       .copyWith(
-            //     color: Colors.white,
-            //   ),
-            //   textAlign: TextAlign.left,
-            // ),
-            ),
+          child: Icon(Icons.check,
+              size: ServiceProvider
+                  .instance.instanceStyleService.appStyle.iconSizeStandard,
+              color: Colors.white),
+        ),
       ),
     );
   }

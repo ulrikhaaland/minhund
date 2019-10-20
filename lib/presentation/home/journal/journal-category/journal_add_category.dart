@@ -30,6 +30,8 @@ class JournalAddCategoryController extends DialogTemplateController {
 
   bool canSave = false;
 
+  DialogSaveButtonController saveBtnCtrlr;
+
   JournalAddCategoryController(
       {this.journalCategoryItems,
       this.childOnSaved,
@@ -45,10 +47,7 @@ class JournalAddCategoryController extends DialogTemplateController {
   @override
   // TODO: implement actionTwo
   Widget get actionTwo => DialogSaveButton(
-        controller: DialogSaveButtonController(
-          onPressed: () => null,
-          canSave: canSave,
-        ),
+        controller: saveBtnCtrlr,
       );
 
   @override
@@ -64,6 +63,11 @@ class JournalAddCategoryController extends DialogTemplateController {
           sortIndex: journalCategoryItems.length);
 
     if (singleCategoryItem.title.length > 0) canSave = true;
+
+    saveBtnCtrlr = DialogSaveButtonController(
+      onPressed: () => onSaved(),
+      canSave: canSave,
+    );
     super.initState();
   }
 
@@ -121,90 +125,6 @@ class JournalAddCategory extends DialogTemplate {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  // Container(
-                  //   height: constraints.maxHeight * 0.1,
-                  //   child: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //     children: <Widget>[
-                  //       InkWell(
-                  //         onTap: () => Navigator.pop(context),
-                  //         child: Container(
-                  //           width: ServiceProvider.instance.screenService
-                  //               .getWidthByPercentage(context, 15),
-                  //           child: Align(
-                  //             alignment: Alignment.centerLeft,
-                  //             child: Icon(
-                  //               Icons.close,
-                  //               color: ServiceProvider.instance
-                  //                   .instanceStyleService.appStyle.textGrey,
-                  //               size: ServiceProvider
-                  //                   .instance
-                  //                   .instanceStyleService
-                  //                   .appStyle
-                  //                   .iconSizeStandard,
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //       Text(
-                  //         controller.pageState == PageState.create
-                  //             ? "Legg til ny"
-                  //             : "Rediger",
-                  //         style: ServiceProvider
-                  //             .instance.instanceStyleService.appStyle.title,
-                  //       ),
-
-                  //       InkWell(
-                  //         onTap: () => controller.onSaved(),
-                  //         child: Container(
-                  //           width: ServiceProvider.instance.screenService
-                  //               .getWidthByPercentage(context, 15),
-                  //           decoration: BoxDecoration(
-                  //               color: controller.canSave
-                  //                   ? ServiceProvider.instance
-                  //                       .instanceStyleService.appStyle.green
-                  //                   : ServiceProvider
-                  //                       .instance
-                  //                       .instanceStyleService
-                  //                       .appStyle
-                  //                       .inactiveIconColor,
-                  //               borderRadius: BorderRadius.all(Radius.circular(
-                  //                   ServiceProvider
-                  //                       .instance
-                  //                       .instanceStyleService
-                  //                       .appStyle
-                  //                       .borderRadius))),
-                  //           child: Padding(
-                  //             padding: const EdgeInsets.all(8.0),
-                  //             child: Center(
-                  //               child: Text(
-                  //                 "Lagre",
-                  //                 style: ServiceProvider.instance
-                  //                     .instanceStyleService.appStyle.body1
-                  //                     .copyWith(
-                  //                   color: Colors.white,
-                  //                 ),
-                  //                 textAlign: TextAlign.center,
-                  //               ),
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       ),
-                  //       // InkWell(
-                  //       //   onTap: () => controller.onDelete(),
-                  //       //   child: Icon(
-                  //       //     Icons.delete,
-                  //       //     size: ServiceProvider.instance.instanceStyleService
-                  //       //         .appStyle.iconSizeStandard,
-                  //       //     color: controller.pageState == PageState.create
-                  //       //         ? Colors.transparent
-                  //       //         : ServiceProvider.instance.instanceStyleService
-                  //       //             .appStyle.textGrey,
-                  //       //   ),
-                  //       // ),
-                  //     ],
-                  //   ),
-                  // ),
                   PrimaryTextField(
                     autoFocus: true,
                     initValue: controller.singleCategoryItem.title,
@@ -216,7 +136,9 @@ class JournalAddCategory extends DialogTemplate {
                       else
                         controller.canSave = false;
                       controller.singleCategoryItem.title = val;
-                      controller.setState(() {});
+                      controller.setState(() {
+                        controller.saveBtnCtrlr.canSave = controller.canSave;
+                      });
                     },
                     textInputType: TextInputType.text,
                     textInputAction: TextInputAction.done,

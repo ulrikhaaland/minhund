@@ -40,6 +40,11 @@ abstract class MasterPage extends BaseView {
         controller.actionOne != null ||
         controller.actionTwo != null)
       appBar = AppBar(
+        iconTheme: IconThemeData(
+            color:
+                ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
+            size: ServiceProvider
+                .instance.instanceStyleService.appStyle.iconSizeBig),
         elevation: 0,
         backgroundColor: ServiceProvider
             .instance.instanceStyleService.appStyle.backgroundColor,
