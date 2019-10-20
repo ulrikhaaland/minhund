@@ -1,23 +1,27 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:minhund/helper/helper.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/service/service_provider.dart';
 import '../../../bottom_navigation.dart';
+import 'map-options/map_options_page.dart';
 
-class MapLocationController extends BottomNavigationController {
+enum MapPageState { noCurrentLocation, map, options }
+
+class MapPageController extends BottomNavigationController {
   Completer<GoogleMapController> mapController = Completer();
-
-  MapLocationController() {
-    print("Map Page built");
-  }
 
   LocationData currentLocation;
 
-  var location = new Location();
+  Location location = new Location();
+
+  MapPageState mapPageState = MapPageState.noCurrentLocation;
+
+  MapPageController() {
+    print("Map Page built");
+  }
 
   @override
   void initState() {
@@ -28,7 +32,9 @@ class MapLocationController extends BottomNavigationController {
   Future<void> getLocation() async {
     try {
       currentLocation = await location.getLocation();
-      setState(() {});
+      setState(() {
+        mapPageState = MapPageState.map;
+      });
     } catch (e) {
       if (e.code == 'PERMISSION_DENIED') {
         print('Location permission denied');
@@ -49,18 +55,27 @@ class MapLocationController extends BottomNavigationController {
   }
 
   @override
-  FloatingActionButton get fab => currentLocation != null
-      ? FloatingActionButton.extended(
-          heroTag: "map",
-          onPressed: _goToTheLake,
-          label: Text('To the lake!'),
-          icon: Icon(Icons.directions_boat),
-        )
-      : null;
+  FloatingActionButton get fab => FloatingActionButton.extended(
+        heroTag: "map",
+        backgroundColor:
+            ServiceProvider.instance.instanceStyleService.appStyle.green,
+        foregroundColor: Colors.white,
+        label: Text("Endre innstillinger"),
+        icon: Icon(
+          Icons.settings,
+        ),
+        onPressed: () => showCustomDialog(
+          context: context,
+          child: MapOptionsPage(
+            controller: MapOptionsPageController(onUpdate: () => null),
+          ),
+        ),
+      );
 
   @override
-  String get title =>
-      currentLocation == null ? "Posisjon ikke tilgjengelig" : null;
+  String get title => mapPageState == MapPageState.noCurrentLocation
+      ? "Posisjon ikke tilgjengelig"
+      : null;
 
   @override
   Widget get bottomNav => null;
@@ -72,21 +87,21 @@ class MapLocationController extends BottomNavigationController {
   Widget get actionTwo => null;
 }
 
-class MapLocation extends BottomNavigation {
-  final MapLocationController controller;
+class MapPage extends BottomNavigation {
+  final MapPageController controller;
 
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
   );
 
-  MapLocation({this.controller});
+  MapPage({this.controller});
 
   @override
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    if (controller.currentLocation == null) {
+    if (controller.mapPageState == MapPageState.noCurrentLocation) {
       return Container(
         width: ServiceProvider.instance.screenService
             .getWidthByPercentage(context, 80),
@@ -106,35 +121,29 @@ class MapLocation extends BottomNavigation {
         ]),
       );
     }
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.white,
-      // Color.fromARGB(255, 233, 242, 248), //top bar color
-      statusBarIconBrightness: Brightness.dark, //top bar icons
-      systemNavigationBarColor: Colors.white,
-      // Color.fromARGB(255, 233, 242, 248), //bottom bar color
-      systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
-    ));
-    return Stack(
-      children: <Widget>[
-        GoogleMap(
-          mapType: MapType.terrain,
-          initialCameraPosition: CameraPosition(
-            target: LatLng(
-              59.71949,
-              10.83576,
+    if (controller.mapPageState == MapPageState.map)
+      return Stack(
+        children: <Widget>[
+          GoogleMap(
+            mapType: MapType.normal,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(
+                59.71949,
+                10.83576,
+              ),
+              zoom: 14.4746,
             ),
-            zoom: 14.4746,
+            myLocationEnabled: true,
+            onMapCreated: (GoogleMapController localController) {
+              controller.mapController.complete(localController);
+            },
           ),
-          myLocationEnabled: true,
-          onMapCreated: (GoogleMapController localController) {
-            controller.mapController.complete(localController);
-          },
-        ),
-        Align(
-          alignment: Alignment.topRight,
-          child: Text("data"),
-        ),
-      ],
-    );
+          Align(
+            alignment: Alignment.topRight,
+            child: Text("data"),
+          ),
+        ],
+      );
+    return Container();
   }
 }

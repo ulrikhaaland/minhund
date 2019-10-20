@@ -35,7 +35,7 @@ class InstanceStyleService {
   void setStandardStyle(double screenHeight, double factor) {
     print('InstanceStyleService: setStandardStyle');
 
-    _appStyle.backgroundColor = new Color.fromARGB(255, 233, 242, 248);
+    _appStyle.backgroundColor = new Color.fromARGB(255, 245, 246, 247);
 
     _appStyle.pink = new Color.fromARGB(255, 230, 115, 153);
     _appStyle.skyBlue = new Color.fromARGB(255, 161, 196, 253);
