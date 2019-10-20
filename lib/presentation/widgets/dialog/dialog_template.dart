@@ -17,7 +17,10 @@ abstract class DialogTemplate extends BaseView {
   DialogTemplate({this.controller});
   @override
   Widget build(BuildContext context) {
+    if (!mounted) return Container();
+
     double padding = getDefaultPadding(context);
+
     return Padding(
       padding: EdgeInsets.fromLTRB(padding, padding * 2, padding, padding),
       child: LayoutBuilder(
@@ -25,9 +28,7 @@ abstract class DialogTemplate extends BaseView {
           return Container(
             alignment: Alignment.centerLeft,
             height: constraints.maxHeight * 0.1,
-            width: constraints.maxWidth != null
-                ? (constraints.maxWidth * 0.935) / 2
-                : null,
+            width: (constraints.maxWidth * 0.935) / 2,
             child: Column(
               children: <Widget>[
                 Row(
@@ -42,14 +43,17 @@ abstract class DialogTemplate extends BaseView {
                                   left: getDefaultPadding(context) * 2),
                               child: controller.actionOne ?? Container(),
                             ))),
-                    Container(
-                      width: constraints.maxWidth / 2,
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Text(
-                          controller.title ?? "",
-                          style: ServiceProvider.instance.instanceStyleService
-                              .appStyle.smallTitle,
+                    Flexible(
+                      child: Container(
+                        width: constraints.maxWidth / 2,
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            controller.title ?? "",
+                            style: ServiceProvider.instance.instanceStyleService
+                                .appStyle.smallTitle,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     ),

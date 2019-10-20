@@ -67,10 +67,13 @@ class JournalEventListItem extends BaseView {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(
-                  controller.eventItem.title,
-                  style: ServiceProvider
-                      .instance.instanceStyleService.appStyle.smallTitle,
+                Flexible(
+                  child: Text(
+                    controller.eventItem.title,
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.smallTitle,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 Row(
                   children: <Widget>[

@@ -29,8 +29,6 @@ class JournalProvider extends CrudProvider {
       JournalCategoryItem journalItem = JournalCategoryItem.fromJson(doc.data);
       journalItem.docRef = doc.reference;
       list.add(journalItem);
-      journalItem.journalEventItems = await JournalEventProvider()
-          .getCollection(id: id + path + "/${doc.documentID}");
     });
 
     return list;
