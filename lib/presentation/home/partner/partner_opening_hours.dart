@@ -11,7 +11,9 @@ import 'package:minhund/service/service_provider.dart';
 class PartnerOpeningHoursController extends DialogTemplateController {
   final OpeningHours openingHours;
 
-  PartnerOpeningHoursController({this.openingHours});
+  PageState pageState;
+
+  PartnerOpeningHoursController({this.openingHours, this.pageState});
   @override
   Widget get actionOne => PopButton();
 
@@ -58,15 +60,20 @@ class PartnerOpeningHours extends DialogTemplate {
                     child: Container(
                       width: constraints.maxWidth / 2.25,
                       child: DateTimePicker(
-                        controller: DateTimePickerController(label: "Fra"),
-                      ),
+                          controller: DateTimePickerController(
+                              label: "Fra",
+                              initialDate: controller.openingHours.dayFrom,
+                              time: true)),
                     ),
                   ),
                   Flexible(
                     child: Container(
                       width: constraints.maxWidth / 2.25,
                       child: DateTimePicker(
-                        controller: DateTimePickerController(label: "Til"),
+                        controller: DateTimePickerController(
+                            label: "Til",
+                            initialDate: controller.openingHours.dayTo,
+                            time: true),
                       ),
                     ),
                   )
@@ -88,7 +95,10 @@ class PartnerOpeningHours extends DialogTemplate {
                     child: Container(
                       width: constraints.maxWidth / 2.25,
                       child: DateTimePicker(
-                        controller: DateTimePickerController(label: "Fra"),
+                        controller: DateTimePickerController(
+                            label: "Fra",
+                            initialDate: controller.openingHours.weekendFrom,
+                            time: true),
                       ),
                     ),
                   ),
@@ -96,8 +106,10 @@ class PartnerOpeningHours extends DialogTemplate {
                     child: Container(
                       width: constraints.maxWidth / 2.25,
                       child: DateTimePicker(
-                        controller: DateTimePickerController(label: "Til"),
-                      ),
+                          controller: DateTimePickerController(
+                              label: "Til",
+                              initialDate: controller.openingHours.weekendTo,
+                              time: true)),
                     ),
                   )
                 ],
