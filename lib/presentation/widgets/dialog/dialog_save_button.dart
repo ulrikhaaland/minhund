@@ -9,7 +9,7 @@ class DialogSaveButtonController extends BaseController {
   final String buttonText;
 
   DialogSaveButtonController(
-      {this.onPressed, this.canSave, this.buttonText = "Lagre"});
+      {this.onPressed, this.canSave = true, this.buttonText = "Lagre"});
 }
 
 class DialogSaveButton extends BaseView {

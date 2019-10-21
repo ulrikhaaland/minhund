@@ -9,8 +9,12 @@ class UserProvider extends CrudProvider {
 
   Future updateFcmToken(User user, FirebaseMessaging firebaseMessaging) =>
       firebaseMessaging.getToken().then((token) {
-        user.fcm = token;
-        update(model: user);
+        if (user.fcm != token) {
+          user.fcm = token;
+          update(model: user);
+        } else {
+          return;
+        }
       });
 
   Future get({String id, model: User}) async {

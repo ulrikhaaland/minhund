@@ -61,7 +61,7 @@ class PhoneLoginController extends MasterPageController {
             rootPageController.firebaseUser =
                 await auth.signInWithPhone(_verificationId, _smsCode);
             if (rootPageController.firebaseUser != null) {
-              rootPageController.getUser().then((v) {
+              rootPageController.getUserContext().then((v) {
                 Navigator.pop(context);
               });
             } else {

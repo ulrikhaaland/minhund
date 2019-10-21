@@ -5,10 +5,12 @@ import 'package:minhund/helper/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
+import 'package:minhund/model/partner/partner.dart';
 import 'package:minhund/presentation/animation/intro.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/intro/user_intro.dart';
 import 'package:minhund/presentation/login/login_page.dart';
+import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/dog_provider.dart';
 import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/provider/journal_provider.dart';
@@ -36,6 +38,8 @@ class RootPageController extends BaseController {
 
   User _user;
   bool introDone = false;
+
+  UserContext userContext;
 
   bool newUser = false;
 
@@ -108,63 +112,108 @@ class RootPageController extends BaseController {
         .listen((IosNotificationSettings setting) {
       print("IOS Setting Registered");
     });
-    getUser();
+
+    getUserContext();
 
     super.initState();
   }
 
-  @override
-  void dispose() {
-    print('RootPage: dispose');
-    super.dispose();
-  }
-
-  Future<Null> getUser() async {
+  Future<void> getUserContext() async {
     if (firebaseUser == null) {
       firebaseUser = await auth.currentUser();
     }
-
     if (firebaseUser != null) {
-      _user = await UserProvider().get(
-        id: firebaseUser.uid,
-      );
-      if (_user == null) {
-        _user = User(
-            email: firebaseUser.email == "" ? null : firebaseUser.email,
-            id: firebaseUser.uid == "" ? null : firebaseUser.uid,
-            fcm: null,
-            allowsNotifications: false,
-            appVersion: 1,
-            notifications: 0,
-            phoneNumber: firebaseUser.phoneNumber,
-            dogs: [],
-            currentDogIndex: 0);
-
-        newUser = true;
-        await UserProvider().set(id: _user.id, model: _user);
-        _user = await UserProvider().get(
-          id: _user.id,
+      DocumentSnapshot userDocSnap =
+          await firestoreInstance.document("users/${firebaseUser.uid}").get();
+      if (userDocSnap.exists) {
+        prepareUser(
+          userDocSnap: userDocSnap,
         );
-        refresh();
       } else {
-        List<Dog> dogs =
-            await DogProvider().getCollection(id: firebaseUser.uid);
-        dogs.forEach((dog) async {
-          dog.journalItems =
-              await JournalProvider().getCollection(id: dog.docRef.path);
+        DocumentSnapshot partnerDocSnap = await firestoreInstance
+            .document("partners/${firebaseUser.uid}")
+            .get();
+        if (partnerDocSnap.exists) {
+          preparePartner(partnerDocSnap: partnerDocSnap);
+        } else {
+          prepareNewUser();
+        }
+      }
+    }
+  }
+
+  void preparePartner({DocumentSnapshot partnerDocSnap}) {
+    userContext = UserContext.partner;
+
+    _user = Partner.fromJson(partnerDocSnap.data);
+    _user.docRef = partnerDocSnap.reference;
+    setState(() {});
+  }
+
+  Future prepareNewUser() async {
+    _user = User(
+        email: firebaseUser.email == "" ? null : firebaseUser.email,
+        id: firebaseUser.uid == "" ? null : firebaseUser.uid,
+        fcm: null,
+        allowsNotifications: false,
+        appVersion: 1,
+        notifications: 0,
+        phoneNumber: firebaseUser.phoneNumber,
+        dogs: [],
+        currentDogIndex: 0);
+
+    newUser = true;
+    await UserProvider().set(id: _user.id, model: _user);
+    _user = await UserProvider().get(
+      id: _user.id,
+    );
+    setState(() {});
+    return;
+  }
+
+  Future prepareUser({DocumentSnapshot userDocSnap}) async {
+    userContext = UserContext.user;
+
+    _user = User.fromJson(userDocSnap.data);
+    _user.docRef = userDocSnap.reference;
+
+    List<Dog> dogs = await DogProvider().getCollection(id: firebaseUser.uid);
+    if (dogs.isNotEmpty) {
+      dogs.forEach((dog) async {
+        dog.journalItems =
+            await JournalProvider().getCollection(id: dog.docRef.path);
+        if (dog.journalItems.isNotEmpty) {
           dog.journalItems.forEach((item) async {
             item.journalEventItems = await JournalEventProvider()
                 .getCollection(id: item.docRef.path);
-            refresh();
           });
-        });
+          setState(() {});
+        } else {
+          setState(() {});
+        }
+      });
 
-        _user.dogs = dogs ?? [];
-      }
-      UserProvider().updateFcmToken(_user, firebaseMessaging);
+      _user.dogs = dogs;
+    } else {
+      _user.dog = Dog(
+        name: "Min Hund",
+        weigth: "12",
+        birthDate: DateTime(
+          2015,
+          5,
+          15,
+        ),
+        race: "Beagle",
+      );
+
+      _user.dogs = [
+        _user.dog,
+      ];
+      setState(() {});
     }
 
-    refresh();
+    UserProvider().updateFcmToken(_user, firebaseMessaging);
+
     return;
   }
 
@@ -211,8 +260,9 @@ class RootPage extends BaseView {
     if (!controller.introDone) {
       return Intro(
         introDone: () {
-          controller.introDone = true;
-          controller.refresh();
+          controller.setState(() {
+            controller.introDone = true;
+          });
         },
       );
     } else if (controller.firebaseUser == null) {
@@ -222,8 +272,9 @@ class RootPage extends BaseView {
           auth: controller.auth,
           returnUser: (returnUser) {
             if (returnUser != null) {
-              controller.firebaseUser = returnUser;
-              controller.refresh();
+              controller.setState(() {
+                controller.firebaseUser = returnUser;
+              });
             }
             return returnUser;
           },
@@ -237,11 +288,13 @@ class RootPage extends BaseView {
                 controller.setState(() => controller.newUser = false)),
       );
     } else if (controller._user != null) {
-      controller._user.dog =
-          controller._user.dogs[controller._user.currentDogIndex];
+      if (controller.userContext == UserContext.user)
+        controller._user.dog =
+            controller._user.dogs[controller._user.currentDogIndex];
 
       return BottomNavigation(
         controller: BottomNavigationController(
+          userContext: controller.userContext,
           user: controller._user,
         ),
       );

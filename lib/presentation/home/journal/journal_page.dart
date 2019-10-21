@@ -4,6 +4,7 @@ import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
+import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
 import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/service/service_provider.dart';
@@ -15,11 +16,24 @@ class JournalPageController extends BottomNavigationController {
 
   Dog dog;
 
-  JournalPageController({
-    this.user,
-  }) {
+  static final JournalPageController _instance =
+      JournalPageController._internal();
+
+  factory JournalPageController() {
     print("Journal Page built");
+
+    return _instance;
   }
+
+  JournalPageController._internal({
+    this.user,
+  });
+
+  // JournalPageController({
+  //   this.user,
+  // }) {
+  //   print("Journal Page built");
+  // }
 
   @override
   FloatingActionButton get fab => FloatingActionButton(
@@ -69,6 +83,17 @@ class JournalPage extends BottomNavigation {
   @override
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
+
+    if (controller.user.dog.profileImage == null) {
+      controller.user.dog.profileImage = CustomImage(
+        controller: CustomImageController(
+          customImageType: CustomImageType.circle,
+          imgUrl: controller.user.dog.imgUrl,
+        ),
+      );
+    } else {
+      controller.user.dog.profileImage.controller.init = false;
+    }
 
     getTimeDifference(time: controller.dog.birthDate, daysMonthsYears: true);
 

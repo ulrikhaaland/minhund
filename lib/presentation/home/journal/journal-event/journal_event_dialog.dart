@@ -412,6 +412,7 @@ class JournalEventDialog extends DialogTemplate {
                                     controller.basicContainer(
                                       width: constraints.maxWidth,
                                       child: Padding(
+                                        // ? Checkout this padding
                                         padding: EdgeInsets.only(
                                             left: padding * 1.6),
                                         child: Text(

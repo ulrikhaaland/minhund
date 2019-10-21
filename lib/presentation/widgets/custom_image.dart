@@ -31,7 +31,7 @@ class CustomImageController extends BaseController {
   CustomImageController(
       {this.imageSizePercentage,
       this.imageFile,
-      this.customImageType,
+      this.customImageType = CustomImageType.circle,
       this.imgUrl,
       this.getImageFile,
       this.init = false});
@@ -74,7 +74,7 @@ class CustomImage extends BaseView {
                     .getHeightByPercentage(
                         context, controller.imageSizePercentage ?? 7.5),
                 backgroundColor: ServiceProvider
-                    .instance.instanceStyleService.appStyle.green,
+                    .instance.instanceStyleService.appStyle.skyBlue,
                 child: controller.isLoading ? CPI(false) : icon,
                 backgroundImage: controller.imgUrl != null
                     ? AdvancedNetworkImage(controller.imgUrl)
@@ -93,7 +93,7 @@ class CustomImage extends BaseView {
                     : controller.setState(() => controller.imageFile = null),
                 child: Text(
                   controller.imageFile == null
-                      ? "Legg til et bilde av din hund"
+                      ? "Legg til et bilde"
                       : "Fjern bilde",
                   style: ServiceProvider.instance.instanceStyleService.appStyle
                       .disabledColoredText,
