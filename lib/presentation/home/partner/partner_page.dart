@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/address.dart';
+import 'package:minhund/model/partner/opening_hours.dart';
 import 'package:minhund/model/partner/partner.dart';
+import 'package:minhund/presentation/home/partner/partner_opening_hours.dart';
+import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_save_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
@@ -18,6 +21,12 @@ class PartnerPageController extends BottomNavigationController {
   CustomImage customImage;
 
   List<PrimaryTextField> editTextFields;
+
+  final _formKey = GlobalKey<FormState>();
+
+  ScrollController scrollController;
+
+  FocusScopeNode focusScopeNode = FocusScopeNode();
 
   PartnerPageController({this.pageState = PageState.read, this.partner});
 
@@ -103,6 +112,14 @@ class PartnerPage extends BottomNavigation {
 
   PartnerPage({this.controller});
 
+  void textFieldNext({double height}) {
+    scrollScreen(
+        controller: controller.scrollController,
+        height: ServiceProvider.instance.screenService
+            .getHeightByPercentage(context, height));
+    controller.focusScopeNode.nextFocus();
+  }
+
   @override
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
@@ -170,23 +187,32 @@ class PartnerPage extends BottomNavigation {
         hintText: "Juridisk navn",
         initValue: controller.partner.name,
         onSaved: (val) => controller.partner.name,
+        onFieldSubmitted: () => textFieldNext(height: 10),
       ),
       PrimaryTextField(
-          hintText: "Adresse",
-          initValue: controller.partner.address?.address,
-          onSaved: (val) => controller.partner.address.address),
+        hintText: "Adresse",
+        initValue: controller.partner.address?.address,
+        onSaved: (val) => controller.partner.address.address,
+        onFieldSubmitted: () => textFieldNext(height: 0),
+      ),
       PrimaryTextField(
-          hintText: "Postkode",
-          initValue: controller.partner.address?.zip,
-          onSaved: (val) => controller.partner.address.zip),
+        hintText: "Postkode",
+        initValue: controller.partner.address?.zip,
+        onSaved: (val) => controller.partner.address.zip,
+        onFieldSubmitted: () => textFieldNext(height: 0),
+      ),
       PrimaryTextField(
-          hintText: "Poststed",
-          initValue: controller.partner.address?.city,
-          onSaved: (val) => controller.partner.address.city),
+        hintText: "Poststed",
+        initValue: controller.partner.address?.city,
+        onFieldSubmitted: () => textFieldNext(height: 0),
+        onSaved: (val) => controller.partner.address.city,
+      ),
       PrimaryTextField(
-          hintText: "Email",
-          initValue: controller.partner.email,
-          onSaved: (val) => controller.partner.email),
+        hintText: "Email",
+        initValue: controller.partner.email,
+        onFieldSubmitted: () => textFieldNext(height: 0),
+        onSaved: (val) => controller.partner.email,
+      ),
       PrimaryTextField(
           hintText: "Telefonnummer",
           initValue: controller.partner.phoneNumber,
@@ -196,6 +222,7 @@ class PartnerPage extends BottomNavigation {
     return LayoutBuilder(
       builder: (context, con) {
         return SingleChildScrollView(
+          controller: controller.scrollController,
           child: Container(
             width: ServiceProvider.instance.screenService
                 .getWidthByPercentage(context, 80),
@@ -205,12 +232,38 @@ class PartnerPage extends BottomNavigation {
                 Container(
                   height: padding * 4,
                 ),
-                Column(
-                  children: controller.editTextFields
-                      .map((tf) => controller.editBasicContainer(
-                            child: tf,
-                          ))
-                      .toList(),
+                SecondaryButton(
+                  color: Colors.white,
+                  textColor: ServiceProvider
+                      .instance.instanceStyleService.appStyle.textGrey,
+                  text: "Åpningstider",
+                  onPressed: () => showCustomDialog(
+                    context: context,
+                    child: PartnerOpeningHours(
+                      controller: PartnerOpeningHoursController(
+                          openingHours: controller.partner.openingHours ??
+                              OpeningHours()),
+                    ),
+                  ),
+                ),
+                Container(
+                  height: padding * 4,
+                ),
+                Form(
+                  key: controller._formKey,
+                  child: FocusScope(
+                    node: controller.focusScopeNode,
+                    child: Column(
+                      children: controller.editTextFields
+                          .map((tf) => controller.editBasicContainer(
+                                child: tf,
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                ),
+                Container(
+                  height: padding * 4,
                 ),
               ],
             ),

@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:minhund/model/address.dart';
+import 'package:minhund/model/partner/opening_hours.dart';
 import 'package:minhund/model/user.dart';
 
 part 'partner.g.dart';
@@ -19,6 +20,7 @@ class Partner extends User {
   Address address;
   double latitude;
   double longitude;
+  OpeningHours openingHours;
 
   factory Partner.fromJson(Map<String, dynamic> json) =>
       _$PartnerFromJson(json);

@@ -5,6 +5,7 @@ import 'package:minhund/service/service_provider.dart';
 class SecondaryButton extends StatelessWidget {
   final Key key;
   final String text;
+  final Color textColor;
   final Color color;
   final VoidCallback onPressed;
   final double width;
@@ -19,6 +20,7 @@ class SecondaryButton extends StatelessWidget {
     this.width,
     this.bottomPadding,
     this.topPadding,
+    this.textColor,
   }) : super(key: key);
 
   @override
@@ -38,7 +40,8 @@ class SecondaryButton extends StatelessWidget {
           child: RaisedButton(
               child: Text(text ?? "N/A",
                   style: ServiceProvider
-                      .instance.instanceStyleService.appStyle.buttonText),
+                      .instance.instanceStyleService.appStyle.buttonText
+                      .copyWith(color: textColor ?? Colors.white)),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(ServiceProvider
                       .instance.instanceStyleService.appStyle.borderRadius))),

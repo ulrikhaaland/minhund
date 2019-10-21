@@ -14,6 +14,7 @@ Partner _$PartnerFromJson(Map<String, dynamic> json) {
         : Address.fromJson(json['address'] as Map<String, dynamic>),
     latitude: (json['latitude'] as num)?.toDouble(),
     longitude: (json['longitude'] as num)?.toDouble(),
+    imgUrl: json['imgUrl'] as String,
   )
     ..id = json['id'] as String
     ..name = json['name'] as String
@@ -23,7 +24,10 @@ Partner _$PartnerFromJson(Map<String, dynamic> json) {
     ..fcm = json['fcm'] as String
     ..appVersion = (json['appVersion'] as num)?.toDouble()
     ..allowsNotifications = json['allowsNotifications'] as bool
-    ..notifications = json['notifications'] as int;
+    ..notifications = json['notifications'] as int
+    ..openingHours = json['openingHours'] == null
+        ? null
+        : OpeningHours.fromJson(json['openingHours'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$PartnerToJson(Partner instance) => <String, dynamic>{
@@ -37,7 +41,9 @@ Map<String, dynamic> _$PartnerToJson(Partner instance) => <String, dynamic>{
       'allowsNotifications': instance.allowsNotifications,
       'notifications': instance.notifications,
       'fcmList': instance.fcmList,
-      'address': instance.address.toJson(),
+      'imgUrl': instance.imgUrl,
+      'address': instance.address,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
+      'openingHours': instance.openingHours,
     };
