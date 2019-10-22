@@ -241,8 +241,7 @@ class PartnerPage extends BottomNavigation {
                     context: context,
                     child: PartnerOpeningHours(
                       controller: PartnerOpeningHoursController(
-                          openingHours: controller.partner.openingHours ??
-                              OpeningHours()),
+                          openingHours: controller.partner.openingHours),
                     ),
                   ),
                 ),

@@ -96,7 +96,7 @@ class DateTimePickerController extends BaseController {
               title: Align(
                   alignment: Alignment.center,
                   child: Text(
-                    title ?? "N/A",
+                    title ?? label ?? "N/A",
                     style: ServiceProvider
                         .instance.instanceStyleService.appStyle.smallTitle,
                   )),
