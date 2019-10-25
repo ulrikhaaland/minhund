@@ -15,6 +15,8 @@ class DateTimePickerController extends BaseController {
   final DateTime initialDate;
   final String title;
 
+  final DateTime minDateTime;
+
   final double width;
 
   bool canSave = false;
@@ -36,6 +38,7 @@ class DateTimePickerController extends BaseController {
       {this.onConfirmed,
       this.title,
       this.dateFormat,
+      this.minDateTime,
       this.label,
       this.initialDate,
       this.width,
@@ -127,6 +130,7 @@ class DateTimePickerController extends BaseController {
                   ),
                 if (time != true)
                   DatePickerWidget(
+                    minDateTime: minDateTime,
                     // maxDateTime: DateTime.now(),
                     dateFormat: dateFormat ?? "dd-MM-yyyy",
                     onConfirm: (DateTime selectedTime, List<int> list) {

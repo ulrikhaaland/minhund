@@ -4,9 +4,9 @@ import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
+import 'package:minhund/presentation/widgets/buttons/save_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_pop_button.dart';
-import 'package:minhund/presentation/widgets/dialog/dialog_save_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_template.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/cloud_functions_provider.dart';
@@ -30,7 +30,7 @@ class JournalAddCategoryController extends DialogTemplateController {
 
   bool canSave = false;
 
-  DialogSaveButtonController saveBtnCtrlr;
+  SaveButtonController saveBtnCtrlr;
 
   JournalAddCategoryController(
       {this.journalCategoryItems,
@@ -46,7 +46,7 @@ class JournalAddCategoryController extends DialogTemplateController {
 
   @override
   // TODO: implement actionTwo
-  Widget get actionTwo => DialogSaveButton(
+  Widget get actionTwo => SaveButton(
         controller: saveBtnCtrlr,
       );
 
@@ -64,7 +64,7 @@ class JournalAddCategoryController extends DialogTemplateController {
 
     if (singleCategoryItem.title.length > 0) canSave = true;
 
-    saveBtnCtrlr = DialogSaveButtonController(
+    saveBtnCtrlr = SaveButtonController(
       onPressed: () => onSaved(),
       canSave: canSave,
     );

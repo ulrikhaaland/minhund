@@ -32,7 +32,7 @@ class DogProvider extends CrudProvider {
     String path = "users/$id/dogs";
     QuerySnapshot qSnap = await super.getCollection(id: path);
     if (qSnap.documents.isNotEmpty) {
-      qSnap.documents.forEach((doc) async {
+      qSnap.documents.forEach((doc) {
         Dog dog = Dog.fromJson(doc.data);
         dog.docRef = doc.reference;
         list.add(dog);

@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:minhund/model/address.dart';
 import 'package:minhund/model/partner/opening_hours.dart';
+import 'package:minhund/model/partner/partner_offer.dart';
 import 'package:minhund/model/user.dart';
 
 part 'partner.g.dart';
@@ -14,6 +15,7 @@ class Partner extends User {
     this.longitude,
     this.imgUrl,
     this.websiteUrl,
+    this.offers,
   });
 
   List<String> fcmList;
@@ -23,6 +25,7 @@ class Partner extends User {
   double latitude;
   double longitude;
   OpeningHours openingHours;
+  List<PartnerOffer> offers;
 
   factory Partner.fromJson(Map<String, dynamic> json) =>
       _$PartnerFromJson(json);

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/partner/opening_hours.dart';
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
+import 'package:minhund/presentation/widgets/buttons/save_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_pop_button.dart';
-import 'package:minhund/presentation/widgets/dialog/dialog_save_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_template.dart';
 import 'package:minhund/presentation/widgets/tap_to_unfocus.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
@@ -23,8 +23,8 @@ class PartnerOpeningHoursController extends DialogTemplateController {
 
   @override
   Widget get actionTwo => pageState == PageState.edit
-      ? DialogSaveButton(
-          controller: DialogSaveButtonController(onPressed: () {
+      ? SaveButton(
+          controller: SaveButtonController(onPressed: () {
             _formKey.currentState.save();
             Navigator.pop(context);
           }),

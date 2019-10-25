@@ -163,7 +163,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                   .getHeightByPercentage(
                       context, widget.maxLines > 1 ? 15 : 7.5),
               child: Card(
-                elevation: 0,
+                elevation: 1,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(ServiceProvider
                       .instance.instanceStyleService.appStyle.borderRadius),

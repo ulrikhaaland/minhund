@@ -7,7 +7,7 @@ import 'package:minhund/presentation/widgets/tap_to_unfocus.dart';
 import 'package:minhund/service/service_provider.dart';
 
 abstract class MasterPageController extends BaseController {
-  FloatingActionButton get fab;
+  Widget get fab;
 
   String get title;
 

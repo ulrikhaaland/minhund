@@ -12,9 +12,9 @@ import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
+import 'package:minhund/presentation/widgets/buttons/save_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_pop_button.dart';
-import 'package:minhund/presentation/widgets/dialog/dialog_save_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_template.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/crud_provider.dart';
@@ -63,7 +63,7 @@ class JournalEventDialogController extends DialogTemplateController {
 
   DateTimePickerController timePickerController;
 
-  DialogSaveButtonController saveBtnCtrlr;
+  SaveButtonController saveBtnCtrlr;
 
   List<String> reminderItems = [
     "Ingen",
@@ -85,7 +85,7 @@ class JournalEventDialogController extends DialogTemplateController {
 
   @override
   Widget get actionTwo => pageState != PageState.read
-      ? DialogSaveButton(
+      ? SaveButton(
           controller: saveBtnCtrlr,
         )
       : IconButton(
@@ -140,7 +140,7 @@ class JournalEventDialogController extends DialogTemplateController {
       canSave = true;
     }
 
-    saveBtnCtrlr = DialogSaveButtonController(
+    saveBtnCtrlr = SaveButtonController(
         canSave: canSave, onPressed: () => saveEventItem());
 
     super.initState();

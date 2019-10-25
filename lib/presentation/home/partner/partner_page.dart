@@ -7,9 +7,9 @@ import 'package:minhund/model/address.dart';
 import 'package:minhund/model/partner/opening_hours.dart';
 import 'package:minhund/model/partner/partner.dart';
 import 'package:minhund/presentation/home/partner/partner_opening_hours.dart';
+import 'package:minhund/presentation/widgets/buttons/save_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
-import 'package:minhund/presentation/widgets/dialog/dialog_save_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/file_provider.dart';
 import 'package:minhund/provider/partner_provider.dart';
@@ -37,14 +37,11 @@ class PartnerPageController extends BottomNavigationController {
   PartnerPageController({this.pageState = PageState.read, this.partner});
 
   @override
-  // TODO: implement bottomNav
   Widget get bottomNav => null;
 
   @override
-  // TODO: implement title
   String get title => partner.name;
   @override
-  // TODO: implement actionTwo
   Widget get actionTwo => pageState == PageState.read
       ? IconButton(
           onPressed: () => setState(() => pageState = PageState.edit),
@@ -54,8 +51,8 @@ class PartnerPageController extends BottomNavigationController {
           iconSize: ServiceProvider
               .instance.instanceStyleService.appStyle.iconSizeStandard,
         )
-      : DialogSaveButton(
-          controller: DialogSaveButtonController(
+      : SaveButton(
+          controller: SaveButtonController(
             onPressed: () async {
               if (partner.imgUrl == null)
                 partner.imgUrl = await FileProvider().uploadFile(
@@ -73,7 +70,7 @@ class PartnerPageController extends BottomNavigationController {
         );
 
   @override
-  initState() {
+  void initState() {
     if (partner.address == null) partner.address = Address();
 
     if (partner.openingHours == null)
@@ -181,40 +178,42 @@ class PartnerPage extends BottomNavigation {
     return LayoutBuilder(
       builder: (context, con) {
         controller.constraints = con;
-        return Container(
-          width: ServiceProvider.instance.screenService
-              .getWidthByPercentage(context, 80),
-          child: Column(
-            children: <Widget>[
-              controller.customImage,
-              Container(
-                height: padding * 4,
-              ),
-              controller.readBasicContainer(
-                  key: "Adresse", value: controller.partner.address?.address),
-              controller.readBasicContainer(
-                  key: "Postnummer", value: controller.partner.address?.zip),
-              controller.readBasicContainer(
-                key: "Poststed",
-                value: controller.partner.address?.city,
-              ),
-              controller.readBasicContainer(
-                key: "Email",
-                value: controller.partner.email,
-              ),
-              controller.readBasicContainer(
-                key: "Telefonnummer",
-                value: controller.partner.phoneNumber,
-              ),
-              controller.readBasicContainer(
-                key: "Nettsted",
-                value: controller.partner.websiteUrl,
-              ),
-              controller.readBasicContainer(
-                key: "Kundenummer",
-                value: controller.partner.id,
-              ),
-            ],
+        return SingleChildScrollView(
+          child: Container(
+            width: ServiceProvider.instance.screenService
+                .getWidthByPercentage(context, 80),
+            child: Column(
+              children: <Widget>[
+                controller.customImage,
+                Container(
+                  height: padding * 4,
+                ),
+                controller.readBasicContainer(
+                    key: "Adresse", value: controller.partner.address?.address),
+                controller.readBasicContainer(
+                    key: "Postnummer", value: controller.partner.address?.zip),
+                controller.readBasicContainer(
+                  key: "Poststed",
+                  value: controller.partner.address?.city,
+                ),
+                controller.readBasicContainer(
+                  key: "Email",
+                  value: controller.partner.email,
+                ),
+                controller.readBasicContainer(
+                  key: "Telefonnummer",
+                  value: controller.partner.phoneNumber,
+                ),
+                controller.readBasicContainer(
+                  key: "Nettsted",
+                  value: controller.partner.websiteUrl,
+                ),
+                controller.readBasicContainer(
+                  key: "Kundenummer",
+                  value: controller.partner.id,
+                ),
+              ],
+            ),
           ),
         );
       },

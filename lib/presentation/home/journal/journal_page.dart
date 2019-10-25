@@ -16,24 +16,11 @@ class JournalPageController extends BottomNavigationController {
 
   Dog dog;
 
-  static final JournalPageController _instance =
-      JournalPageController._internal();
-
-  factory JournalPageController() {
-    print("Journal Page built");
-
-    return _instance;
-  }
-
-  JournalPageController._internal({
+  JournalPageController({
     this.user,
-  });
-
-  // JournalPageController({
-  //   this.user,
-  // }) {
-  //   print("Journal Page built");
-  // }
+  }) {
+    print("Journal Page built");
+  }
 
   @override
   FloatingActionButton get fab => FloatingActionButton(
@@ -83,17 +70,6 @@ class JournalPage extends BottomNavigation {
   @override
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
-
-    if (controller.user.dog.profileImage == null) {
-      controller.user.dog.profileImage = CustomImage(
-        controller: CustomImageController(
-          customImageType: CustomImageType.circle,
-          imgUrl: controller.user.dog.imgUrl,
-        ),
-      );
-    } else {
-      controller.user.dog.profileImage.controller.init = false;
-    }
 
     getTimeDifference(time: controller.dog.birthDate, daysMonthsYears: true);
 

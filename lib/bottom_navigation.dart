@@ -3,7 +3,7 @@ import 'package:minhund/helper/helper.dart';
 import 'package:minhund/presentation/home/journal/journal_page.dart';
 import 'package:minhund/presentation/home/leverage/leverage.dart';
 import 'package:minhund/presentation/home/map/map_page.dart';
-import 'package:minhund/presentation/home/partner/parter_offers_page.dart';
+import 'package:minhund/presentation/home/partner/partner-offer/partner_offers_page.dart';
 import 'package:minhund/presentation/home/profile/profile.dart';
 import 'package:minhund/presentation/widgets/bottom_nav.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
@@ -48,7 +48,9 @@ class BottomNavigationController extends MasterPageController {
 
     if (userContext == UserContext.user) {
       journal = JournalPage(
-        controller: JournalPageController(),
+        controller: JournalPageController(
+          user: user,
+        ),
       );
 
       mapLocation = MapPage(
@@ -95,7 +97,7 @@ class BottomNavigationController extends MasterPageController {
   String get title => null;
 
   @override
-  FloatingActionButton get fab => null;
+  Widget get fab => null;
 }
 
 class BottomNavigation extends MasterPage {
@@ -107,6 +109,18 @@ class BottomNavigation extends MasterPage {
   @override
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
+
+    if (controller.user.dog != null) if (controller.user.dog.profileImage ==
+        null) {
+      controller.user.dog.profileImage = CustomImage(
+        controller: CustomImageController(
+          customImageType: CustomImageType.circle,
+          imgUrl: controller.user.dog.imgUrl,
+        ),
+      );
+    } else {
+      controller.user.dog.profileImage.controller.init = false;
+    }
 
     return IndexedStack(
       index: controller.bottomNavIndex,
