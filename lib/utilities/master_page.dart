@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:minhund/helper/helper.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/service/service_provider.dart';
@@ -54,7 +55,12 @@ abstract class MasterPage extends BaseView {
           controller.title ?? "",
           style: ServiceProvider.instance.instanceStyleService.appStyle.title,
         ),
-        actions: <Widget>[controller.actionTwo ?? Container()],
+        actions: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: getDefaultPadding(context) * 2),
+            child: controller.actionTwo ?? Container(),
+          )
+        ],
       );
 
     return GestureDetector(

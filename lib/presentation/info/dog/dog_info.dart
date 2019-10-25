@@ -151,7 +151,7 @@ class DogInfoController extends BaseController {
         imageFile: null,
         imgUrl: dog.imgUrl,
         init: true,
-        getImageFile: (file) => imageFile = file,
+        provideImageFile: (file) => imageFile = file,
       ),
     );
     super.initState();

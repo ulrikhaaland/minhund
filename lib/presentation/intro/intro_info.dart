@@ -1,14 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
-import 'package:minhund/helper/image_picker.dart';
 import 'package:minhund/model/dog.dart';
-import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/info/dog/dog_info.dart';
 import 'package:minhund/presentation/info/user/user_info.dart';
-import 'package:minhund/provider/dog_provider.dart';
-import 'package:minhund/provider/user_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 

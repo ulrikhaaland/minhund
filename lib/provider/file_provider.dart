@@ -17,4 +17,16 @@ class FileProvider {
       return await (await uploadTask.onComplete).ref.getDownloadURL();
     }
   }
+
+  Future deleteFile({String path}) async {
+    if (path != null) {
+      try {
+        StorageReference ref = FirebaseStorage.instance.ref().child(path);
+        await ref.delete();
+      } catch (e) {
+        print(e.toString());
+      }
+    }
+    return null;
+  }
 }

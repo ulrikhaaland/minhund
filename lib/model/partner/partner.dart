@@ -5,7 +5,7 @@ import 'package:minhund/model/user.dart';
 
 part 'partner.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(anyMap: true)
 class Partner extends User {
   Partner({
     this.fcmList,

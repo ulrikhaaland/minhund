@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/helper.dart';
@@ -9,6 +11,8 @@ import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_save_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
+import 'package:minhund/provider/file_provider.dart';
+import 'package:minhund/provider/partner_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 
 class PartnerPageController extends BottomNavigationController {
@@ -25,6 +29,8 @@ class PartnerPageController extends BottomNavigationController {
   final _formKey = GlobalKey<FormState>();
 
   ScrollController scrollController;
+
+  File imageFile;
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
@@ -50,13 +56,33 @@ class PartnerPageController extends BottomNavigationController {
         )
       : DialogSaveButton(
           controller: DialogSaveButtonController(
-            onPressed: () => setState(() => pageState = PageState.read),
+            onPressed: () async {
+              if (partner.imgUrl == null)
+                partner.imgUrl = await FileProvider().uploadFile(
+                    file: imageFile, path: "partners/${partner.id}/logo");
+
+              _formKey.currentState.save();
+
+              PartnerProvider().update(model: partner);
+
+              setState(() {
+                pageState = PageState.read;
+              });
+            },
           ),
         );
 
   @override
   initState() {
     if (partner.address == null) partner.address = Address();
+
+    if (partner.openingHours == null)
+      partner.openingHours = OpeningHours(
+        dayFrom: DateTime.now(),
+        dayTo: DateTime.now(),
+        weekendFrom: DateTime.now(),
+        weekendTo: DateTime.now(),
+      );
     super.initState();
   }
 
@@ -126,8 +152,17 @@ class PartnerPage extends BottomNavigation {
 
     controller.customImage = CustomImage(
       controller: CustomImageController(
+        onDelete: () {
+          FileProvider()
+              .deleteFile(path: "partners/${controller.partner.id}/logo");
+          controller.partner.imgUrl = null;
+        },
+        provideImageFile: (imgFile) {
+          controller.imageFile = imgFile;
+        },
         init: controller.pageState == PageState.edit ? true : false,
         imageSizePercentage: 10,
+        imageFile: controller.imageFile,
         imgUrl: controller.partner.imgUrl,
       ),
     );
@@ -135,6 +170,8 @@ class PartnerPage extends BottomNavigation {
     if (controller.pageState == PageState.read) return buildRead(context);
 
     if (controller.pageState == PageState.edit) return buildEdit(context);
+
+    return Container();
   }
 
   Widget buildRead(BuildContext context) {
@@ -186,37 +223,37 @@ class PartnerPage extends BottomNavigation {
       PrimaryTextField(
         hintText: "Juridisk navn",
         initValue: controller.partner.name,
-        onSaved: (val) => controller.partner.name,
+        onSaved: (val) => controller.partner.name = val,
         onFieldSubmitted: () => textFieldNext(height: 10),
       ),
       PrimaryTextField(
         hintText: "Adresse",
         initValue: controller.partner.address?.address,
-        onSaved: (val) => controller.partner.address.address,
+        onSaved: (val) => controller.partner.address.address = val,
         onFieldSubmitted: () => textFieldNext(height: 0),
       ),
       PrimaryTextField(
         hintText: "Postkode",
         initValue: controller.partner.address?.zip,
-        onSaved: (val) => controller.partner.address.zip,
+        onSaved: (val) => controller.partner.address.zip = val,
         onFieldSubmitted: () => textFieldNext(height: 0),
       ),
       PrimaryTextField(
         hintText: "Poststed",
         initValue: controller.partner.address?.city,
         onFieldSubmitted: () => textFieldNext(height: 0),
-        onSaved: (val) => controller.partner.address.city,
+        onSaved: (val) => controller.partner.address.city = val,
       ),
       PrimaryTextField(
         hintText: "Email",
         initValue: controller.partner.email,
         onFieldSubmitted: () => textFieldNext(height: 0),
-        onSaved: (val) => controller.partner.email,
+        onSaved: (val) => controller.partner.email = val,
       ),
       PrimaryTextField(
           hintText: "Telefonnummer",
           initValue: controller.partner.phoneNumber,
-          onSaved: (val) => controller.partner.phoneNumber),
+          onSaved: (val) => controller.partner.phoneNumber = val),
     ];
 
     return LayoutBuilder(
@@ -254,8 +291,16 @@ class PartnerPage extends BottomNavigation {
                     node: controller.focusScopeNode,
                     child: Column(
                       children: controller.editTextFields
-                          .map((tf) => controller.editBasicContainer(
-                                child: tf,
+                          .map((tf) => ListTile(
+                                title: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    tf.hintText,
+                                    style: ServiceProvider.instance
+                                        .instanceStyleService.appStyle.body1,
+                                  ),
+                                ),
+                                subtitle: tf,
                               ))
                           .toList(),
                     ),

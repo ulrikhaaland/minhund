@@ -36,18 +36,6 @@ class PartnerOpeningHoursController extends DialogTemplateController {
   @override
   String get title => "Åpningstider";
 
-  @override
-  initState() {
-    if (openingHours == null)
-      openingHours = OpeningHours(
-        dayFrom: DateTime.now(),
-        dayTo: DateTime.now(),
-        weekendFrom: DateTime.now(),
-        weekendTo: DateTime.now(),
-      );
-    super.initState();
-  }
-
   String formatTime({int timeToFormat}) {
     String time = "n/a";
 
@@ -97,7 +85,7 @@ class PartnerOpeningHours extends DialogTemplate {
                     "${controller.formatTime(timeToFormat: controller.openingHours.dayFrom.hour)}:${controller.formatTime(timeToFormat: controller.openingHours.dayFrom.minute)} - ${controller.formatTime(timeToFormat: controller.openingHours.dayTo.hour)}:${controller.formatTime(timeToFormat: controller.openingHours.dayTo.minute)}",
                     style: ServiceProvider
                         .instance.instanceStyleService.appStyle.body1,
-                  )
+                  ),
                 ],
               ),
               Container(
@@ -109,7 +97,12 @@ class PartnerOpeningHours extends DialogTemplate {
                     "Helg:",
                     style: ServiceProvider
                         .instance.instanceStyleService.appStyle.descTitle,
-                  )
+                  ),
+                  Text(
+                    "${controller.formatTime(timeToFormat: controller.openingHours.weekendFrom.hour)}:${controller.formatTime(timeToFormat: controller.openingHours.weekendFrom.minute)} - ${controller.formatTime(timeToFormat: controller.openingHours.weekendTo.hour)}:${controller.formatTime(timeToFormat: controller.openingHours.weekendTo.minute)}",
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.body1,
+                  ),
                 ],
               ),
             ],
@@ -145,6 +138,8 @@ class PartnerOpeningHours extends DialogTemplate {
                       width: constraints.maxWidth / 2.25,
                       child: DateTimePicker(
                           controller: DateTimePickerController(
+                              onConfirmed: (time) =>
+                                  controller.openingHours.dayFrom = time,
                               label: "Fra",
                               initialDate: controller.openingHours.dayFrom,
                               time: true)),
@@ -155,6 +150,8 @@ class PartnerOpeningHours extends DialogTemplate {
                       width: constraints.maxWidth / 2.25,
                       child: DateTimePicker(
                         controller: DateTimePickerController(
+                            onConfirmed: (time) =>
+                                controller.openingHours.dayTo = time,
                             label: "Til",
                             initialDate: controller.openingHours.dayTo,
                             time: true),
@@ -180,6 +177,8 @@ class PartnerOpeningHours extends DialogTemplate {
                       width: constraints.maxWidth / 2.25,
                       child: DateTimePicker(
                         controller: DateTimePickerController(
+                            onConfirmed: (time) =>
+                                controller.openingHours.weekendFrom = time,
                             label: "Fra",
                             initialDate: controller.openingHours.weekendFrom,
                             time: true),
@@ -191,6 +190,8 @@ class PartnerOpeningHours extends DialogTemplate {
                       width: constraints.maxWidth / 2.25,
                       child: DateTimePicker(
                           controller: DateTimePickerController(
+                              onConfirmed: (time) =>
+                                  controller.openingHours.weekendTo = time,
                               label: "Til",
                               initialDate: controller.openingHours.weekendTo,
                               time: true)),
