@@ -165,7 +165,6 @@ class PartnerCRUDOffer extends MasterPage {
                 DateTimePicker(
                   controller: DateTimePickerController(
                     minDateTime: DateTime.now(),
-                    dateFormat: "mm-HH-dd-MM-yyyy",
                     label: "Sluttdato for tilbudet",
                     onConfirmed: (date) {
                       controller.offer.endOfOffer = date;
@@ -182,6 +181,56 @@ class PartnerCRUDOffer extends MasterPage {
                   initValue: controller.offer.price != null
                       ? controller.offer.price.toString()
                       : null,
+                ),
+                PrimaryTextField(
+                  hintText: "Beskrivelse",
+                  asListTile: true,
+                  onSaved: (val) => controller.offer.desc = val,
+                  textInputType: TextInputType.number,
+                  initValue: controller.offer.desc,
+                  maxLines: 5,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: padding * 2, bottom: padding, top: padding * 4),
+                      child: Text(
+                        "Hvis tilbudet skal vises må det være aktivt",
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.body1,
+                      ),
+                    ),
+                    Container(
+                      width: ServiceProvider.instance.screenService
+                          .getWidthByPercentage(context, 80),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(ServiceProvider
+                              .instance
+                              .instanceStyleService
+                              .appStyle
+                              .borderRadius),
+                        ),
+                        elevation: 1,
+                        child: CheckboxListTile(
+                          dense: true,
+                          value: controller.offer.active ?? false,
+                          onChanged: (val) => controller
+                              .setState(() => controller.offer.active = val),
+                          checkColor: Colors.white,
+                          activeColor: ServiceProvider
+                              .instance.instanceStyleService.appStyle.green,
+                          title: Text(
+                            "Aktivt",
+                            style: ServiceProvider.instance.instanceStyleService
+                                .appStyle.descTitle,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
