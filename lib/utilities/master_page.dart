@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
+import 'package:minhund/presentation/widgets/tap_to_unfocus.dart';
 import 'package:minhund/service/service_provider.dart';
 
 abstract class MasterPageController extends BaseController {
@@ -63,8 +64,7 @@ abstract class MasterPage extends BaseView {
         ],
       );
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
+    return TapToUnfocus(
       child: Scaffold(
           backgroundColor: ServiceProvider
               .instance.instanceStyleService.appStyle.backgroundColor,

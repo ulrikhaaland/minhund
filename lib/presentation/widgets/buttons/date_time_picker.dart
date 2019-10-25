@@ -170,6 +170,7 @@ class DateTimePicker extends BaseView {
   Widget build(BuildContext context) {
     canSave = controller.canSave;
     return PrimaryTextField(
+      asListTile: true,
       validate: controller.validate ?? true,
       textEditingController: controller._textCtrlr,
       focusNode: controller._textNode,

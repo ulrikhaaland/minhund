@@ -15,6 +15,7 @@ Partner _$PartnerFromJson(Map json) {
     latitude: (json['latitude'] as num)?.toDouble(),
     longitude: (json['longitude'] as num)?.toDouble(),
     imgUrl: json['imgUrl'] as String,
+    websiteUrl: json['websiteUrl'] as String,
   )
     ..id = json['id'] as String
     ..name = json['name'] as String
@@ -44,6 +45,7 @@ Map<String, dynamic> _$PartnerToJson(Partner instance) => <String, dynamic>{
       'notifications': instance.notifications,
       'fcmList': instance.fcmList,
       'imgUrl': instance.imgUrl,
+      'websiteUrl': instance.websiteUrl,
       'address': instance.address.toJson(),
       'latitude': instance.latitude,
       'longitude': instance.longitude,

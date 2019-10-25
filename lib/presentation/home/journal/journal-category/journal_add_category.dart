@@ -129,7 +129,7 @@ class JournalAddCategory extends DialogTemplate {
                     autoFocus: true,
                     initValue: controller.singleCategoryItem.title,
                     textCapitalization: TextCapitalization.sentences,
-                    asTextField: true,
+                    textFieldType: TextFieldType.ordinary,
                     onChanged: (val) {
                       if (val.length > 0)
                         controller.canSave = true;

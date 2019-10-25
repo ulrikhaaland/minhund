@@ -364,7 +364,7 @@ class JournalEventDialog extends DialogTemplate {
                                                 ""
                                             ? controller.firstBuild
                                             : false,
-                                    asTextField: true,
+                                    textFieldType: TextFieldType.ordinary,
                                     hintText: "Tittel",
                                     onChanged: (val) {
                                       if (val.isNotEmpty)
@@ -638,7 +638,7 @@ class JournalEventDialog extends DialogTemplate {
                                     textInputType: TextInputType.text,
                                     maxLines: 5,
                                     validate: false,
-                                    asTextField: true,
+                                    textFieldType: TextFieldType.ordinary,
                                     onChanged: (val) {
                                       if (val.isNotEmpty) {
                                         controller.placeHolderEventItem.note =

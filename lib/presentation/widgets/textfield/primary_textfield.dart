@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 enum RegExType { phone, email, password, smsCode }
 
+enum TextFieldType { form, ordinary }
+
 class PrimaryTextField extends StatefulWidget {
   final String initValue;
   final FocusNode focusNode;
@@ -31,10 +33,10 @@ class PrimaryTextField extends StatefulWidget {
   final RegExType regExType;
   final int maxLength;
   final double width;
+  final TextFieldType textFieldType;
+  final bool asListTile;
 
   final void Function(String val) onChanged;
-
-  final bool asTextField;
 
   bool canSave;
 
@@ -66,8 +68,9 @@ class PrimaryTextField extends StatefulWidget {
     this.regExType,
     this.maxLength,
     this.onChanged,
-    this.asTextField = false,
     this.width,
+    this.textFieldType,
+    this.asListTile = false,
     this.canSave = true,
   }) : super(key: key);
 
@@ -102,12 +105,15 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
     double padding = getDefaultPadding(context);
 
     widget.validate == null ? widget.validate = true : null;
-    return Container(
+    Widget textField = Container(
       width: widget.width ??
           ServiceProvider.instance.screenService
               .getWidthByPercentage(context, 80),
       height: ServiceProvider.instance.screenService.getHeightByPercentage(
-          context, !widget.canSave ? 11.5 : widget.maxLines > 1 ? 15 : 10),
+          context,
+          widget.validate || widget.maxLines > 1
+              ? !widget.canSave ? 11.5 : widget.maxLines > 1 ? 15 : 10
+              : 0),
       child: Padding(
         padding: EdgeInsets.only(
             top: widget.paddingTop ?? 0, bottom: widget.paddingBottom ?? 0),
@@ -167,7 +173,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                       EdgeInsets.only(left: padding * 4, right: padding * 4),
                   child: Center(
                     child: Container(
-                      child: widget.asTextField
+                      child: widget.textFieldType == TextFieldType.ordinary
                           ? TextField(
                               autocorrect: widget.autocorrect ?? false,
                               obscureText: widget.obscure ?? false,
@@ -193,7 +199,9 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                               onChanged: (val) => widget.onChanged(val),
                               onSubmitted: (val) => widget.onFieldSubmitted(),
                               decoration: InputDecoration(
-                                hintText: widget.hintText ?? null,
+                                hintText: !widget.asListTile
+                                    ? widget.hintText ?? null
+                                    : null,
                                 labelText: widget.labelText ?? null,
                                 hintStyle: ServiceProvider.instance
                                     .instanceStyleService.appStyle.body1,
@@ -249,7 +257,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
 
                                   String pattern;
 
-                                  if (val.length == 0) {
+                                  if (val.length == 0 && widget.validate) {
                                     errorMessage = 'Vennligst fyll inn feltet';
                                     widget.canSave = false;
                                   } else {
@@ -306,7 +314,9 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                               onFieldSubmitted: (val) =>
                                   widget.onFieldSubmitted(),
                               decoration: InputDecoration(
-                                hintText: widget.hintText ?? null,
+                                hintText: !widget.asListTile
+                                    ? widget.hintText ?? null
+                                    : null,
                                 labelText: widget.labelText ?? null,
                                 hintStyle: ServiceProvider.instance
                                     .instanceStyleService.appStyle.body1,
@@ -339,5 +349,23 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
         ),
       ),
     );
+
+    if (widget.asListTile) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(left: padding * 2, bottom: padding),
+            child: Text(
+              widget.hintText,
+              style:
+                  ServiceProvider.instance.instanceStyleService.appStyle.body1,
+            ),
+          ),
+          textField,
+        ],
+      );
+    }
+    return textField;
   }
 }

@@ -25,7 +25,7 @@ class DialogSaveButton extends BaseView {
               .instance.instanceStyleService.appStyle.inactiveIconColor,
       radius: ServiceProvider
               .instance.instanceStyleService.appStyle.iconSizeStandard *
-          0.8,
+          0.7,
       child: InkWell(
         onTap: () => controller.onPressed(),
         child: Center(

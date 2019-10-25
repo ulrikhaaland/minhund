@@ -13,10 +13,12 @@ class Partner extends User {
     this.latitude,
     this.longitude,
     this.imgUrl,
+    this.websiteUrl,
   });
 
   List<String> fcmList;
   String imgUrl;
+  String websiteUrl;
   Address address;
   double latitude;
   double longitude;

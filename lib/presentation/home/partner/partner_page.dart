@@ -153,6 +153,7 @@ class PartnerPage extends BottomNavigation {
     controller.customImage = CustomImage(
       controller: CustomImageController(
         onDelete: () {
+          controller.imageFile = null;
           FileProvider()
               .deleteFile(path: "partners/${controller.partner.id}/logo");
           controller.partner.imgUrl = null;
@@ -206,6 +207,10 @@ class PartnerPage extends BottomNavigation {
                 value: controller.partner.phoneNumber,
               ),
               controller.readBasicContainer(
+                key: "Nettsted",
+                value: controller.partner.websiteUrl,
+              ),
+              controller.readBasicContainer(
                 key: "Kundenummer",
                 value: controller.partner.id,
               ),
@@ -225,18 +230,21 @@ class PartnerPage extends BottomNavigation {
         initValue: controller.partner.name,
         onSaved: (val) => controller.partner.name = val,
         onFieldSubmitted: () => textFieldNext(height: 10),
+        asListTile: true,
       ),
       PrimaryTextField(
         hintText: "Adresse",
         initValue: controller.partner.address?.address,
         onSaved: (val) => controller.partner.address.address = val,
         onFieldSubmitted: () => textFieldNext(height: 0),
+        asListTile: true,
       ),
       PrimaryTextField(
         hintText: "Postkode",
         initValue: controller.partner.address?.zip,
         onSaved: (val) => controller.partner.address.zip = val,
         onFieldSubmitted: () => textFieldNext(height: 0),
+        asListTile: true,
       ),
       PrimaryTextField(
         hintText: "Poststed",
@@ -248,12 +256,21 @@ class PartnerPage extends BottomNavigation {
         hintText: "Email",
         initValue: controller.partner.email,
         onFieldSubmitted: () => textFieldNext(height: 0),
+        asListTile: true,
         onSaved: (val) => controller.partner.email = val,
       ),
       PrimaryTextField(
           hintText: "Telefonnummer",
           initValue: controller.partner.phoneNumber,
+          textInputAction: TextInputAction.done,
+          asListTile: true,
           onSaved: (val) => controller.partner.phoneNumber = val),
+      PrimaryTextField(
+          hintText: "Nettsted, www.mittnettsted.no",
+          initValue: controller.partner.websiteUrl,
+          textInputAction: TextInputAction.done,
+          asListTile: true,
+          onSaved: (val) => controller.partner.websiteUrl = val),
     ];
 
     return LayoutBuilder(
@@ -262,7 +279,7 @@ class PartnerPage extends BottomNavigation {
           controller: controller.scrollController,
           child: Container(
             width: ServiceProvider.instance.screenService
-                .getWidthByPercentage(context, 80),
+                .getWidthByPercentage(context, 90),
             child: Column(
               children: <Widget>[
                 controller.customImage,
@@ -290,19 +307,8 @@ class PartnerPage extends BottomNavigation {
                   child: FocusScope(
                     node: controller.focusScopeNode,
                     child: Column(
-                      children: controller.editTextFields
-                          .map((tf) => ListTile(
-                                title: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    tf.hintText,
-                                    style: ServiceProvider.instance
-                                        .instanceStyleService.appStyle.body1,
-                                  ),
-                                ),
-                                subtitle: tf,
-                              ))
-                          .toList(),
+                      children:
+                          controller.editTextFields.map((tf) => tf).toList(),
                     ),
                   ),
                 ),
