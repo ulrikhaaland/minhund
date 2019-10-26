@@ -28,7 +28,7 @@ class CustomImageController extends BaseController {
 
   final void Function(File file) provideImageFile;
 
-  bool init;
+  bool edit;
 
   CustomImageController(
       {this.imageSizePercentage,
@@ -37,13 +37,14 @@ class CustomImageController extends BaseController {
       this.imgUrl,
       this.provideImageFile,
       this.onDelete,
-      this.init = false});
+      this.edit = false});
 
   Future<void> getImage() async {
     try {
       setState(() => isLoading = true);
-      imageFile =
-          await CustomImageCropper().cropImage(FileProvider().getFile());
+      imageFile = await CustomImageCropper().cropImage(
+          imageFile: FileProvider().getFile(),
+          circleShape: customImageType == CustomImageType.circle);
       if (imageFile != null) provideImageFile(imageFile);
     } catch (e) {}
     setState(() => isLoading = false);
@@ -58,6 +59,42 @@ class CustomImage extends BaseView {
   Widget build(BuildContext context) {
     if (!mounted) return Container();
 
+    double padding = getDefaultPadding(context);
+
+    Widget editImage = Container();
+
+    if (controller.edit)
+      editImage = Column(
+        children: <Widget>[
+          Container(
+            height: padding,
+          ),
+          InkWell(
+            onTap: () {
+              if (controller.imageFile == null && controller.imgUrl == null) {
+                controller.getImage();
+              } else {
+                if (controller.imgUrl != null) {
+                  controller.imgUrl = null;
+                  controller.onDelete();
+                }
+                controller.setState(() {
+                  controller.imageFile = null;
+                  controller.imgUrl = null;
+                });
+              }
+            },
+            child: Text(
+              controller.imageFile == null && controller.imgUrl == null
+                  ? "Legg til et bilde"
+                  : "Fjern bilde",
+              style: ServiceProvider
+                  .instance.instanceStyleService.appStyle.disabledColoredText,
+            ),
+          ),
+        ],
+      );
+
     Widget icon;
 
     icon = Icon(
@@ -71,7 +108,7 @@ class CustomImage extends BaseView {
         return Column(
           children: <Widget>[
             InkWell(
-              onTap: () async => controller.init ? controller.getImage() : null,
+              onTap: () async => controller.edit ? controller.getImage() : null,
               child: CircleAvatar(
                 radius: ServiceProvider.instance.screenService
                     .getHeightByPercentage(
@@ -90,41 +127,72 @@ class CustomImage extends BaseView {
                         : null,
               ),
             ),
-            if (controller.init) ...[
-              Container(
-                height: getDefaultPadding(context),
-              ),
-              InkWell(
-                onTap: () {
-                  if (controller.imageFile == null &&
-                      controller.imgUrl == null) {
-                    controller.getImage();
-                  } else {
-                    if (controller.imgUrl != null) {
-                      controller.imgUrl = null;
-                      controller.onDelete();
-                    }
-                    controller.setState(() {
-                      controller.imageFile = null;
-                      controller.imgUrl = null;
-                    });
-                  }
-                },
-                child: Text(
-                  controller.imageFile == null && controller.imgUrl == null
-                      ? "Legg til et bilde"
-                      : "Fjern bilde",
-                  style: ServiceProvider.instance.instanceStyleService.appStyle
-                      .disabledColoredText,
-                ),
-              ),
-            ],
+            editImage,
           ],
         );
 
         break;
+      case CustomImageType.squared:
+        return Container(
+          width: ServiceProvider.instance.screenService
+              .getWidthByPercentage(context, 80),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(
+                    left: padding * 2, bottom: padding, top: padding * 4),
+                child: Text(
+                  "Beskrivende bilde",
+                  style: ServiceProvider
+                      .instance.instanceStyleService.appStyle.body1,
+                  textAlign: TextAlign.start,
+                ),
+              ),
+              Column(
+                children: <Widget>[
+                  InkWell(
+                    onTap: () async =>
+                        controller.edit ? controller.getImage() : null,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          image: controller.imgUrl != null ||
+                                  controller.imageFile != null
+                              ? DecorationImage(
+                                  fit: BoxFit.fill,
+                                  image: controller.imgUrl != null
+                                      ? AdvancedNetworkImage(controller.imgUrl)
+                                      : controller.imageFile != null
+                                          ? FileImage(controller.imageFile)
+                                          : null,
+                                )
+                              : null,
+                          color: ServiceProvider
+                              .instance.instanceStyleService.appStyle.skyBlue,
+                          borderRadius:
+                              BorderRadius.all(Radius.elliptical(20, 30))),
+                      height: ServiceProvider.instance.screenService
+                          .getHeightByPercentage(context, 20),
+                      width: ServiceProvider.instance.screenService
+                          .getHeightByPercentage(context, 20),
+                      child: controller.isLoading
+                          ? CPI(false)
+                          : controller.imageFile == null &&
+                                  controller.imgUrl == null
+                              ? icon
+                              : null,
+                    ),
+                  ),
+                  IntrinsicWidth(child: editImage)
+                ],
+              ),
+            ],
+          ),
+        );
+        break;
+
       default:
     }
-    return null;
+    return Container();
   }
 }

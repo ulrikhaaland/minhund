@@ -17,7 +17,6 @@ class PartnerOffersPageController extends BottomNavigationController {
   String get title => "Tilbud";
 
   @override
-  // TODO: implement fab
   Widget get fab => Fab(
       onPressed: () => Navigator.push(
           context,
@@ -26,9 +25,19 @@ class PartnerOffersPageController extends BottomNavigationController {
               controller: PartnerCRUDOfferController(
                 pageState: PageState.create,
                 offer: PartnerOffer(),
+                partnerId: partner.id,
+                onCreate: (offer) {
+                  partner.offers.add(offer);
+                },
               ),
             ),
           )));
+
+  @override
+  void initState() {
+    if (partner.offers == null) partner.offers = [];
+    super.initState();
+  }
 }
 
 class PartnerOffersPage extends BottomNavigation {
@@ -40,6 +49,11 @@ class PartnerOffersPage extends BottomNavigation {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    return Container();
+    return Container(
+      child: Column(
+        children:
+            controller.partner.offers.map((offer) => Text("Offer")).toList(),
+      ),
+    );
   }
 }

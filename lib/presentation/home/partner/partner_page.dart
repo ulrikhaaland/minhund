@@ -80,6 +80,23 @@ class PartnerPageController extends BottomNavigationController {
         weekendFrom: DateTime.now(),
         weekendTo: DateTime.now(),
       );
+
+    customImage = CustomImage(
+      controller: CustomImageController(
+        onDelete: () {
+          imageFile = null;
+          FileProvider().deleteFile(path: "partners/${partner.id}/logo");
+          partner.imgUrl = null;
+        },
+        provideImageFile: (imgFile) {
+          imageFile = imgFile;
+        },
+        edit: pageState == PageState.edit,
+        imageSizePercentage: 10,
+        imageFile: imageFile,
+        imgUrl: partner.imgUrl,
+      ),
+    );
     super.initState();
   }
 
@@ -147,24 +164,6 @@ class PartnerPage extends BottomNavigation {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    controller.customImage = CustomImage(
-      controller: CustomImageController(
-        onDelete: () {
-          controller.imageFile = null;
-          FileProvider()
-              .deleteFile(path: "partners/${controller.partner.id}/logo");
-          controller.partner.imgUrl = null;
-        },
-        provideImageFile: (imgFile) {
-          controller.imageFile = imgFile;
-        },
-        init: controller.pageState == PageState.edit ? true : false,
-        imageSizePercentage: 10,
-        imageFile: controller.imageFile,
-        imgUrl: controller.partner.imgUrl,
-      ),
-    );
-
     if (controller.pageState == PageState.read) return buildRead(context);
 
     if (controller.pageState == PageState.edit) return buildEdit(context);
@@ -174,6 +173,9 @@ class PartnerPage extends BottomNavigation {
 
   Widget buildRead(BuildContext context) {
     double padding = getDefaultPadding(context);
+
+    controller.customImage.controller.edit = false;
+    controller.customImage.controller.setState(() {});
 
     return LayoutBuilder(
       builder: (context, con) {
@@ -223,6 +225,8 @@ class PartnerPage extends BottomNavigation {
   Widget buildEdit(BuildContext context) {
     double padding = getDefaultPadding(context);
 
+    controller.customImage.controller.edit = true;
+    controller.customImage.controller.setState(() {});
     controller.editTextFields = [
       PrimaryTextField(
         hintText: "Juridisk navn",

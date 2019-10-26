@@ -25,6 +25,7 @@ class Partner extends User {
   double latitude;
   double longitude;
   OpeningHours openingHours;
+  @JsonKey(ignore: true)
   List<PartnerOffer> offers;
 
   factory Partner.fromJson(Map<String, dynamic> json) =>

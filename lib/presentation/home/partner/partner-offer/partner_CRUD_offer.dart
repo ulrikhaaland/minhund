@@ -1,10 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/partner/partner_offer.dart';
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
 import 'package:minhund/presentation/widgets/buttons/save_button.dart';
+import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/tap_to_unfocus.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
+import 'package:minhund/provider/file_provider.dart';
+import 'package:minhund/provider/partner_offer_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 
@@ -13,9 +17,13 @@ class PartnerCRUDOfferController extends MasterPageController {
 
   PageState pageState;
 
+  final String partnerId;
+
   final _formKey = GlobalKey<FormState>();
 
   bool service = false;
+
+  final void Function(PartnerOffer offer) onCreate;
 
   SaveButtonController saveButtonController;
 
@@ -23,7 +31,8 @@ class PartnerCRUDOfferController extends MasterPageController {
 
   FocusScopeNode _scopeNode = FocusScopeNode();
 
-  PartnerCRUDOfferController({this.offer, this.pageState});
+  PartnerCRUDOfferController(
+      {this.offer, this.pageState, this.partnerId, this.onCreate});
   @override
   Widget get actionOne => null;
 
@@ -51,12 +60,40 @@ class PartnerCRUDOfferController extends MasterPageController {
     }
     saveButtonController = SaveButtonController(
         canSave: canSave,
-        onPressed: () {
+        onPressed: () async {
           if (canSave) {
             _formKey.currentState.save();
+
+            if (pageState == PageState.create) {
+              PartnerOfferProvider()
+                  .create(model: offer, id: "partners/$partnerId/offers")
+                  .then((ref) => offer.docRef = ref);
+              onCreate(offer);
+            }
+
+            if (offer.imageFile != null) {
+              FileProvider()
+                  .uploadFile(
+                      file: offer.imageFile,
+                      path: "partners/$partnerId/offers/${offer.id}/image")
+                  .then((url) {
+                offer.imgUrl = url;
+              });
+            }
+
+            if (pageState == PageState.create) Navigator.pop(context);
           }
         });
     super.initState();
+  }
+
+  void deleteImage() {
+    offer.imageFile = null;
+
+    FileProvider()
+        .deleteFile(path: "partners/$partnerId/offers/${offer.id}/image");
+
+    offer.imgUrl = null;
   }
 }
 
@@ -86,153 +123,183 @@ class PartnerCRUDOffer extends MasterPage {
     return TapToUnfocus(
       width: ServiceProvider.instance.screenService
           .getWidthByPercentage(context, 90),
-      child: SingleChildScrollView(
-        child: Form(
-          child: FocusScope(
-            node: controller._scopeNode,
-            child: Column(
-              children: <Widget>[
-                Card(
-                  elevation: 3,
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(ServiceProvider
-                        .instance.instanceStyleService.appStyle.borderRadius),
+      child: Scrollbar(
+        child: SingleChildScrollView(
+          child: Form(
+            key: controller._formKey,
+            child: FocusScope(
+              node: controller._scopeNode,
+              child: Column(
+                children: <Widget>[
+                  Card(
+                    elevation: 3,
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(ServiceProvider
+                          .instance.instanceStyleService.appStyle.borderRadius),
+                    ),
+                    child: Container(
+                      width: ServiceProvider.instance.screenService
+                          .getWidthByPercentage(context, 80),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: CheckboxListTile(
+                              title: Text(
+                                "Vare",
+                                style: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.smallTitle,
+                              ),
+                              value: !controller.service,
+                              onChanged: (val) => controller.setState(() =>
+                                  controller.service = !controller.service),
+                              checkColor: Colors.white,
+                              activeColor: ServiceProvider
+                                  .instance.instanceStyleService.appStyle.green,
+                            ),
+                          ),
+                          Expanded(
+                            child: CheckboxListTile(
+                              title: Text(
+                                "Tjeneste",
+                                style: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.smallTitle,
+                              ),
+                              value: controller.service,
+                              onChanged: (val) => controller.setState(() =>
+                                  controller.service = !controller.service),
+                              checkColor: Colors.white,
+                              activeColor: ServiceProvider
+                                  .instance.instanceStyleService.appStyle.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  child: Container(
+                  Container(
+                    height: padding * 2,
+                  ),
+                  PrimaryTextField(
+                    paddingBottom: padding * 2,
+                    asListTile: true,
+                    textFieldType: TextFieldType.ordinary,
+                    hintText: "Tittel",
+                    textCapitalization: TextCapitalization.sentences,
+                    initValue: controller.offer.title,
+                    onFieldSubmitted: () => controller._scopeNode.nextFocus(),
+                    onChanged: (val) {
+                      if (val.isNotEmpty) {
+                        controller.offer.title = val;
+                        controller.canSave = true;
+                      } else {
+                        controller.canSave = false;
+                      }
+                      controller.saveButtonController.setState(() {
+                        controller.saveButtonController.canSave =
+                            controller.canSave;
+                      });
+                    },
+                    validate: true,
+                  ),
+                  DateTimePicker(
+                    controller: DateTimePickerController(
+                      minDateTime: DateTime.now(),
+                      validate: false,
+                      label: "Sluttdato for tilbudet",
+                      onConfirmed: (date) {
+                        controller.offer.endOfOffer = date;
+                        controller._scopeNode.nextFocus();
+                      },
+                      initialDate: controller.offer.endOfOffer,
+                    ),
+                  ),
+                  PrimaryTextField(
+                    hintText: "Pris",
+                    asListTile: true,
+                    validate: false,
+                    onSaved: (val) => controller.offer.price =
+                        val.isEmpty ? null : double.parse(val),
+                    textInputType: TextInputType.number,
+                    onFieldSubmitted: () => controller._scopeNode.nextFocus(),
+                    initValue: controller.offer.price != null
+                        ? controller.offer.price.toString()
+                        : null,
+                  ),
+                  PrimaryTextField(
+                    hintText: "Beskrivelse",
+                    asListTile: true,
+                    validate: false,
+                    onSaved: (val) => controller.offer.desc = val,
+                    textInputType: TextInputType.number,
+                    initValue: controller.offer.desc,
+                    textInputAction: TextInputAction.done,
+                    textCapitalization: TextCapitalization.sentences,
+                    maxLines: 5,
+                  ),
+                  CustomImage(
+                    controller: CustomImageController(
+                      edit: true,
+                      customImageType: CustomImageType.squared,
+                      onDelete: () {
+                        if (controller.pageState == PageState.edit) {
+                          controller.deleteImage();
+                        }
+                      },
+                      provideImageFile: (imgFile) =>
+                          controller.offer.imageFile = imgFile,
+                    ),
+                  ),
+                  Container(
                     width: ServiceProvider.instance.screenService
                         .getWidthByPercentage(context, 80),
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Expanded(
-                          child: CheckboxListTile(
-                            title: Text(
-                              "Vare",
-                              style: ServiceProvider.instance
-                                  .instanceStyleService.appStyle.smallTitle,
-                            ),
-                            value: controller.service,
-                            onChanged: (val) => controller.setState(
-                                () => controller.service = !controller.service),
-                            checkColor: Colors.white,
-                            activeColor: ServiceProvider
-                                .instance.instanceStyleService.appStyle.green,
+                        Padding(
+                          padding: EdgeInsets.only(
+                              left: padding * 2,
+                              bottom: padding,
+                              top: padding * 4),
+                          child: Text(
+                            "Hvis tilbudet skal være synlig for kunder må det være aktivt, dette kan du endre senere.",
+                            style: ServiceProvider
+                                .instance.instanceStyleService.appStyle.body1,
+                            textAlign: TextAlign.start,
                           ),
                         ),
-                        Expanded(
+                        Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(ServiceProvider
+                                .instance
+                                .instanceStyleService
+                                .appStyle
+                                .borderRadius),
+                          ),
+                          elevation: 1,
                           child: CheckboxListTile(
-                            title: Text(
-                              "Tjeneste",
-                              style: ServiceProvider.instance
-                                  .instanceStyleService.appStyle.smallTitle,
-                            ),
-                            value: !controller.service,
-                            onChanged: (val) => controller.setState(
-                                () => controller.service = !controller.service),
+                            dense: true,
+                            value: controller.offer.active ?? false,
+                            onChanged: (val) => controller
+                                .setState(() => controller.offer.active = val),
                             checkColor: Colors.white,
                             activeColor: ServiceProvider
                                 .instance.instanceStyleService.appStyle.green,
+                            title: Text(
+                              "Aktivt",
+                              style: ServiceProvider.instance
+                                  .instanceStyleService.appStyle.descTitle,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-                Container(
-                  height: padding * 2,
-                ),
-                PrimaryTextField(
-                  paddingBottom: padding * 2,
-                  asListTile: true,
-                  textFieldType: TextFieldType.ordinary,
-                  hintText: "Tittel",
-                  initValue: controller.offer.title,
-                  onFieldSubmitted: () => controller._scopeNode.nextFocus(),
-                  onChanged: (val) {
-                    if (val.isNotEmpty) {
-                      controller.offer.title = val;
-                      controller.canSave = true;
-                    } else {
-                      controller.canSave = false;
-                    }
-                    controller.saveButtonController.setState(() {
-                      controller.saveButtonController.canSave =
-                          controller.canSave;
-                    });
-                  },
-                  validate: true,
-                ),
-                DateTimePicker(
-                  controller: DateTimePickerController(
-                    minDateTime: DateTime.now(),
-                    label: "Sluttdato for tilbudet",
-                    onConfirmed: (date) {
-                      controller.offer.endOfOffer = date;
-                    },
-                    initialDate: controller.offer.endOfOffer,
+                  Container(
+                    height: padding * 10,
                   ),
-                ),
-                PrimaryTextField(
-                  hintText: "Pris",
-                  asListTile: true,
-                  onSaved: (val) =>
-                      controller.offer.price = int.parse(val).toDouble(),
-                  textInputType: TextInputType.number,
-                  initValue: controller.offer.price != null
-                      ? controller.offer.price.toString()
-                      : null,
-                ),
-                PrimaryTextField(
-                  hintText: "Beskrivelse",
-                  asListTile: true,
-                  onSaved: (val) => controller.offer.desc = val,
-                  textInputType: TextInputType.number,
-                  initValue: controller.offer.desc,
-                  maxLines: 5,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(
-                          left: padding * 2, bottom: padding, top: padding * 4),
-                      child: Text(
-                        "Hvis tilbudet skal vises må det være aktivt",
-                        style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.body1,
-                      ),
-                    ),
-                    Container(
-                      width: ServiceProvider.instance.screenService
-                          .getWidthByPercentage(context, 80),
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(ServiceProvider
-                              .instance
-                              .instanceStyleService
-                              .appStyle
-                              .borderRadius),
-                        ),
-                        elevation: 1,
-                        child: CheckboxListTile(
-                          dense: true,
-                          value: controller.offer.active ?? false,
-                          onChanged: (val) => controller
-                              .setState(() => controller.offer.active = val),
-                          checkColor: Colors.white,
-                          activeColor: ServiceProvider
-                              .instance.instanceStyleService.appStyle.green,
-                          title: Text(
-                            "Aktivt",
-                            style: ServiceProvider.instance.instanceStyleService
-                                .appStyle.descTitle,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

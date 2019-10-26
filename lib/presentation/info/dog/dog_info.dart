@@ -150,7 +150,7 @@ class DogInfoController extends BaseController {
         customImageType: CustomImageType.circle,
         imageFile: null,
         imgUrl: dog.imgUrl,
-        init: true,
+        edit: true,
         provideImageFile: (file) => imageFile = file,
       ),
     );

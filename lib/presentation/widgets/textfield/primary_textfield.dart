@@ -113,7 +113,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
           context,
           widget.validate || widget.maxLines > 1
               ? !widget.canSave ? 11.5 : widget.maxLines > 1 ? 15 : 10
-              : 0),
+              : 11.5),
       child: Padding(
         padding: EdgeInsets.only(
             top: widget.paddingTop ?? 0, bottom: widget.paddingBottom ?? 0),

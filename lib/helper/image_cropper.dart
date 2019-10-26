@@ -6,7 +6,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:minhund/service/service_provider.dart';
 
 class CustomImageCropper {
-  Future<File> cropImage(Future<File> imageFile) async {
+  Future<File> cropImage({Future<File> imageFile, bool circleShape}) async {
     File file = await imageFile;
     File croppedFile = await ImageCropper.cropImage(
       toolbarTitle: "Rediger bilde",
@@ -18,7 +18,7 @@ class CustomImageCropper {
       statusBarColor:
           ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
 
-      circleShape: true,
+      circleShape: circleShape,
       sourcePath: file.path,
       ratioX: 1.0,
       ratioY: 1.0,

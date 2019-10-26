@@ -73,7 +73,9 @@ class BottomNavigationController extends MasterPageController {
       );
 
       partnerOffersPage = PartnerOffersPage(
-        controller: PartnerOffersPageController(),
+        controller: PartnerOffersPageController(
+          partner: user,
+        ),
       );
 
       pages = <BottomNavigation>[
@@ -119,7 +121,7 @@ class BottomNavigation extends MasterPage {
         ),
       );
     } else {
-      controller.user.dog.profileImage.controller.init = false;
+      // controller.user.dog.profileImage.controller.edit = false;
     }
 
     return IndexedStack(

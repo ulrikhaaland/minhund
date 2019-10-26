@@ -46,8 +46,8 @@ Map<String, dynamic> _$PartnerToJson(Partner instance) => <String, dynamic>{
       'fcmList': instance.fcmList,
       'imgUrl': instance.imgUrl,
       'websiteUrl': instance.websiteUrl,
-      'address': instance.address.toJson(),
+      'address': instance.address,
       'latitude': instance.latitude,
       'longitude': instance.longitude,
-      'openingHours': instance.openingHours.toJson(),
+      'openingHours': instance.openingHours,
     };
