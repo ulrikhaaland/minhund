@@ -133,12 +133,11 @@ class CustomImage extends BaseView {
 
         break;
       case CustomImageType.squared:
-        return Container(
-          width: ServiceProvider.instance.screenService
-              .getWidthByPercentage(context, 80),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            if (controller.edit)
               Padding(
                 padding: EdgeInsets.only(
                     left: padding * 2, bottom: padding, top: padding * 4),
@@ -149,45 +148,44 @@ class CustomImage extends BaseView {
                   textAlign: TextAlign.start,
                 ),
               ),
-              Column(
-                children: <Widget>[
-                  InkWell(
-                    onTap: () async =>
-                        controller.edit ? controller.getImage() : null,
-                    child: Container(
-                      decoration: BoxDecoration(
-                          image: controller.imgUrl != null ||
-                                  controller.imageFile != null
-                              ? DecorationImage(
-                                  fit: BoxFit.fill,
-                                  image: controller.imgUrl != null
-                                      ? AdvancedNetworkImage(controller.imgUrl)
-                                      : controller.imageFile != null
-                                          ? FileImage(controller.imageFile)
-                                          : null,
-                                )
-                              : null,
-                          color: ServiceProvider
-                              .instance.instanceStyleService.appStyle.skyBlue,
-                          borderRadius:
-                              BorderRadius.all(Radius.elliptical(20, 30))),
-                      height: ServiceProvider.instance.screenService
-                          .getHeightByPercentage(context, 20),
-                      width: ServiceProvider.instance.screenService
-                          .getHeightByPercentage(context, 20),
-                      child: controller.isLoading
-                          ? CPI(false)
-                          : controller.imageFile == null &&
-                                  controller.imgUrl == null
-                              ? icon
-                              : null,
-                    ),
+            Column(
+              children: <Widget>[
+                InkWell(
+                  onTap: () async =>
+                      controller.edit ? controller.getImage() : null,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        image: controller.imgUrl != null ||
+                                controller.imageFile != null
+                            ? DecorationImage(
+                                fit: BoxFit.fill,
+                                image: controller.imgUrl != null
+                                    ? AdvancedNetworkImage(controller.imgUrl)
+                                    : controller.imageFile != null
+                                        ? FileImage(controller.imageFile)
+                                        : null,
+                              )
+                            : null,
+                        color: ServiceProvider
+                            .instance.instanceStyleService.appStyle.skyBlue,
+                        borderRadius:
+                            BorderRadius.all(Radius.elliptical(20, 30))),
+                    height: ServiceProvider.instance.screenService
+                        .getHeightByPercentage(context, 20),
+                    width: ServiceProvider.instance.screenService
+                        .getHeightByPercentage(context, 20),
+                    child: controller.isLoading
+                        ? CPI(false)
+                        : controller.imageFile == null &&
+                                controller.imgUrl == null
+                            ? icon
+                            : null,
                   ),
-                  IntrinsicWidth(child: editImage)
-                ],
-              ),
-            ],
-          ),
+                ),
+                if (controller.edit) IntrinsicWidth(child: editImage)
+              ],
+            ),
+          ],
         );
         break;
 

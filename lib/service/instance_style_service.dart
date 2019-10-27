@@ -214,10 +214,11 @@ class InstanceStyleService {
     );
 
     _appStyle.label = new TextStyle(
-      fontSize: screenHeight * 0.025 * factor,
+      fontFamily: "Apercu",
+      fontSize: screenHeight * 0.020 * factor,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.italic,
-      color: Colors.black,
+      color: appStyle.textGrey,
     );
 
     _appStyle.labelLight = new TextStyle(

@@ -132,29 +132,29 @@ class PartnerOffersPage extends BottomNavigation {
         initialIndex: 0,
         child: Column(
           children: <Widget>[
-            Container(
-              height: ServiceProvider
-                      .instance.instanceStyleService.appStyle.iconSizeBig *
-                  2.5,
-              child: Card(
-                color: Colors.white,
-                elevation: ServiceProvider
-                    .instance.instanceStyleService.appStyle.elevation,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(ServiceProvider
-                      .instance.instanceStyleService.appStyle.borderRadius),
+            Card(
+              color: Colors.white,
+              elevation: ServiceProvider
+                  .instance.instanceStyleService.appStyle.elevation,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(ServiceProvider
+                    .instance.instanceStyleService.appStyle.borderRadius),
+              ),
+              child: TabBar(
+                indicatorColor: ServiceProvider
+                    .instance.instanceStyleService.appStyle.skyBlue,
+                indicatorWeight: 3,
+                indicatorPadding: EdgeInsets.only(
+                  left: padding * 2,
+                  right: padding * 2,
+                  bottom: padding,
                 ),
-                child: TabBar(
-                  indicatorColor: ServiceProvider
-                      .instance.instanceStyleService.appStyle.skyBlue,
-                  indicatorWeight: 3,
-                  indicatorPadding: EdgeInsets.only(
-                    left: padding * 2,
-                    right: padding * 2,
-                    bottom: padding,
-                  ),
-                  tabs: <Widget>[
-                    Tab(
+                tabs: <Widget>[
+                  Container(
+                    height: ServiceProvider.instance.instanceStyleService
+                            .appStyle.iconSizeBig *
+                        3,
+                    child: Tab(
                       icon: Icon(
                         Icons.done,
                         color: ServiceProvider
@@ -168,7 +168,12 @@ class PartnerOffersPage extends BottomNavigation {
                             .instance.instanceStyleService.appStyle.descTitle,
                       ),
                     ),
-                    Tab(
+                  ),
+                  Container(
+                    height: ServiceProvider.instance.instanceStyleService
+                            .appStyle.iconSizeBig *
+                        3,
+                    child: Tab(
                       icon: Icon(
                         Icons.check_box_outline_blank,
                         color: ServiceProvider
@@ -180,10 +185,11 @@ class PartnerOffersPage extends BottomNavigation {
                         "Inaktive",
                         style: ServiceProvider
                             .instance.instanceStyleService.appStyle.descTitle,
+                        overflow: TextOverflow.clip,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
             Expanded(
