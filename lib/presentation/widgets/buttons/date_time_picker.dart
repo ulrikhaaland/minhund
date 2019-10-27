@@ -21,6 +21,8 @@ class DateTimePickerController extends BaseController {
 
   bool canSave = false;
 
+  final bool enabled;
+
   final bool validate;
 
   final bool time;
@@ -42,6 +44,7 @@ class DateTimePickerController extends BaseController {
       this.label,
       this.initialDate,
       this.width,
+      this.enabled = true,
       this.time = false,
       this.validate = true,
       this.overrideInitialDate = false});
@@ -175,6 +178,7 @@ class DateTimePicker extends BaseView {
     canSave = controller.canSave;
     return PrimaryTextField(
       asListTile: true,
+      enabled: controller.enabled,
       validate: controller.validate ?? true,
       textEditingController: controller._textCtrlr,
       focusNode: controller._textNode,

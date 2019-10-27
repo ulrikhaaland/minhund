@@ -204,11 +204,15 @@ class PartnerPage extends BottomNavigation {
                 ),
                 controller.readBasicContainer(
                   key: "Telefonnummer",
-                  value: controller.partner.phoneNumber,
+                  value: controller.partner.phoneNumber != null
+                      ? "+47 " + controller.partner.phoneNumber
+                      : null,
                 ),
                 controller.readBasicContainer(
                   key: "Nettsted",
-                  value: controller.partner.websiteUrl,
+                  value: controller.partner.websiteUrl != null
+                      ? "www." + controller.partner.websiteUrl
+                      : null,
                 ),
                 controller.readBasicContainer(
                   key: "Kundenummer",
@@ -266,12 +270,14 @@ class PartnerPage extends BottomNavigation {
           hintText: "Telefonnummer",
           initValue: controller.partner.phoneNumber,
           textInputAction: TextInputAction.done,
+          prefixText: "+47 ",
           asListTile: true,
           onSaved: (val) => controller.partner.phoneNumber = val),
       PrimaryTextField(
-          hintText: "Nettsted, www.mittnettsted.no",
+          hintText: "Nettsted, (mittnettsted.no)",
           initValue: controller.partner.websiteUrl,
           textInputAction: TextInputAction.done,
+          prefixText: "www.",
           asListTile: true,
           onSaved: (val) => controller.partner.websiteUrl = val),
     ];

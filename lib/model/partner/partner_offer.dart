@@ -15,12 +15,15 @@ class PartnerOffer {
       this.endOfOffer,
       this.id});
   String id;
+  DateTime createdAt;
   String title;
   double price;
   String desc;
+  int sortIndex;
   String imgUrl;
   DateTime endOfOffer;
   bool active;
+  String type;
   @JsonKey(ignore: true)
   DocumentReference docRef;
   @JsonKey(ignore: true)

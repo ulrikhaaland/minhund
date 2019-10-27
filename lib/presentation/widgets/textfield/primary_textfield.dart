@@ -35,6 +35,8 @@ class PrimaryTextField extends StatefulWidget {
   final double width;
   final TextFieldType textFieldType;
   final bool asListTile;
+  final String prefixText;
+  final bool enabled;
 
   final void Function(String val) onChanged;
 
@@ -44,8 +46,10 @@ class PrimaryTextField extends StatefulWidget {
     Key key,
     this.initValue,
     this.focusNode,
+    this.enabled,
     this.onFieldSubmitted,
     this.onSaved,
+    this.prefixText,
     this.labelText,
     this.helperText,
     this.helperStyle,
@@ -175,6 +179,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                     child: Container(
                       child: widget.textFieldType == TextFieldType.ordinary
                           ? TextField(
+                              enabled: widget.enabled ?? true,
                               autocorrect: widget.autocorrect ?? false,
                               obscureText: widget.obscure ?? false,
                               autofocus: widget.autoFocus ?? false,
@@ -220,12 +225,15 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                                     fontFamily: "Montserrat"),
                                 enabledBorder: new UnderlineInputBorder(
                                     borderSide: BorderSide.none),
+                                disabledBorder: new UnderlineInputBorder(
+                                    borderSide: BorderSide.none),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide.none,
                                 ),
                               ),
                             )
                           : TextFormField(
+                              enabled: widget.enabled ?? true,
                               autocorrect: widget.autocorrect ?? false,
                               obscureText: widget.obscure ?? false,
                               autofocus: widget.autoFocus ?? false,
@@ -314,6 +322,13 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                               onFieldSubmitted: (val) =>
                                   widget.onFieldSubmitted(),
                               decoration: InputDecoration(
+                                prefixText: widget.prefixText,
+                                prefixStyle: widget.style ??
+                                    ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .textFieldInput,
                                 hintText: !widget.asListTile
                                     ? widget.hintText ?? null
                                     : null,
@@ -334,6 +349,8 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                                     color: Colors.green,
                                     fontFamily: "Montserrat"),
                                 enabledBorder: new UnderlineInputBorder(
+                                    borderSide: BorderSide.none),
+                                disabledBorder: new UnderlineInputBorder(
                                     borderSide: BorderSide.none),
                                 focusedBorder: UnderlineInputBorder(
                                   borderSide: BorderSide.none,

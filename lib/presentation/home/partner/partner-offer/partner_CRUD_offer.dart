@@ -31,6 +31,10 @@ class PartnerCRUDOfferController extends MasterPageController {
 
   FocusScopeNode _scopeNode = FocusScopeNode();
 
+  FocusNode priceFocusNode = FocusNode();
+
+  bool enabled = false;
+
   PartnerCRUDOfferController(
       {this.offer, this.pageState, this.partnerId, this.onCreate});
   @override
@@ -62,23 +66,30 @@ class PartnerCRUDOfferController extends MasterPageController {
         canSave: canSave,
         onPressed: () async {
           if (canSave) {
+            if (service) {
+              offer.type = "service";
+            } else if (!service) {
+              offer.type = "product";
+            }
+
             _formKey.currentState.save();
 
+            if (offer.imageFile != null) {
+              offer.imgUrl = await FileProvider().uploadFile(
+                  file: offer.imageFile,
+                  path: "partners/$partnerId/offers/${offer.id}/image");
+            }
+
             if (pageState == PageState.create) {
+              offer.createdAt = DateTime.now();
               PartnerOfferProvider()
                   .create(model: offer, id: "partners/$partnerId/offers")
                   .then((ref) => offer.docRef = ref);
               onCreate(offer);
             }
-
-            if (offer.imageFile != null) {
-              FileProvider()
-                  .uploadFile(
-                      file: offer.imageFile,
-                      path: "partners/$partnerId/offers/${offer.id}/image")
-                  .then((url) {
-                offer.imgUrl = url;
-              });
+            if (pageState == PageState.edit) {
+              PartnerOfferProvider().update(model: offer);
+              setState(() => pageState = PageState.read);
             }
 
             if (pageState == PageState.create) Navigator.pop(context);
@@ -95,6 +106,13 @@ class PartnerCRUDOfferController extends MasterPageController {
 
     offer.imgUrl = null;
   }
+
+  @override
+  void dispose() {
+    _scopeNode.dispose();
+    priceFocusNode.dispose();
+    super.dispose();
+  }
 }
 
 class PartnerCRUDOffer extends MasterPage {
@@ -107,7 +125,12 @@ class PartnerCRUDOffer extends MasterPage {
     if (!mounted) return Container();
 
     if (controller.pageState == PageState.edit ||
-        controller.pageState == PageState.create) return _buildEdit(context);
+        controller.pageState == PageState.create) {
+      controller.enabled = controller.pageState == PageState.edit ||
+          controller.pageState == PageState.create;
+    } else {}
+
+    return _buildEdit(context);
 
     if (controller.pageState == PageState.read) return _buildRead(context);
 
@@ -151,8 +174,10 @@ class PartnerCRUDOffer extends MasterPage {
                                     .instanceStyleService.appStyle.smallTitle,
                               ),
                               value: !controller.service,
-                              onChanged: (val) => controller.setState(() =>
-                                  controller.service = !controller.service),
+                              onChanged: (val) => controller.enabled
+                                  ? controller.setState(() =>
+                                      controller.service = !controller.service)
+                                  : null,
                               checkColor: Colors.white,
                               activeColor: ServiceProvider
                                   .instance.instanceStyleService.appStyle.green,
@@ -166,8 +191,10 @@ class PartnerCRUDOffer extends MasterPage {
                                     .instanceStyleService.appStyle.smallTitle,
                               ),
                               value: controller.service,
-                              onChanged: (val) => controller.setState(() =>
-                                  controller.service = !controller.service),
+                              onChanged: (val) => controller.enabled
+                                  ? controller.setState(() =>
+                                      controller.service = !controller.service)
+                                  : null,
                               checkColor: Colors.white,
                               activeColor: ServiceProvider
                                   .instance.instanceStyleService.appStyle.green,
@@ -182,6 +209,7 @@ class PartnerCRUDOffer extends MasterPage {
                   ),
                   PrimaryTextField(
                     paddingBottom: padding * 2,
+                    enabled: controller.enabled,
                     asListTile: true,
                     textFieldType: TextFieldType.ordinary,
                     hintText: "Tittel",
@@ -204,20 +232,24 @@ class PartnerCRUDOffer extends MasterPage {
                   ),
                   DateTimePicker(
                     controller: DateTimePickerController(
+                      enabled: controller.enabled,
                       minDateTime: DateTime.now(),
                       validate: false,
                       label: "Sluttdato for tilbudet",
                       onConfirmed: (date) {
                         controller.offer.endOfOffer = date;
-                        controller._scopeNode.nextFocus();
+                        controller.priceFocusNode.requestFocus();
                       },
                       initialDate: controller.offer.endOfOffer,
                     ),
                   ),
                   PrimaryTextField(
                     hintText: "Pris",
+                    focusNode: controller.priceFocusNode,
+                    enabled: controller.enabled,
                     asListTile: true,
                     validate: false,
+                    prefixText: "NOK ",
                     onSaved: (val) => controller.offer.price =
                         val.isEmpty ? null : double.parse(val),
                     textInputType: TextInputType.number,
@@ -228,6 +260,7 @@ class PartnerCRUDOffer extends MasterPage {
                   ),
                   PrimaryTextField(
                     hintText: "Beskrivelse",
+                    enabled: controller.enabled,
                     asListTile: true,
                     validate: false,
                     onSaved: (val) => controller.offer.desc = val,
@@ -237,19 +270,23 @@ class PartnerCRUDOffer extends MasterPage {
                     textCapitalization: TextCapitalization.sentences,
                     maxLines: 5,
                   ),
-                  CustomImage(
-                    controller: CustomImageController(
-                      edit: true,
-                      customImageType: CustomImageType.squared,
-                      onDelete: () {
-                        if (controller.pageState == PageState.edit) {
-                          controller.deleteImage();
-                        }
-                      },
-                      provideImageFile: (imgFile) =>
-                          controller.offer.imageFile = imgFile,
+                  if ((controller.offer.imgUrl != null ||
+                              controller.offer.imageFile != null) &&
+                          controller.pageState == PageState.read ||
+                      controller.pageState != PageState.read)
+                    CustomImage(
+                      controller: CustomImageController(
+                        edit: true,
+                        customImageType: CustomImageType.squared,
+                        onDelete: () {
+                          if (controller.pageState == PageState.edit) {
+                            controller.deleteImage();
+                          }
+                        },
+                        provideImageFile: (imgFile) =>
+                            controller.offer.imageFile = imgFile,
+                      ),
                     ),
-                  ),
                   Container(
                     width: ServiceProvider.instance.screenService
                         .getWidthByPercentage(context, 80),
@@ -280,8 +317,10 @@ class PartnerCRUDOffer extends MasterPage {
                           child: CheckboxListTile(
                             dense: true,
                             value: controller.offer.active ?? false,
-                            onChanged: (val) => controller
-                                .setState(() => controller.offer.active = val),
+                            onChanged: (val) => controller.enabled
+                                ? controller.setState(
+                                    () => controller.offer.active = val)
+                                : null,
                             checkColor: Colors.white,
                             activeColor: ServiceProvider
                                 .instance.instanceStyleService.appStyle.green,

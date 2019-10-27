@@ -3,6 +3,7 @@ import 'package:minhund/model/partner/partner_offer.dart';
 import 'package:minhund/provider/crud_provider.dart';
 
 class PartnerOfferProvider extends CrudProvider {
+  String path = "partners/";
   @override
   Future create({model, String id}) {
     return super.create(model: model, id: id);
@@ -15,7 +16,7 @@ class PartnerOfferProvider extends CrudProvider {
 
   @override
   Future<List<PartnerOffer>> getCollection({String id}) async {
-    QuerySnapshot qSnap = await super.getCollection(id: id);
+    QuerySnapshot qSnap = await super.getCollection(id: path + id + "/offers");
 
     List<PartnerOffer> list = <PartnerOffer>[];
 

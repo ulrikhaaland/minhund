@@ -1,13 +1,25 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/partner/partner.dart';
 import 'package:minhund/model/partner/partner_offer.dart';
 import 'package:minhund/presentation/home/partner/partner-offer/partner_CRUD_offer.dart';
+import 'package:minhund/presentation/home/partner/partner-offer/partner_offer_list_item.dart';
 import 'package:minhund/presentation/widgets/buttons/fab.dart';
+import 'package:minhund/presentation/widgets/circular_progress_indicator.dart';
+import 'package:minhund/presentation/widgets/reorderable_list.dart';
+import 'package:minhund/provider/partner_offer_provider.dart';
+import 'package:minhund/service/service_provider.dart';
 
 class PartnerOffersPageController extends BottomNavigationController {
   final Partner partner;
+
+  List<PartnerOffer> activeOffers = [];
+  List<PartnerOffer> inActiveOffers = [];
+
+  bool loading = true;
 
   PartnerOffersPageController({this.partner});
   @override
@@ -35,8 +47,52 @@ class PartnerOffersPageController extends BottomNavigationController {
 
   @override
   void initState() {
+    getOffers();
     if (partner.offers == null) partner.offers = [];
     super.initState();
+  }
+
+  Future getOffers() {
+    return PartnerOfferProvider().getCollection(id: partner.id).then((list) {
+      partner.offers = list;
+      setState(() => loading = false);
+    });
+  }
+
+  void sortListByDate({@required List<PartnerOffer> offerItemList}) {
+    if (offerItemList.isNotEmpty) {
+      offerItemList.sort((a, b) {
+        if (a.createdAt != null && b.createdAt != null)
+          return a.createdAt.compareTo(b.createdAt);
+        else
+          return 0;
+      });
+      offerItemList.sort((a, b) {
+        if (a.sortIndex != null && b.sortIndex != null) {
+          return a.sortIndex.compareTo(b.sortIndex);
+        } else
+          return 0;
+      });
+    }
+  }
+
+  void reOrder(int oldIndex, int newIndex, List<PartnerOffer> list) {
+    PartnerOffer cItem = list.removeAt(oldIndex);
+
+    PartnerOffer oldItem =
+        list.firstWhere((i) => i.sortIndex == newIndex, orElse: () => null);
+
+    cItem.sortIndex = newIndex;
+
+    PartnerOfferProvider().update(model: cItem);
+
+    list.insert(newIndex, cItem);
+
+    if (oldItem != null) {
+      oldItem.sortIndex = list.indexOf(oldItem);
+
+      PartnerOfferProvider().update(model: oldItem);
+    }
   }
 }
 
@@ -49,10 +105,126 @@ class PartnerOffersPage extends BottomNavigation {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
+    double padding = getDefaultPadding(context);
+
+    if (controller.partner.offers.isNotEmpty) {
+      controller.activeOffers = controller.partner.offers
+          .where((offer) => offer.active == true)
+          .toList();
+
+      controller.inActiveOffers = controller.partner.offers
+          .where((offer) => offer.active != true)
+          .toList();
+    } else {
+      controller.activeOffers = [];
+      controller.inActiveOffers = [];
+    }
+
+    if (controller.loading) return CPI(false);
+
+    controller.sortListByDate(offerItemList: controller.inActiveOffers);
+    controller.sortListByDate(offerItemList: controller.activeOffers);
+
     return Container(
-      child: Column(
-        children:
-            controller.partner.offers.map((offer) => Text("Offer")).toList(),
+      padding: EdgeInsets.only(left: padding * 2, right: padding * 2),
+      child: DefaultTabController(
+        length: 2,
+        initialIndex: 0,
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: ServiceProvider
+                      .instance.instanceStyleService.appStyle.iconSizeBig *
+                  2.5,
+              child: Card(
+                color: Colors.white,
+                elevation: ServiceProvider
+                    .instance.instanceStyleService.appStyle.elevation,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ServiceProvider
+                      .instance.instanceStyleService.appStyle.borderRadius),
+                ),
+                child: TabBar(
+                  indicatorColor: ServiceProvider
+                      .instance.instanceStyleService.appStyle.skyBlue,
+                  indicatorWeight: 3,
+                  indicatorPadding: EdgeInsets.only(
+                    left: padding * 2,
+                    right: padding * 2,
+                    bottom: padding,
+                  ),
+                  tabs: <Widget>[
+                    Tab(
+                      icon: Icon(
+                        Icons.done,
+                        color: ServiceProvider
+                            .instance.instanceStyleService.appStyle.green,
+                        size: ServiceProvider
+                            .instance.instanceStyleService.appStyle.iconSizeBig,
+                      ),
+                      child: Text(
+                        "Aktive",
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.descTitle,
+                      ),
+                    ),
+                    Tab(
+                      icon: Icon(
+                        Icons.check_box_outline_blank,
+                        color: ServiceProvider
+                            .instance.instanceStyleService.appStyle.imperial,
+                        size: ServiceProvider
+                            .instance.instanceStyleService.appStyle.iconSizeBig,
+                      ),
+                      child: Text(
+                        "Inaktive",
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.descTitle,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                key: Key(Random().nextInt(999999999).toString()),
+                children: <Widget>[
+                  ReorderableList(
+                    onReorder: (oldIndex, newIndex) => controller.reOrder(
+                        oldIndex, newIndex, controller.activeOffers),
+                    widgetList: controller.activeOffers
+                        .map(
+                          (offer) => PartnerOfferListItem(
+                            key: Key(offer.id ??
+                                Random().nextInt(99999999).toString()),
+                            controller: PartnerOfferListItemController(
+                              offer: offer,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  ReorderableList(
+                    onReorder: (oldIndex, newIndex) => controller.reOrder(
+                        oldIndex, newIndex, controller.inActiveOffers),
+                    widgetList: controller.inActiveOffers
+                        .map(
+                          (offer) => PartnerOfferListItem(
+                            key: Key(offer.id ??
+                                Random().nextInt(99999999).toString()),
+                            controller: PartnerOfferListItemController(
+                              offer: offer,
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

@@ -27,6 +27,6 @@ class CPI extends StatelessWidget {
                 .getHeightByPercentage(context, 50),
             child: cpi,
           )
-        : cpi;
+        : Center(child: cpi);
   }
 }
