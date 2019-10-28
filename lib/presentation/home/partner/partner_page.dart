@@ -106,7 +106,7 @@ class PartnerPageController extends BottomNavigationController {
   }) {
     return Container(
       alignment: Alignment.centerLeft,
-      height: constraints.minHeight * 0.1,
+      height: (constraints.minHeight ?? 520) * 0.1,
       child: Column(
         children: <Widget>[
           Row(

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/partner/partner_offer.dart';
@@ -35,15 +34,31 @@ class PartnerCRUDOfferController extends MasterPageController {
 
   bool enabled = false;
 
+  bool hasSaved;
+
+  CustomImageController customImageController;
+
   PartnerCRUDOfferController(
       {this.offer, this.pageState, this.partnerId, this.onCreate});
   @override
   Widget get actionOne => null;
 
   @override
-  Widget get actionTwo => SaveButton(
-        controller: saveButtonController,
-      );
+  Widget get actionTwo => pageState != PageState.read
+      ? SaveButton(
+          controller: saveButtonController,
+        )
+      : IconButton(
+          onPressed: () => setState(() {
+            pageState = PageState.edit;
+            customImageController.edit = true;
+          }),
+          icon: Icon(Icons.edit),
+          color:
+              ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
+          iconSize: ServiceProvider
+              .instance.instanceStyleService.appStyle.iconSizeStandard,
+        );
 
   @override
   Widget get bottomNav => null;
@@ -62,6 +77,20 @@ class PartnerCRUDOfferController extends MasterPageController {
     } else {
       canSave = false;
     }
+
+    customImageController = CustomImageController(
+      edit: pageState != PageState.read,
+      customImageType: CustomImageType.squared,
+      imgUrl: offer.imgUrl,
+      withLabel: true,
+      onDelete: () {
+        if (pageState == PageState.edit) {
+          deleteImage();
+        }
+      },
+      provideImageFile: (imgFile) => offer.imageFile = imgFile,
+    );
+
     saveButtonController = SaveButtonController(
         canSave: canSave,
         onPressed: () async {
@@ -72,7 +101,19 @@ class PartnerCRUDOfferController extends MasterPageController {
               offer.type = "product";
             }
 
+            hasSaved = true;
+
+            customImageController.edit = false;
+
             _formKey.currentState.save();
+
+            if (pageState == PageState.create) {
+              offer.createdAt = DateTime.now();
+              offer.docRef = await PartnerOfferProvider()
+                  .create(model: offer, id: "partners/$partnerId/offers");
+
+              onCreate(offer);
+            }
 
             if (offer.imageFile != null) {
               offer.imgUrl = await FileProvider().uploadFile(
@@ -80,15 +121,9 @@ class PartnerCRUDOfferController extends MasterPageController {
                   path: "partners/$partnerId/offers/${offer.id}/image");
             }
 
-            if (pageState == PageState.create) {
-              offer.createdAt = DateTime.now();
-              PartnerOfferProvider()
-                  .create(model: offer, id: "partners/$partnerId/offers")
-                  .then((ref) => offer.docRef = ref);
-              onCreate(offer);
-            }
+            PartnerOfferProvider().update(model: offer);
+
             if (pageState == PageState.edit) {
-              PartnerOfferProvider().update(model: offer);
               setState(() => pageState = PageState.read);
             }
 
@@ -109,6 +144,7 @@ class PartnerCRUDOfferController extends MasterPageController {
 
   @override
   void dispose() {
+    if (hasSaved != true) offer.imageFile = null;
     _scopeNode.dispose();
     priceFocusNode.dispose();
     super.dispose();
@@ -124,17 +160,10 @@ class PartnerCRUDOffer extends MasterPage {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    if (controller.pageState == PageState.edit ||
-        controller.pageState == PageState.create) {
-      controller.enabled = controller.pageState == PageState.edit ||
-          controller.pageState == PageState.create;
-    } else {}
+    controller.enabled = controller.pageState == PageState.edit ||
+        controller.pageState == PageState.create;
 
     return _buildEdit(context);
-
-    if (controller.pageState == PageState.read) return _buildRead(context);
-
-    return Container();
   }
 
   Widget _buildRead(BuildContext context) {
@@ -143,6 +172,7 @@ class PartnerCRUDOffer extends MasterPage {
 
   Widget _buildEdit(BuildContext context) {
     double padding = getDefaultPadding(context);
+
     return TapToUnfocus(
       width: ServiceProvider.instance.screenService
           .getWidthByPercentage(context, 90),
@@ -274,17 +304,12 @@ class PartnerCRUDOffer extends MasterPage {
                               controller.offer.imageFile != null) &&
                           controller.pageState == PageState.read ||
                       controller.pageState != PageState.read)
-                    CustomImage(
-                      controller: CustomImageController(
-                        edit: true,
-                        customImageType: CustomImageType.squared,
-                        onDelete: () {
-                          if (controller.pageState == PageState.edit) {
-                            controller.deleteImage();
-                          }
-                        },
-                        provideImageFile: (imgFile) =>
-                            controller.offer.imageFile = imgFile,
+                    Container(
+                      width: ServiceProvider.instance.screenService
+                          .getWidthByPercentage(context, 80),
+                      alignment: Alignment.centerLeft,
+                      child: CustomImage(
+                        controller: controller.customImageController,
                       ),
                     ),
                   Container(

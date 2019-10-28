@@ -64,7 +64,7 @@ class PrimaryTextField extends StatefulWidget {
     this.textEditingController,
     this.maxLines = 1,
     this.hintText,
-    this.validate,
+    this.validate = false,
     this.autoFocus,
     this.obscure,
     this.autocorrect,

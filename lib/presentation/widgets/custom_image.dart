@@ -26,6 +26,8 @@ class CustomImageController extends BaseController {
 
   bool isLoading = false;
 
+  final bool withLabel;
+
   final void Function(File file) provideImageFile;
 
   bool edit;
@@ -37,6 +39,7 @@ class CustomImageController extends BaseController {
       this.imgUrl,
       this.provideImageFile,
       this.onDelete,
+      this.withLabel = false,
       this.edit = false});
 
   Future<void> getImage() async {
@@ -137,7 +140,7 @@ class CustomImage extends BaseView {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            if (controller.edit)
+            if (controller.withLabel)
               Padding(
                 padding: EdgeInsets.only(
                     left: padding * 2, bottom: padding, top: padding * 4),
@@ -159,10 +162,11 @@ class CustomImage extends BaseView {
                                 controller.imageFile != null
                             ? DecorationImage(
                                 fit: BoxFit.fill,
-                                image: controller.imgUrl != null
-                                    ? AdvancedNetworkImage(controller.imgUrl)
-                                    : controller.imageFile != null
-                                        ? FileImage(controller.imageFile)
+                                image: controller.imageFile != null
+                                    ? FileImage(controller.imageFile)
+                                    : controller.imgUrl != null
+                                        ? AdvancedNetworkImage(
+                                            controller.imgUrl)
                                         : null,
                               )
                             : null,

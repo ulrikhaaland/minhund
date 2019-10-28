@@ -49,5 +49,5 @@ Map<String, dynamic> _$PartnerToJson(Partner instance) => <String, dynamic>{
       'address': instance.address.toJson(),
       'latitude': instance.latitude,
       'longitude': instance.longitude,
-      'openingHours': instance.openingHours,
+      'openingHours': instance.openingHours.toJson(),
     };
