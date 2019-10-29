@@ -18,15 +18,16 @@ class FileProvider {
     }
   }
 
-  Future deleteFile({String path}) async {
+  Future<bool> deleteFile({String path}) async {
     if (path != null) {
       try {
         StorageReference ref = FirebaseStorage.instance.ref().child(path);
         await ref.delete();
+        return true;
       } catch (e) {
         print(e.toString());
+        return false;
       }
     }
-    return null;
   }
 }

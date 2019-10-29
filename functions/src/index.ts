@@ -22,6 +22,8 @@ exports.recursiveDelete = functions
     }
 
     const path = data.path;
+    const type = data.type;
+
     console.log(
       `User ${context.auth.uid} has requested to delete path ${path}`
     );
@@ -30,10 +32,10 @@ exports.recursiveDelete = functions
     // The 'token' must be set in the functions config, and can be generated
     // at the command line by running 'firebase login:ci'.
     return firebase_tools.firestore
-      .delete(`users/${context.auth.uid}/${path}`, {
+      .delete(`${type}/${context.auth.uid}/${path}`, {
         project: process.env.GCLOUD_PROJECT,
         recursive: true,
-        yes: true,
+        yes: true
       })
       .then(() => {
         return {

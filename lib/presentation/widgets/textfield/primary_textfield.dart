@@ -46,7 +46,7 @@ class PrimaryTextField extends StatefulWidget {
     Key key,
     this.initValue,
     this.focusNode,
-    this.enabled,
+    this.enabled = true,
     this.onFieldSubmitted,
     this.onSaved,
     this.prefixText,
@@ -167,7 +167,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                   .getHeightByPercentage(
                       context, widget.maxLines > 1 ? 15 : 7.5),
               child: Card(
-                elevation: 1,
+                elevation: widget.enabled ? 1 : 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(ServiceProvider
                       .instance.instanceStyleService.appStyle.borderRadius),

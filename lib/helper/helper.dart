@@ -324,20 +324,51 @@ double getDefaultButtonHeight(BuildContext context) {
 
 double _defaultButtonHeight;
 
+enum DialogSize { small, medium, large }
+
 Future<void> showCustomDialog({
   BuildContext context,
   Widget child,
+  DialogSize dialogSize,
 }) async {
-  double height = ServiceProvider.instance.screenService
-      .getHeightByPercentage(context, 80.0);
-  double width = ServiceProvider.instance.screenService
-      .getWidthByPercentage(context, 80.0);
+  double height;
+  double width;
+  switch (dialogSize) {
+    case DialogSize.small:
+      height = ServiceProvider.instance.screenService
+          .getHeightByPercentage(context, 20.0);
+
+      width = ServiceProvider.instance.screenService
+          .getWidthByPercentage(context, 20.0);
+      break;
+    case DialogSize.medium:
+      height = ServiceProvider.instance.screenService
+          .getHeightByPercentage(context, 60.0);
+
+      width = ServiceProvider.instance.screenService
+          .getWidthByPercentage(context, 60.0);
+      break;
+    case DialogSize.large:
+      height = ServiceProvider.instance.screenService
+          .getHeightByPercentage(context, 80.0);
+
+      width = ServiceProvider.instance.screenService
+          .getWidthByPercentage(context, 80.0);
+      break;
+    default:
+      height = ServiceProvider.instance.screenService
+          .getHeightByPercentage(context, 80.0);
+
+      width = ServiceProvider.instance.screenService
+          .getWidthByPercentage(context, 80.0);
+  }
+
   return await showDialog(
     context: context,
     builder: (con) {
       return Dialog(
-        backgroundColor:
-            ServiceProvider.instance.instanceStyleService.appStyle.lightBlue,
+        backgroundColor: ServiceProvider
+            .instance.instanceStyleService.appStyle.backgroundColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(ServiceProvider
                   .instance.instanceStyleService.appStyle.borderRadius ??

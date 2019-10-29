@@ -37,28 +37,31 @@ class JournalEventPageController extends MasterPageController {
   Widget get actionOne => null;
 
   @override
-  Widget get actionTwo => IconButton(
-        onPressed: () => showCustomDialog(
-            context: context,
-            child: JournalAddCategory(
-              controller: JournalAddCategoryController(
-                singleCategoryItem: categoryItem,
-                childOnSaved: () => refresh(),
-                childOnDelete: () {
-                  dog.journalItems
-                      .removeWhere((item) => item.id == categoryItem.id);
-                  onUpdate(true);
-                  Navigator.of(context)..pop()..pop();
-                },
-                pageState: PageState.edit,
-                dogDocRefPath: dog.docRef.path,
-              ),
-            )),
-        icon: Icon(Icons.edit),
-        color: ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
-        iconSize: ServiceProvider
-            .instance.instanceStyleService.appStyle.iconSizeStandard,
-      );
+  List<Widget> get actionTwoList => [
+        IconButton(
+          onPressed: () => showCustomDialog(
+              context: context,
+              child: JournalAddCategory(
+                controller: JournalAddCategoryController(
+                  singleCategoryItem: categoryItem,
+                  childOnSaved: () => refresh(),
+                  childOnDelete: () {
+                    dog.journalItems
+                        .removeWhere((item) => item.id == categoryItem.id);
+                    onUpdate(true);
+                    Navigator.of(context)..pop()..pop();
+                  },
+                  pageState: PageState.edit,
+                  dogDocRefPath: dog.docRef.path,
+                ),
+              )),
+          icon: Icon(Icons.edit),
+          color:
+              ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
+          iconSize: ServiceProvider
+              .instance.instanceStyleService.appStyle.iconSizeStandard,
+        )
+      ];
 
   @override
   Widget get bottomNav => null;

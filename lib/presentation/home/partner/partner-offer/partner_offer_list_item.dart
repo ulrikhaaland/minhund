@@ -12,7 +12,9 @@ import 'package:minhund/service/service_provider.dart';
 class PartnerOfferListItemController extends BaseController {
   final PartnerOffer offer;
 
-  PartnerOfferListItemController({this.offer});
+  final void Function(PartnerOffer offer) onDelete;
+
+  PartnerOfferListItemController({this.offer, this.onDelete});
 }
 
 class PartnerOfferListItem extends BaseView {
@@ -39,6 +41,7 @@ class PartnerOfferListItem extends BaseView {
                 controller: PartnerCRUDOfferController(
                   offer: offer,
                   pageState: PageState.read,
+                  onDelete: (offer) => controller.onDelete(offer),
                 ),
               ),
             ),

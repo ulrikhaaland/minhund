@@ -21,7 +21,7 @@ class DateTimePickerController extends BaseController {
 
   bool canSave = false;
 
-  final bool enabled;
+  bool enabled;
 
   final bool validate;
 
@@ -64,7 +64,8 @@ class DateTimePickerController extends BaseController {
           .instance.instanceStyleService.appStyle.iconSizeStandard,
     );
     super.initState();
-    _textNode.addListener(() => openDatePicker(context));
+    _textNode
+        .addListener(() => _textNode.hasFocus ? openDatePicker(context) : null);
     if (initialDate != null && overrideInitialDate != true)
       _setCtrlrText(initialDate);
     if (_textCtrlr.text != "" && _textCtrlr.text != null) canSave = true;
@@ -178,6 +179,7 @@ class DateTimePicker extends BaseView {
     canSave = controller.canSave;
     return PrimaryTextField(
       asListTile: true,
+      autoFocus: false,
       enabled: controller.enabled,
       validate: controller.validate ?? true,
       textEditingController: controller._textCtrlr,

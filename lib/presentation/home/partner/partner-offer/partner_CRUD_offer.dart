@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/partner/partner_offer.dart';
+import 'package:minhund/presentation/home/partner/partner-offer/partner_offer_reserve.dart';
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
 import 'package:minhund/presentation/widgets/buttons/save_button.dart';
+import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/tap_to_unfocus.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
+import 'package:minhund/provider/cloud_functions_provider.dart';
 import 'package:minhund/provider/file_provider.dart';
-import 'package:minhund/provider/partner_offer_provider.dart';
+import 'package:minhund/provider/offer_provider.dart';
+import 'package:minhund/provider/partner/partner_offer_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 
@@ -24,6 +28,8 @@ class PartnerCRUDOfferController extends MasterPageController {
 
   final void Function(PartnerOffer offer) onCreate;
 
+  final void Function(PartnerOffer offer) onDelete;
+
   SaveButtonController saveButtonController;
 
   bool canSave = false;
@@ -32,33 +38,101 @@ class PartnerCRUDOfferController extends MasterPageController {
 
   FocusNode priceFocusNode = FocusNode();
 
-  bool enabled = false;
+  bool enabled;
+
+  DateTimePickerController dateTimePickerController;
 
   bool hasSaved;
 
   CustomImageController customImageController;
 
   PartnerCRUDOfferController(
-      {this.offer, this.pageState, this.partnerId, this.onCreate});
+      {this.offer,
+      this.pageState,
+      this.partnerId,
+      this.onCreate,
+      this.onDelete});
+
   @override
   Widget get actionOne => null;
 
   @override
-  Widget get actionTwo => pageState != PageState.read
-      ? SaveButton(
-          controller: saveButtonController,
-        )
-      : IconButton(
-          onPressed: () => setState(() {
-            pageState = PageState.edit;
-            customImageController.edit = true;
-          }),
-          icon: Icon(Icons.edit),
-          color:
-              ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
-          iconSize: ServiceProvider
-              .instance.instanceStyleService.appStyle.iconSizeStandard,
-        );
+  List<Widget> get actionTwoList => [
+        if (pageState != PageState.create)
+          IconButton(
+            onPressed: () => setState(() {
+              showCustomDialog(
+                context: context,
+                dialogSize: DialogSize.small,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(
+                      getDefaultPadding(context) * 2,
+                      getDefaultPadding(context) * 4,
+                      getDefaultPadding(context) * 2,
+                      getDefaultPadding(context) * 2),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Slettingen kan ikke reverseres. Er du sikker på at du vil slette tilbudet?",
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.body1,
+                      ),
+                      SecondaryButton(
+                        color: ServiceProvider
+                            .instance.instanceStyleService.appStyle.pink,
+                        text: "Slett",
+                        onPressed: () {
+                          if (offer.inMarket == true) {
+                            OfferProvider().delete(model: offer);
+                          }
+
+                          if (offer.imgUrl == null)
+                            FileProvider()
+                                .deleteFile(path: offer.docRef.path + "/image");
+
+                          CloudFunctionsProvider().recursiveDelete(
+                              pathAfterTypeId: "offers/${offer.id}",
+                              userType: UserType.partner);
+
+                          // PartnerOfferProvider().delete(model: offer);
+
+                          onDelete(offer);
+
+                          Navigator.of(context)..pop()..pop();
+                        },
+                      )
+                    ],
+                  ),
+                ),
+              );
+            }),
+            icon: Icon(
+              Icons.delete,
+            ),
+            color:
+                ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
+            iconSize: ServiceProvider
+                .instance.instanceStyleService.appStyle.iconSizeStandard,
+          ),
+        pageState != PageState.read
+            ? SaveButton(
+                controller: saveButtonController,
+              )
+            : IconButton(
+                onPressed: () => setState(() {
+                  pageState = PageState.edit;
+                  dateTimePickerController.enabled = true;
+
+                  customImageController.edit = true;
+                }),
+                icon: Icon(Icons.edit),
+                color: ServiceProvider
+                    .instance.instanceStyleService.appStyle.textGrey,
+                iconSize: ServiceProvider
+                    .instance.instanceStyleService.appStyle.iconSizeStandard,
+              ),
+      ];
 
   @override
   Widget get bottomNav => null;
@@ -67,8 +141,9 @@ class PartnerCRUDOfferController extends MasterPageController {
   Widget get fab => null;
 
   @override
-  String get title =>
-      pageState != PageState.create ? offer.title : "Nytt tilbud";
+  String get title => pageState != PageState.create
+      ? pageState == PageState.read ? offer.title : "Rediger"
+      : "Nytt tilbud";
 
   @override
   void initState() {
@@ -77,6 +152,22 @@ class PartnerCRUDOfferController extends MasterPageController {
     } else {
       canSave = false;
     }
+
+    enabled = pageState != PageState.read;
+
+    service = offer.type == "service";
+
+    dateTimePickerController = DateTimePickerController(
+      enabled: enabled,
+      minDateTime: DateTime.now(),
+      validate: false,
+      label: "Sluttdato for tilbudet",
+      onConfirmed: (date) {
+        offer.endOfOffer = date;
+        priceFocusNode.requestFocus();
+      },
+      initialDate: offer.endOfOffer,
+    );
 
     customImageController = CustomImageController(
       edit: pageState != PageState.read,
@@ -101,6 +192,8 @@ class PartnerCRUDOfferController extends MasterPageController {
               offer.type = "product";
             }
 
+            dateTimePickerController.enabled = false;
+
             hasSaved = true;
 
             customImageController.edit = false;
@@ -119,6 +212,8 @@ class PartnerCRUDOfferController extends MasterPageController {
               offer.imgUrl = await FileProvider().uploadFile(
                   file: offer.imageFile,
                   path: "partners/$partnerId/offers/${offer.id}/image");
+
+              customImageController.imgUrl = offer.imgUrl;
             }
 
             PartnerOfferProvider().update(model: offer);
@@ -140,6 +235,8 @@ class PartnerCRUDOfferController extends MasterPageController {
         .deleteFile(path: "partners/$partnerId/offers/${offer.id}/image");
 
     offer.imgUrl = null;
+
+    PartnerOfferProvider().update(model: offer);
   }
 
   @override
@@ -185,7 +282,7 @@ class PartnerCRUDOffer extends MasterPage {
               child: Column(
                 children: <Widget>[
                   Card(
-                    elevation: 3,
+                    elevation: controller.enabled ? 3 : 0,
                     color: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(ServiceProvider
@@ -204,7 +301,8 @@ class PartnerCRUDOffer extends MasterPage {
                                     .instanceStyleService.appStyle.smallTitle,
                               ),
                               value: !controller.service,
-                              onChanged: (val) => controller.enabled
+                              onChanged: (val) => controller.enabled &&
+                                      val != !controller.service
                                   ? controller.setState(() =>
                                       controller.service = !controller.service)
                                   : null,
@@ -237,6 +335,12 @@ class PartnerCRUDOffer extends MasterPage {
                   Container(
                     height: padding * 2,
                   ),
+                  PartnerOfferReserve(
+                    controller: PartnerOfferReserveController(),
+                  ),
+                  Container(
+                    height: padding * 2,
+                  ),
                   PrimaryTextField(
                     paddingBottom: padding * 2,
                     enabled: controller.enabled,
@@ -261,17 +365,7 @@ class PartnerCRUDOffer extends MasterPage {
                     validate: true,
                   ),
                   DateTimePicker(
-                    controller: DateTimePickerController(
-                      enabled: controller.enabled,
-                      minDateTime: DateTime.now(),
-                      validate: false,
-                      label: "Sluttdato for tilbudet",
-                      onConfirmed: (date) {
-                        controller.offer.endOfOffer = date;
-                        controller.priceFocusNode.requestFocus();
-                      },
-                      initialDate: controller.offer.endOfOffer,
-                    ),
+                    controller: controller.dateTimePickerController,
                   ),
                   PrimaryTextField(
                     hintText: "Pris",
@@ -324,7 +418,7 @@ class PartnerCRUDOffer extends MasterPage {
                               bottom: padding,
                               top: padding * 4),
                           child: Text(
-                            "Hvis tilbudet skal være synlig for kunder må det være aktivt, dette kan du endre senere.",
+                            "Hvis tilbudet skal være synlig for kunder må det være aktivt, dette kan du endre når som helst.",
                             style: ServiceProvider
                                 .instance.instanceStyleService.appStyle.body1,
                             textAlign: TextAlign.start,
@@ -338,7 +432,7 @@ class PartnerCRUDOffer extends MasterPage {
                                 .appStyle
                                 .borderRadius),
                           ),
-                          elevation: 1,
+                          elevation: controller.enabled ? 1 : 0,
                           child: CheckboxListTile(
                             dense: true,
                             value: controller.offer.active ?? false,

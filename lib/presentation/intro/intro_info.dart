@@ -41,7 +41,7 @@ class IntroInfoOwnerController extends MasterPageController {
       );
 
   @override
-  Widget get actionTwo => null;
+  List<Widget> get actionTwoList => null;
 }
 
 class IntroInfoOwner extends MasterPage {

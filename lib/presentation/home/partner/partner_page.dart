@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/helper.dart';
@@ -12,7 +11,7 @@ import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/file_provider.dart';
-import 'package:minhund/provider/partner_provider.dart';
+import 'package:minhund/provider/partner/partner_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 
 class PartnerPageController extends BottomNavigationController {
@@ -42,33 +41,34 @@ class PartnerPageController extends BottomNavigationController {
   @override
   String get title => partner.name;
   @override
-  Widget get actionTwo => pageState == PageState.read
-      ? IconButton(
-          onPressed: () => setState(() => pageState = PageState.edit),
-          icon: Icon(Icons.edit),
-          color:
-              ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
-          iconSize: ServiceProvider
-              .instance.instanceStyleService.appStyle.iconSizeStandard,
-        )
-      : SaveButton(
-          controller: SaveButtonController(
-            onPressed: () async {
-              if (partner.imgUrl == null)
-                partner.imgUrl = await FileProvider().uploadFile(
-                    file: imageFile, path: "partners/${partner.id}/logo");
+  List<Widget> get actionTwoList => [
+        pageState == PageState.read
+            ? IconButton(
+                onPressed: () => setState(() => pageState = PageState.edit),
+                icon: Icon(Icons.edit),
+                color: ServiceProvider
+                    .instance.instanceStyleService.appStyle.textGrey,
+                iconSize: ServiceProvider
+                    .instance.instanceStyleService.appStyle.iconSizeStandard,
+              )
+            : SaveButton(
+                controller: SaveButtonController(
+                  onPressed: () async {
+                    if (partner.imgUrl == null)
+                      partner.imgUrl = await FileProvider().uploadFile(
+                          file: imageFile, path: "partners/${partner.id}/logo");
 
-              _formKey.currentState.save();
+                    _formKey.currentState.save();
 
-              PartnerProvider().update(model: partner);
+                    PartnerProvider().update(model: partner);
 
-              setState(() {
-                pageState = PageState.read;
-              });
-            },
-          ),
-        );
-
+                    setState(() {
+                      pageState = PageState.read;
+                    });
+                  },
+                ),
+              ),
+      ];
   @override
   void initState() {
     if (partner.address == null) partner.address = Address();
@@ -87,6 +87,7 @@ class PartnerPageController extends BottomNavigationController {
           imageFile = null;
           FileProvider().deleteFile(path: "partners/${partner.id}/logo");
           partner.imgUrl = null;
+          PartnerProvider().update(model: partner);
         },
         provideImageFile: (imgFile) {
           imageFile = imgFile;

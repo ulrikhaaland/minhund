@@ -10,7 +10,7 @@ import 'package:minhund/presentation/home/partner/partner-offer/partner_offer_li
 import 'package:minhund/presentation/widgets/buttons/fab.dart';
 import 'package:minhund/presentation/widgets/circular_progress_indicator.dart';
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
-import 'package:minhund/provider/partner_offer_provider.dart';
+import 'package:minhund/provider/partner/partner_offer_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 
 class PartnerOffersPageController extends BottomNavigationController {
@@ -57,6 +57,10 @@ class PartnerOffersPageController extends BottomNavigationController {
       partner.offers = list;
       setState(() => loading = false);
     });
+  }
+
+  void onDelete({PartnerOffer offer}) {
+    partner.offers.removeWhere((off) => off.id == offer.id);
   }
 
   void sortListByDate({@required List<PartnerOffer> offerItemList}) {
@@ -205,6 +209,8 @@ class PartnerOffersPage extends BottomNavigation {
                             key: Key(offer.id ??
                                 Random().nextInt(99999999).toString()),
                             controller: PartnerOfferListItemController(
+                              onDelete: (offer) =>
+                                  controller.onDelete(offer: offer),
                               offer: offer,
                             ),
                           ),
@@ -220,6 +226,8 @@ class PartnerOffersPage extends BottomNavigation {
                             key: Key(offer.id ??
                                 Random().nextInt(99999999).toString()),
                             controller: PartnerOfferListItemController(
+                              onDelete: (offer) =>
+                                  controller.onDelete(offer: offer),
                               offer: offer,
                             ),
                           ),

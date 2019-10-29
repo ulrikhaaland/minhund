@@ -34,7 +34,7 @@ class UserIntroController extends MasterPageController {
   Widget get actionOne => null;
 
   @override
-  Widget get actionTwo => null;
+  List<Widget> get actionTwoList => null;
 
   Future<void> saveInfo({Dog dog, File imageFile}) async {
     if (user.dogs == null) {

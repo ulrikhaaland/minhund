@@ -8,6 +8,7 @@ import 'package:minhund/presentation/widgets/buttons/save_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_pop_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_template.dart';
+import 'package:minhund/presentation/widgets/tap_to_unfocus.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/cloud_functions_provider.dart';
 import 'package:minhund/provider/journal_provider.dart';
@@ -88,9 +89,10 @@ class JournalAddCategoryController extends DialogTemplateController {
   void onDelete() {
     //  Parent deletes from list
     String pathFromDog = singleCategoryItem.docRef.path.split("dogs")[1];
-    print(pathFromDog);
-    CloudFunctionsProvider().recursiveDelete("dogs$pathFromDog");
-    // JournalProvider().delete(model: singleCategoryItem);
+
+    CloudFunctionsProvider().recursiveDelete(
+        pathAfterTypeId: "dogs$pathFromDog", userType: UserType.user);
+
     childOnDelete();
   }
 
@@ -113,51 +115,47 @@ class JournalAddCategory extends DialogTemplate {
   Widget buildDialogContent(BuildContext context) {
     if (!mounted) return Container();
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(),
-      child: Container(
-        color: Colors.transparent,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            controller.height = constraints.maxHeight;
-            return Container(
-              padding: EdgeInsets.all(getDefaultPadding(context) * 2),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  PrimaryTextField(
-                    autoFocus: true,
-                    initValue: controller.singleCategoryItem.title,
-                    textCapitalization: TextCapitalization.sentences,
-                    textFieldType: TextFieldType.ordinary,
-                    onChanged: (val) {
-                      if (val.length > 0)
-                        controller.canSave = true;
-                      else
-                        controller.canSave = false;
-                      controller.singleCategoryItem.title = val;
-                      controller.setState(() {
-                        controller.saveBtnCtrlr.canSave = controller.canSave;
-                      });
-                    },
-                    textInputType: TextInputType.text,
-                    textInputAction: TextInputAction.done,
-                    hintText: "Kategori-navn",
-                    onFieldSubmitted: () => controller.onSaved(),
+    return TapToUnfocus(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          controller.height = constraints.maxHeight;
+          return Container(
+            padding: EdgeInsets.all(getDefaultPadding(context) * 2),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                PrimaryTextField(
+                  autoFocus: true,
+                  initValue: controller.singleCategoryItem.title,
+                  textCapitalization: TextCapitalization.sentences,
+                  textFieldType: TextFieldType.ordinary,
+                  onChanged: (val) {
+                    if (val.length > 0)
+                      controller.canSave = true;
+                    else
+                      controller.canSave = false;
+                    controller.singleCategoryItem.title = val;
+                    controller.setState(() {
+                      controller.saveBtnCtrlr.canSave = controller.canSave;
+                    });
+                  },
+                  textInputType: TextInputType.text,
+                  textInputAction: TextInputAction.done,
+                  hintText: "Kategori-navn",
+                  onFieldSubmitted: () => controller.onSaved(),
+                ),
+                if (controller.pageState == PageState.edit)
+                  SecondaryButton(
+                    topPadding: 0,
+                    text: "Slett",
+                    color: ServiceProvider
+                        .instance.instanceStyleService.appStyle.pink,
+                    onPressed: () => controller.onDelete(),
                   ),
-                  if (controller.pageState == PageState.edit)
-                    SecondaryButton(
-                      topPadding: 0,
-                      text: "Slett",
-                      color: ServiceProvider
-                          .instance.instanceStyleService.appStyle.pink,
-                      onPressed: () => controller.onDelete(),
-                    ),
-                ],
-              ),
-            );
-          },
-        ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

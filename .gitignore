@@ -20,11 +20,8 @@
 # is commented out by default.
 #.vscode/
 
-<<<<<<< HEAD
 ./GoogleService-Info.plist
 
-=======
->>>>>>> 6f561fef4904ee92ad0b5f42697128c8785735ce
 # Flutter/Dart/Pub related
 **/doc/api/
 .dart_tool/
@@ -39,3 +36,4 @@ lib/generated_plugin_registrant.dart
 
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+node_modules

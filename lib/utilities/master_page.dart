@@ -14,7 +14,7 @@ abstract class MasterPageController extends BaseController {
   Widget get bottomNav;
 
   Widget get actionOne;
-  Widget get actionTwo;
+  List<Widget> get actionTwoList;
 }
 
 abstract class MasterPage extends BaseView {
@@ -40,7 +40,7 @@ abstract class MasterPage extends BaseView {
 
     if (controller.title != null ||
         controller.actionOne != null ||
-        controller.actionTwo != null)
+        controller.actionTwoList != null)
       appBar = AppBar(
         iconTheme: IconThemeData(
             color:
@@ -55,12 +55,19 @@ abstract class MasterPage extends BaseView {
         title: Text(
           controller.title ?? "",
           style: ServiceProvider.instance.instanceStyleService.appStyle.title,
+          overflow: TextOverflow.ellipsis,
         ),
         actions: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(right: getDefaultPadding(context) * 2),
-            child: controller.actionTwo ?? Container(),
-          )
+          if (controller.actionTwoList != null)
+            Padding(
+              padding: EdgeInsets.only(right: getDefaultPadding(context) * 2),
+              child: Row(
+                    children: controller.actionTwoList
+                        .map((action) => action)
+                        .toList(),
+                  ) ??
+                  Container(),
+            )
         ],
       );
 

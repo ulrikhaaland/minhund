@@ -16,7 +16,7 @@ class ResetPasswordController extends MasterPageController {
   Widget get actionOne => null;
 
   @override
-  Widget get actionTwo => null;
+  List<Widget> get actionTwoList => null;
 
   @override
   Widget get bottomNav => null;

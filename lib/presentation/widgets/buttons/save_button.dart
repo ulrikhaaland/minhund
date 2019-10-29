@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minhund/helper/helper.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/service/service_provider.dart';
@@ -18,29 +19,39 @@ class SaveButton extends BaseView {
   SaveButton({this.controller});
   @override
   Widget build(BuildContext context) {
-    return CircleAvatar(
-      backgroundColor: controller.canSave
-          ? ServiceProvider.instance.instanceStyleService.appStyle.green
-          : Colors.transparent,
-      radius: ServiceProvider
-              .instance.instanceStyleService.appStyle.iconSizeStandard *
-          0.7,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(
-          ServiceProvider
-                  .instance.instanceStyleService.appStyle.iconSizeStandard *
-              0.7,
+    if (!mounted) return Container();
+
+    double iconSizeStandard =
+        ServiceProvider.instance.instanceStyleService.appStyle.iconSizeStandard;
+
+    return Padding(
+      padding: EdgeInsets.only(left: getDefaultPadding(context) * 2.1),
+      child: AnimatedContainer(
+        curve: Curves.decelerate,
+        duration: Duration(milliseconds: 500),
+        decoration: BoxDecoration(
+          color: controller.canSave
+              ? ServiceProvider.instance.instanceStyleService.appStyle.green
+              : ServiceProvider
+                  .instance.instanceStyleService.appStyle.backgroundColor,
+          shape: BoxShape.circle,
         ),
-        onTap: () => controller.canSave ? controller.onPressed() : null,
-        child: Center(
-          child: Icon(
-            Icons.check,
-            size: ServiceProvider
-                .instance.instanceStyleService.appStyle.iconSizeStandard,
-            color: controller.canSave
-                ? Colors.white
-                : ServiceProvider
-                    .instance.instanceStyleService.appStyle.inactiveIconColor,
+        height: iconSizeStandard * 1.4,
+        width: iconSizeStandard * 1.4,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(
+            iconSizeStandard * 0.7,
+          ),
+          onTap: () => controller.canSave ? controller.onPressed() : null,
+          child: Center(
+            child: Icon(
+              Icons.check,
+              size: iconSizeStandard,
+              color: controller.canSave
+                  ? Colors.white
+                  : ServiceProvider
+                      .instance.instanceStyleService.appStyle.inactiveIconColor,
+            ),
           ),
         ),
       ),
