@@ -5,6 +5,7 @@ import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/partner/partner.dart';
 import 'package:minhund/model/partner/partner_offer.dart';
+import 'package:minhund/model/partner/partner_reservation.dart';
 import 'package:minhund/presentation/home/partner/partner-offer/partner_CRUD_offer.dart';
 import 'package:minhund/presentation/home/partner/partner-offer/partner_offer_list_item.dart';
 import 'package:minhund/presentation/widgets/buttons/fab.dart';
@@ -36,7 +37,7 @@ class PartnerOffersPageController extends BottomNavigationController {
             builder: (context) => PartnerCRUDOffer(
               controller: PartnerCRUDOfferController(
                 pageState: PageState.create,
-                offer: PartnerOffer(),
+                offer: PartnerOffer(partnerReservation: PartnerReservation()),
                 partnerId: partner.id,
                 onCreate: (offer) {
                   partner.offers.add(offer);

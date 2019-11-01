@@ -1,3 +1,0 @@
-class OfferReserve {
-  int reservationAmount;
-}

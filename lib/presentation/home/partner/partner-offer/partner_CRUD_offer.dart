@@ -46,6 +46,8 @@ class PartnerCRUDOfferController extends MasterPageController {
 
   CustomImageController customImageController;
 
+  PartnerOfferReserveController offerReserveController;
+
   PartnerCRUDOfferController(
       {this.offer,
       this.pageState,
@@ -58,7 +60,7 @@ class PartnerCRUDOfferController extends MasterPageController {
 
   @override
   List<Widget> get actionTwoList => [
-        if (pageState != PageState.create)
+        if (pageState == PageState.edit)
           IconButton(
             onPressed: () => setState(() {
               showCustomDialog(
@@ -122,6 +124,9 @@ class PartnerCRUDOfferController extends MasterPageController {
             : IconButton(
                 onPressed: () => setState(() {
                   pageState = PageState.edit;
+
+                  offerReserveController.enabled = true;
+
                   dateTimePickerController.enabled = true;
 
                   customImageController.edit = true;
@@ -194,6 +199,8 @@ class PartnerCRUDOfferController extends MasterPageController {
 
             dateTimePickerController.enabled = false;
 
+            offerReserveController.enabled = false;
+
             hasSaved = true;
 
             customImageController.edit = false;
@@ -225,6 +232,11 @@ class PartnerCRUDOfferController extends MasterPageController {
             if (pageState == PageState.create) Navigator.pop(context);
           }
         });
+
+    offerReserveController = PartnerOfferReserveController(
+      enabled: enabled,
+      reservation: offer.partnerReservation,
+    );
     super.initState();
   }
 
@@ -336,7 +348,7 @@ class PartnerCRUDOffer extends MasterPage {
                     height: padding * 2,
                   ),
                   PartnerOfferReserve(
-                    controller: PartnerOfferReserveController(),
+                    controller: controller.offerReserveController,
                   ),
                   Container(
                     height: padding * 2,

@@ -6,7 +6,7 @@ part of 'partner_offer.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-PartnerOffer _$PartnerOfferFromJson(Map<String, dynamic> json) {
+PartnerOffer _$PartnerOfferFromJson(Map json) {
   return PartnerOffer(
     title: json['title'] as String,
     desc: json['desc'] as String,
@@ -15,6 +15,11 @@ PartnerOffer _$PartnerOfferFromJson(Map<String, dynamic> json) {
     endOfOffer: json['endOfOffer'] == null
         ? null
         : DateTime.parse(json['endOfOffer'] as String),
+    partnerReservation: json['partnerReservation'] == null
+        ? null
+        : PartnerReservation.fromJson((json['partnerReservation'] as Map)?.map(
+            (k, e) => MapEntry(k as String, e),
+          )),
     id: json['id'] as String,
   )
     ..createdAt = json['createdAt'] == null
@@ -38,5 +43,6 @@ Map<String, dynamic> _$PartnerOfferToJson(PartnerOffer instance) =>
       'endOfOffer': instance.endOfOffer?.toIso8601String(),
       'active': instance.active,
       'type': instance.type,
+      'partnerReservation': instance.partnerReservation.toJson(),
       'inMarket': instance.inMarket,
     };

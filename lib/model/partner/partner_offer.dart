@@ -1,11 +1,11 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:minhund/model/partner/partner_reservation.dart';
 
 part 'partner_offer.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(anyMap: true)
 class PartnerOffer {
   PartnerOffer(
       {this.title,
@@ -13,6 +13,7 @@ class PartnerOffer {
       this.price,
       this.imgUrl,
       this.endOfOffer,
+      this.partnerReservation,
       this.id});
   String id;
   DateTime createdAt;
@@ -28,7 +29,11 @@ class PartnerOffer {
   DocumentReference docRef;
   @JsonKey(ignore: true)
   File imageFile;
+  // @JsonKey(toJson: partnerToJson )
+  PartnerReservation partnerReservation;
   bool inMarket;
+
+//  PartnerReservation partnerToJson() =>  PartnerReservation.toJson();
 
   factory PartnerOffer.fromJson(Map<String, dynamic> json) =>
       _$PartnerOfferFromJson(json);
