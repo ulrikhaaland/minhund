@@ -3,7 +3,8 @@ import 'package:cloud_functions/cloud_functions.dart';
 enum UserType { partner, user }
 
 class CloudFunctionsProvider {
-  Future recursiveDelete({String pathAfterTypeId, UserType userType}) {
+  Future recursiveUserSpecificDelete(
+      {String pathAfterTypeId, UserType userType}) {
     String type = "users";
     switch (userType) {
       case UserType.user:
@@ -14,9 +15,16 @@ class CloudFunctionsProvider {
         break;
     }
     final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
-      functionName: 'recursiveDelete',
+      functionName: 'recursiveUserSpecificDelete',
     );
     return callable
         .call(<String, dynamic>{"path": pathAfterTypeId, "type": type});
+  }
+
+  Future recursiveUniversalDelete({String path}) {
+    final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
+      functionName: 'recursiveUniversalDelete',
+    );
+    return callable.call(<String, dynamic>{"path": path});
   }
 }

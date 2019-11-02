@@ -15,6 +15,7 @@ PartnerOffer _$PartnerOfferFromJson(Map json) {
     endOfOffer: json['endOfOffer'] == null
         ? null
         : DateTime.parse(json['endOfOffer'] as String),
+    partnerId: json['partnerId'] as String,
     partnerReservation: json['partnerReservation'] == null
         ? null
         : PartnerReservation.fromJson((json['partnerReservation'] as Map)?.map(
@@ -34,6 +35,7 @@ PartnerOffer _$PartnerOfferFromJson(Map json) {
 Map<String, dynamic> _$PartnerOfferToJson(PartnerOffer instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'partnerId': instance.partnerId,
       'createdAt': instance.createdAt?.toIso8601String(),
       'title': instance.title,
       'price': instance.price,

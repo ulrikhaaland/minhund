@@ -90,7 +90,7 @@ class JournalAddCategoryController extends DialogTemplateController {
     //  Parent deletes from list
     String pathFromDog = singleCategoryItem.docRef.path.split("dogs")[1];
 
-    CloudFunctionsProvider().recursiveDelete(
+    CloudFunctionsProvider().recursiveUserSpecificDelete(
         pathAfterTypeId: "dogs$pathFromDog", userType: UserType.user);
 
     childOnDelete();

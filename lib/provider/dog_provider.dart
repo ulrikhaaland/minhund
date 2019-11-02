@@ -22,11 +22,6 @@ class DogProvider extends CrudProvider {
   }
 
   @override
-  Future delete({model}) {
-    return super.delete(model: model);
-  }
-
-  @override
   Future<List<Dog>> getCollection({String id}) async {
     List<Dog> list = [];
     String path = "users/$id/dogs";
@@ -49,15 +44,5 @@ class DogProvider extends CrudProvider {
       dog.id = docSnap.documentID;
       return dog;
     });
-  }
-
-  @override
-  Future set({String id, dynamic model}) {
-    return super.set(id: id, model: model);
-  }
-
-  @override
-  Future update({model}) {
-    return super.update(model: model);
   }
 }

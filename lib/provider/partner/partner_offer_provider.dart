@@ -3,20 +3,12 @@ import 'package:minhund/model/partner/partner_offer.dart';
 import 'package:minhund/provider/crud_provider.dart';
 
 class PartnerOfferProvider extends CrudProvider {
-  String path = "partners/";
-  @override
-  Future create({model, String id}) {
-    return super.create(model: model, id: id);
-  }
-
-  @override
-  Future get({String id}) {
-    return super.get(id: id);
-  }
-
   @override
   Future<List<PartnerOffer>> getCollection({String id}) async {
-    QuerySnapshot qSnap = await super.getCollection(id: path + id + "/offers");
+    QuerySnapshot qSnap = await Firestore.instance
+        .collection("partnerOffers")
+        .where("partnerId", isEqualTo: id)
+        .getDocuments();
 
     List<PartnerOffer> list = <PartnerOffer>[];
 

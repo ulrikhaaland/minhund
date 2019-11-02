@@ -38,10 +38,13 @@ class SecondaryButton extends StatelessWidget {
               minHeight: ServiceProvider.instance.screenService
                   .getPortraitHeightByPercentage(context, 5)),
           child: RaisedButton(
-              child: Text(text ?? "N/A",
-                  style: ServiceProvider
-                      .instance.instanceStyleService.appStyle.buttonText
-                      .copyWith(color: textColor ?? Colors.white)),
+              child: Text(
+                text ?? "N/A",
+                style: ServiceProvider
+                    .instance.instanceStyleService.appStyle.buttonText
+                    .copyWith(color: textColor ?? Colors.white),
+                overflow: TextOverflow.ellipsis,
+              ),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(ServiceProvider
                       .instance.instanceStyleService.appStyle.borderRadius))),

@@ -141,10 +141,10 @@ class InstanceStyleService {
 
     _appStyle.body1Black = new TextStyle(
       fontFamily: "Apercu",
-      fontSize: screenHeight * 0.024 * factor,
+      fontSize: screenHeight * 0.020 * factor,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,
-      color: appStyle.textGrey,
+      color: Colors.black,
     );
 
     _appStyle.body1BlackBig = new TextStyle(

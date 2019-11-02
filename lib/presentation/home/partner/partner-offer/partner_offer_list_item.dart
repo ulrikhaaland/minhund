@@ -93,8 +93,8 @@ class PartnerOfferListItem extends BaseView {
                                 style: ServiceProvider.instance
                                     .instanceStyleService.appStyle.label),
                             Text(
-                              offer.inMarket != true
-                                  ? "Venter på godkjenning"
+                              offer.inMarket == false
+                                  ? "Avvist"
                                   : offer.active ? "I markedet" : "Inaktivt",
                               style: ServiceProvider
                                   .instance.instanceStyleService.appStyle.body1,

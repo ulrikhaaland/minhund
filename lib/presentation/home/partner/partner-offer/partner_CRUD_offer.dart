@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/partner/partner_offer.dart';
@@ -10,7 +11,6 @@ import 'package:minhund/presentation/widgets/tap_to_unfocus.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/cloud_functions_provider.dart';
 import 'package:minhund/provider/file_provider.dart';
-import 'package:minhund/provider/offer_provider.dart';
 import 'package:minhund/provider/partner/partner_offer_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
@@ -85,19 +85,12 @@ class PartnerCRUDOfferController extends MasterPageController {
                             .instance.instanceStyleService.appStyle.pink,
                         text: "Slett",
                         onPressed: () {
-                          if (offer.inMarket == true) {
-                            OfferProvider().delete(model: offer);
-                          }
-
                           if (offer.imgUrl == null)
-                            FileProvider()
-                                .deleteFile(path: offer.docRef.path + "/image");
+                            FileProvider().deleteFile(
+                                path: "partnerOffers/${offer.id}/image");
 
-                          CloudFunctionsProvider().recursiveDelete(
-                              pathAfterTypeId: "offers/${offer.id}",
-                              userType: UserType.partner);
-
-                          // PartnerOfferProvider().delete(model: offer);
+                          CloudFunctionsProvider().recursiveUniversalDelete(
+                              path: "partnerOffers/${offer.id}");
 
                           onDelete(offer);
 
@@ -210,7 +203,7 @@ class PartnerCRUDOfferController extends MasterPageController {
             if (pageState == PageState.create) {
               offer.createdAt = DateTime.now();
               offer.docRef = await PartnerOfferProvider()
-                  .create(model: offer, id: "partners/$partnerId/offers");
+                  .create(model: offer, id: "partnerOffers");
 
               onCreate(offer);
             }
@@ -218,7 +211,7 @@ class PartnerCRUDOfferController extends MasterPageController {
             if (offer.imageFile != null) {
               offer.imgUrl = await FileProvider().uploadFile(
                   file: offer.imageFile,
-                  path: "partners/$partnerId/offers/${offer.id}/image");
+                  path: "partnerOffers/${offer.id}/image");
 
               customImageController.imgUrl = offer.imgUrl;
             }
@@ -234,6 +227,7 @@ class PartnerCRUDOfferController extends MasterPageController {
         });
 
     offerReserveController = PartnerOfferReserveController(
+      offerId: offer.id,
       enabled: enabled,
       reservation: offer.partnerReservation,
     );
@@ -243,8 +237,7 @@ class PartnerCRUDOfferController extends MasterPageController {
   void deleteImage() {
     offer.imageFile = null;
 
-    FileProvider()
-        .deleteFile(path: "partners/$partnerId/offers/${offer.id}/image");
+    FileProvider().deleteFile(path: "partnerOffers/${offer.id}/image");
 
     offer.imgUrl = null;
 
@@ -275,10 +268,6 @@ class PartnerCRUDOffer extends MasterPage {
     return _buildEdit(context);
   }
 
-  Widget _buildRead(BuildContext context) {
-    return Container();
-  }
-
   Widget _buildEdit(BuildContext context) {
     double padding = getDefaultPadding(context);
 
@@ -293,6 +282,12 @@ class PartnerCRUDOffer extends MasterPage {
               node: controller._scopeNode,
               child: Column(
                 children: <Widget>[
+                  PartnerOfferReserve(
+                    controller: controller.offerReserveController,
+                  ),
+                  Container(
+                    height: padding * 2,
+                  ),
                   Card(
                     elevation: controller.enabled ? 3 : 0,
                     color: Colors.white,
@@ -345,13 +340,7 @@ class PartnerCRUDOffer extends MasterPage {
                     ),
                   ),
                   Container(
-                    height: padding * 2,
-                  ),
-                  PartnerOfferReserve(
-                    controller: controller.offerReserveController,
-                  ),
-                  Container(
-                    height: padding * 2,
+                    height: padding * 4,
                   ),
                   PrimaryTextField(
                     paddingBottom: padding * 2,

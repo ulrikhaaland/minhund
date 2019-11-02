@@ -40,17 +40,7 @@ class UserProvider extends CrudProvider {
   }
 
   @override
-  Future delete({model}) {
-    return super.delete(model: model);
-  }
-
-  @override
   Future getCollection({String id}) {
     return super.getCollection(id: id);
-  }
-
-  @override
-  Future update({model}) {
-    return super.update(model: model);
   }
 }

@@ -5,15 +5,6 @@ import 'package:minhund/provider/journal_event_provider.dart';
 
 class JournalProvider extends CrudProvider {
   String path = "/journalItems";
-  @override
-  Future update({model}) {
-    return super.update(model: model);
-  }
-
-  @override
-  Future get({String id}) {
-    return super.get(id: id);
-  }
 
   @override
   Future create({model, String id}) {
@@ -32,15 +23,5 @@ class JournalProvider extends CrudProvider {
     });
 
     return list;
-  }
-
-  @override
-  Future delete({model}) {
-    return super.delete(model: model);
-  }
-
-  @override
-  Future set({String id, model}) {
-    return super.set(id: id, model: model);
   }
 }

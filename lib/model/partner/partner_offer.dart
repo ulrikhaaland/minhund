@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:minhund/model/partner/partner_reservation.dart';
+import 'package:minhund/model/partner/partner-reservation/partner_reservation.dart';
 
 part 'partner_offer.g.dart';
 
@@ -13,9 +13,11 @@ class PartnerOffer {
       this.price,
       this.imgUrl,
       this.endOfOffer,
+      this.partnerId,
       this.partnerReservation,
       this.id});
   String id;
+  String partnerId;
   DateTime createdAt;
   String title;
   double price;
