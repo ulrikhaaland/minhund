@@ -6,9 +6,14 @@ import 'package:minhund/presentation/home/map/map_page.dart';
 import 'package:minhund/presentation/home/partner/partner-offer/partner_offers_page.dart';
 import 'package:minhund/presentation/home/profile/profile.dart';
 import 'package:minhund/presentation/widgets/bottom_nav.dart';
+import 'package:minhund/presentation/widgets/circular_progress_indicator.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
+import 'package:minhund/provider/dog_provider.dart';
+import 'package:minhund/provider/journal_event_provider.dart';
+import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 
+import 'model/dog.dart';
 import 'model/user.dart';
 import 'presentation/home/partner/partner_page.dart';
 
@@ -35,6 +40,8 @@ class BottomNavigationController extends MasterPageController {
   PartnerOffersPage partnerOffersPage;
 
   List<BottomNavigation> pages;
+
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -83,6 +90,10 @@ class BottomNavigationController extends MasterPageController {
         partnerOffersPage,
       ];
     }
+    if (userContext == UserContext.user)
+      getDogs();
+    else
+      isLoading = false;
     super.initState();
   }
 
@@ -100,6 +111,32 @@ class BottomNavigationController extends MasterPageController {
 
   @override
   Widget get fab => null;
+
+  Future<void> getDogs() async {
+    List<Dog> dogs = await DogProvider().getCollection(id: user.id);
+    if (dogs.isNotEmpty) {
+      user.dogs = dogs;
+      user.dog = dogs[0];
+    } else {
+      user.dog = Dog(
+        name: "Min Hund",
+        weigth: "12",
+        birthDate: DateTime(
+          2015,
+          5,
+          15,
+        ),
+        race: "Beagle",
+      );
+
+      user.dogs = [
+        user.dog,
+      ];
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
 }
 
 class BottomNavigation extends MasterPage {
@@ -112,21 +149,24 @@ class BottomNavigation extends MasterPage {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    if (controller.user.dog != null) if (controller.user.dog.profileImage ==
-        null) {
-      controller.user.dog.profileImage = CustomImage(
-        controller: CustomImageController(
-          customImageType: CustomImageType.circle,
-          imgUrl: controller.user.dog.imgUrl,
-        ),
-      );
-    } else {
-      // controller.user.dog.profileImage.controller.edit = false;
+    if (!controller.isLoading) {
+      if (controller.user.dog != null) if (controller.user.dog.profileImage ==
+          null) {
+        controller.user.dog.profileImage = CustomImage(
+          controller: CustomImageController(
+            customImageType: CustomImageType.circle,
+            imgUrl: controller.user.dog.imgUrl,
+          ),
+        );
+      } else {
+        // controller.user.dog.profileImage.controller.edit = false;
+      }
     }
 
     return IndexedStack(
       index: controller.bottomNavIndex,
-      children: controller.pages,
+      children:
+          controller.isLoading ? [Center(child: CPI(false))] : controller.pages,
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
+import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import '../../../bottom_navigation.dart';
@@ -57,8 +58,22 @@ class JournalPageController extends BottomNavigationController {
   void initState() {
     dog = user.dog;
     dog.profileImage.controller.imageSizePercentage = 5;
-
+    getJournalItems();
     super.initState();
+  }
+
+  void getJournalItems() {
+    user.dogs.forEach((dog) async {
+      dog.journalItems =
+          await JournalProvider().getCollection(id: dog.docRef.path);
+      if (dog.journalItems.isNotEmpty) {
+        dog.journalItems.forEach((item) async {
+          item.journalEventItems =
+              await JournalEventProvider().getCollection(id: item.docRef.path);
+          setState(() {});
+        });
+      }
+    });
   }
 }
 

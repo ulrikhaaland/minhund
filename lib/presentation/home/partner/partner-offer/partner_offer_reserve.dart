@@ -59,12 +59,14 @@ class PartnerOfferReserve extends BaseView {
         controller.reservation.customerReservations = <CustomerReservation>[];
 
         // populate with reservations
-        snapshots.data.documents.forEach((DocumentSnapshot doc) {
-          CustomerReservation customerReservation =
-              CustomerReservation.fromJson(doc.data);
-          customerReservation.docRef = doc.reference;
-          controller.reservation.customerReservations.add(customerReservation);
-        });
+        if (snapshots.hasData)
+          snapshots.data.documents.forEach((DocumentSnapshot doc) {
+            CustomerReservation customerReservation =
+                CustomerReservation.fromJson(doc.data);
+            customerReservation.docRef = doc.reference;
+            controller.reservation.customerReservations
+                .add(customerReservation);
+          });
         controller.reservation.customerReservations.sort((a, b) {
           if (a.reservedAt != null && b.reservedAt != null)
             return a.reservedAt.compareTo(b.reservedAt);

@@ -177,41 +177,6 @@ class RootPageController extends BaseController {
     _user = User.fromJson(userDocSnap.data);
     _user.docRef = userDocSnap.reference;
 
-    List<Dog> dogs = await DogProvider().getCollection(id: firebaseUser.uid);
-    if (dogs.isNotEmpty) {
-      dogs.forEach((dog) async {
-        dog.journalItems =
-            await JournalProvider().getCollection(id: dog.docRef.path);
-        if (dog.journalItems.isNotEmpty) {
-          dog.journalItems.forEach((item) async {
-            item.journalEventItems = await JournalEventProvider()
-                .getCollection(id: item.docRef.path);
-          });
-          setState(() {});
-        } else {
-          setState(() {});
-        }
-      });
-
-      _user.dogs = dogs;
-    } else {
-      _user.dog = Dog(
-        name: "Min Hund",
-        weigth: "12",
-        birthDate: DateTime(
-          2015,
-          5,
-          15,
-        ),
-        race: "Beagle",
-      );
-
-      _user.dogs = [
-        _user.dog,
-      ];
-      setState(() {});
-    }
-
     UserProvider().updateFcmToken(_user, firebaseMessaging);
 
     return;
@@ -255,7 +220,7 @@ class RootPage extends BaseView {
       ServiceProvider.instance.screenService.getBambooFactor(context),
     );
 
-    // controller.auth.signOut();
+    controller.auth.signOut();
 
     if (!controller.introDone) {
       return Intro(
@@ -289,15 +254,15 @@ class RootPage extends BaseView {
       );
     } else if (controller._user != null) {
       if (controller.userContext == UserContext.user)
-        controller._user.dog =
-            controller._user.dogs[controller._user.currentDogIndex];
+        // controller._user.dog =
+        //     controller._user.dogs[controller._user.currentDogIndex];
 
-      return BottomNavigation(
-        controller: BottomNavigationController(
-          userContext: controller.userContext,
-          user: controller._user,
-        ),
-      );
+        return BottomNavigation(
+          controller: BottomNavigationController(
+            userContext: controller.userContext,
+            user: controller._user,
+          ),
+        );
     }
     return Container();
   }

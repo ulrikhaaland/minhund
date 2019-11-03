@@ -10,13 +10,11 @@ class CPI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget cpi = Container(
-      child: CircularProgressIndicator(
-        strokeWidth: 3,
-        backgroundColor:
-            ServiceProvider.instance.instanceStyleService.appStyle.lightBlue,
-        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-      ),
+    Widget cpi = CircularProgressIndicator(
+      strokeWidth: 3,
+      backgroundColor:
+          ServiceProvider.instance.instanceStyleService.appStyle.lightBlue,
+      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
     );
     // Center CPI
     return positioned
@@ -27,6 +25,6 @@ class CPI extends StatelessWidget {
                 .getHeightByPercentage(context, 50),
             child: cpi,
           )
-        : Center(child: cpi);
+        : cpi;
   }
 }

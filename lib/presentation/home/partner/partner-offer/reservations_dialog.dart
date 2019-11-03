@@ -25,6 +25,7 @@ class _ReservationDialogState extends State<ReservationDialog> {
     if (!mounted) return Container();
 
     double padding = getDefaultPadding(context);
+
     return Padding(
       padding: EdgeInsets.all(padding * 2),
       child: Container(
