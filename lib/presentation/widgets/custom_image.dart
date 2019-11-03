@@ -33,7 +33,7 @@ class CustomImageController extends BaseController {
   bool edit;
 
   CustomImageController(
-      {this.imageSizePercentage,
+      {this.imageSizePercentage = 25,
       this.imageFile,
       this.customImageType = CustomImageType.circle,
       this.imgUrl,
@@ -135,62 +135,65 @@ class CustomImage extends BaseView {
         );
 
         break;
+
       case CustomImageType.squared:
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            if (controller.withLabel)
-              Padding(
-                padding: EdgeInsets.only(
-                    left: padding * 2, bottom: padding, top: padding * 4),
-                child: Text(
-                  "Beskrivende bilde",
-                  style: ServiceProvider
-                      .instance.instanceStyleService.appStyle.body1,
-                  textAlign: TextAlign.start,
-                ),
-              ),
-            Column(
+        {
+          Widget squaredImage = Container(
+            decoration: BoxDecoration(
+                image: controller.imgUrl != null || controller.imageFile != null
+                    ? DecorationImage(
+                        fit: BoxFit.fill,
+                        image: controller.imageFile != null
+                            ? FileImage(controller.imageFile)
+                            : controller.imgUrl != null
+                                ? AdvancedNetworkImage(controller.imgUrl)
+                                : null,
+                      )
+                    : null,
+                color: ServiceProvider
+                    .instance.instanceStyleService.appStyle.skyBlue,
+                borderRadius: BorderRadius.all(Radius.elliptical(20, 30))),
+            height: ServiceProvider.instance.screenService
+                .getHeightByPercentage(context, controller.imageSizePercentage),
+            width: ServiceProvider.instance.screenService
+                .getHeightByPercentage(context, controller.imageSizePercentage),
+            child: controller.isLoading
+                ? CPI(false)
+                : controller.imageFile == null && controller.imgUrl == null
+                    ? icon
+                    : null,
+          );
+          if (controller.edit)
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
-                InkWell(
-                  onTap: () async =>
-                      controller.edit ? controller.getImage() : null,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        image: controller.imgUrl != null ||
-                                controller.imageFile != null
-                            ? DecorationImage(
-                                fit: BoxFit.fill,
-                                image: controller.imageFile != null
-                                    ? FileImage(controller.imageFile)
-                                    : controller.imgUrl != null
-                                        ? AdvancedNetworkImage(
-                                            controller.imgUrl)
-                                        : null,
-                              )
-                            : null,
-                        color: ServiceProvider
-                            .instance.instanceStyleService.appStyle.skyBlue,
-                        borderRadius:
-                            BorderRadius.all(Radius.elliptical(20, 30))),
-                    height: ServiceProvider.instance.screenService
-                        .getHeightByPercentage(context, 20),
-                    width: ServiceProvider.instance.screenService
-                        .getHeightByPercentage(context, 20),
-                    child: controller.isLoading
-                        ? CPI(false)
-                        : controller.imageFile == null &&
-                                controller.imgUrl == null
-                            ? icon
-                            : null,
+                if (controller.withLabel)
+                  Padding(
+                    padding: EdgeInsets.only(
+                        left: padding * 2, bottom: padding, top: padding * 4),
+                    child: Text(
+                      "Beskrivende bilde",
+                      style: ServiceProvider
+                          .instance.instanceStyleService.appStyle.body1,
+                      textAlign: TextAlign.start,
+                    ),
                   ),
+                Column(
+                  children: <Widget>[
+                    InkWell(
+                      onTap: () async =>
+                          controller.edit ? controller.getImage() : null,
+                      child: squaredImage,
+                    ),
+                    if (controller.edit) IntrinsicWidth(child: editImage)
+                  ],
                 ),
-                if (controller.edit) IntrinsicWidth(child: editImage)
               ],
-            ),
-          ],
-        );
+            );
+          return squaredImage;
+        }
+
         break;
 
       default:

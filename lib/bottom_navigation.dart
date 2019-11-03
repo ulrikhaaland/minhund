@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/presentation/home/journal/journal_page.dart';
-import 'package:minhund/presentation/home/leverage/leverage.dart';
 import 'package:minhund/presentation/home/map/map_page.dart';
+import 'package:minhund/presentation/home/offer/offer_page.dart';
 import 'package:minhund/presentation/home/partner/partner-offer/partner_offers_page.dart';
 import 'package:minhund/presentation/home/profile/profile.dart';
 import 'package:minhund/presentation/widgets/bottom_nav.dart';
 import 'package:minhund/presentation/widgets/circular_progress_indicator.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/provider/dog_provider.dart';
-import 'package:minhund/provider/journal_event_provider.dart';
-import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 import 'package:provider/provider.dart';
 
@@ -33,7 +31,7 @@ class BottomNavigationController extends MasterPageController {
   // User Pages
   JournalPage journal;
   MapPage mapLocation;
-  Leverage leverage;
+  OfferPage offerPage;
   ProfilePage profile;
 
   // Partner Pages
@@ -42,7 +40,7 @@ class BottomNavigationController extends MasterPageController {
 
   List<BottomNavigation> pages;
 
-  bool isLoading = true;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -69,11 +67,11 @@ class BottomNavigationController extends MasterPageController {
         controller: ProfilePageController(),
       );
 
-      leverage = Leverage(
-        controller: LeverageController(),
+      offerPage = OfferPage(
+        controller: OfferPageController(),
       );
 
-      pages = <BottomNavigation>[journal, mapLocation, leverage, profile];
+      pages = <BottomNavigation>[journal, mapLocation, offerPage, profile];
     } else if (userContext == UserContext.partner) {
       partnerPage = PartnerPage(
         controller:
@@ -94,7 +92,7 @@ class BottomNavigationController extends MasterPageController {
     if (userContext == UserContext.user)
       getDogs();
     else
-      isLoading = false;
+      _isLoading = false;
     super.initState();
   }
 
@@ -135,7 +133,7 @@ class BottomNavigationController extends MasterPageController {
       ];
     }
     setState(() {
-      isLoading = false;
+      _isLoading = false;
     });
   }
 }
@@ -150,7 +148,7 @@ class BottomNavigation extends MasterPage {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    if (!controller.isLoading) {
+    if (!controller._isLoading) {
       if (controller.user.dog != null) if (controller.user.dog.profileImage ==
           null) {
         controller.user.dog.profileImage = CustomImage(
@@ -170,7 +168,7 @@ class BottomNavigation extends MasterPage {
       ],
       child: IndexedStack(
         index: controller.bottomNavIndex,
-        children: controller.isLoading
+        children: controller._isLoading
             ? [Center(child: CPI(false))]
             : controller.pages,
       ),

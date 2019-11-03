@@ -21,6 +21,8 @@ class DateTimePickerController extends BaseController {
 
   bool canSave = false;
 
+  final bool asListTile;
+
   bool enabled;
 
   final bool validate;
@@ -41,6 +43,7 @@ class DateTimePickerController extends BaseController {
       this.title,
       this.dateFormat,
       this.minDateTime,
+      this.asListTile = false,
       this.label,
       this.initialDate,
       this.width,
@@ -178,7 +181,7 @@ class DateTimePicker extends BaseView {
   Widget build(BuildContext context) {
     canSave = controller.canSave;
     return PrimaryTextField(
-      asListTile: true,
+      asListTile: controller.asListTile,
       autoFocus: false,
       enabled: controller.enabled,
       validate: controller.validate ?? true,

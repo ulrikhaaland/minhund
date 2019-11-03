@@ -77,7 +77,7 @@ class InstanceStyleService {
     );
 
     _appStyle.descTitle = new TextStyle(
-      fontSize: screenHeight * 0.026 * factor,
+      fontSize: screenHeight * 0.022 * factor,
       fontFamily: 'Apercu',
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.normal,

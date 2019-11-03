@@ -95,7 +95,9 @@ class PartnerOfferListItem extends BaseView {
                             Text(
                               offer.inMarket == false
                                   ? "Avvist"
-                                  : offer.active ? "I markedet" : "Inaktivt",
+                                  : offer.active ?? false
+                                      ? "I markedet"
+                                      : "Inaktivt",
                               style: ServiceProvider
                                   .instance.instanceStyleService.appStyle.body1,
                             ),

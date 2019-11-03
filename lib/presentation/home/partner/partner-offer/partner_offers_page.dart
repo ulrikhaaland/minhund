@@ -39,7 +39,7 @@ class PartnerOffersPageController extends BottomNavigationController {
             partnerOffer.partnerReservation = PartnerReservation();
             partnerOffer.partnerId = partner.id;
 
-            PartnerCRUDOffer(
+            return PartnerCRUDOffer(
               controller: PartnerCRUDOfferController(
                 pageState: PageState.create,
                 offer: partnerOffer,
