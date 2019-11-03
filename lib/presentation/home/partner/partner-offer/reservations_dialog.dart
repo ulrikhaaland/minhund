@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
-import 'package:minhund/model/partner/partner-reservation/customer_reservation.dart';
+import 'package:minhund/model/customer/customer_reservation.dart';
 import 'package:minhund/service/service_provider.dart';
 
 class ReservationDialog extends StatefulWidget {

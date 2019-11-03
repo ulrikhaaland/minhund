@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:minhund/model/partner/partner-reservation/customer_reservation.dart';
+import 'package:minhund/model/customer/customer_reservation.dart';
 
 part 'partner_reservation.g.dart';
 

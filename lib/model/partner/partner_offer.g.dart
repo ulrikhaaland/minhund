@@ -8,28 +8,28 @@ part of 'partner_offer.dart';
 
 PartnerOffer _$PartnerOfferFromJson(Map json) {
   return PartnerOffer(
-    title: json['title'] as String,
-    desc: json['desc'] as String,
-    price: (json['price'] as num)?.toDouble(),
-    imgUrl: json['imgUrl'] as String,
-    endOfOffer: json['endOfOffer'] == null
-        ? null
-        : DateTime.parse(json['endOfOffer'] as String),
-    partnerId: json['partnerId'] as String,
-    partnerReservation: json['partnerReservation'] == null
-        ? null
-        : PartnerReservation.fromJson((json['partnerReservation'] as Map)?.map(
-            (k, e) => MapEntry(k as String, e),
-          )),
-    id: json['id'] as String,
+    active: json['active'] as bool,
+    inMarket: json['inMarket'] as bool,
+    sortIndex: json['sortIndex'] as int,
   )
+    ..id = json['id'] as String
+    ..partnerId = json['partnerId'] as String
     ..createdAt = json['createdAt'] == null
         ? null
         : DateTime.parse(json['createdAt'] as String)
-    ..sortIndex = json['sortIndex'] as int
-    ..active = json['active'] as bool
+    ..title = json['title'] as String
+    ..price = (json['price'] as num)?.toDouble()
+    ..desc = json['desc'] as String
+    ..imgUrl = json['imgUrl'] as String
+    ..endOfOffer = json['endOfOffer'] == null
+        ? null
+        : DateTime.parse(json['endOfOffer'] as String)
     ..type = json['type'] as String
-    ..inMarket = json['inMarket'] as bool;
+    ..partnerReservation = json['partnerReservation'] == null
+        ? null
+        : PartnerReservation.fromJson((json['partnerReservation'] as Map)?.map(
+            (k, e) => MapEntry(k as String, e),
+          ));
 }
 
 Map<String, dynamic> _$PartnerOfferToJson(PartnerOffer instance) =>
@@ -40,11 +40,11 @@ Map<String, dynamic> _$PartnerOfferToJson(PartnerOffer instance) =>
       'title': instance.title,
       'price': instance.price,
       'desc': instance.desc,
-      'sortIndex': instance.sortIndex,
       'imgUrl': instance.imgUrl,
       'endOfOffer': instance.endOfOffer?.toIso8601String(),
-      'active': instance.active,
       'type': instance.type,
       'partnerReservation': instance.partnerReservation.toJson(),
+      'active': instance.active,
+      'sortIndex': instance.sortIndex,
       'inMarket': instance.inMarket,
     };

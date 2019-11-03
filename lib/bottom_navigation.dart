@@ -12,6 +12,7 @@ import 'package:minhund/provider/dog_provider.dart';
 import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
+import 'package:provider/provider.dart';
 
 import 'model/dog.dart';
 import 'model/user.dart';
@@ -163,10 +164,16 @@ class BottomNavigation extends MasterPage {
       }
     }
 
-    return IndexedStack(
-      index: controller.bottomNavIndex,
-      children:
-          controller.isLoading ? [Center(child: CPI(false))] : controller.pages,
+    return MultiProvider(
+      providers: [
+        Provider<User>.value(value: controller.user),
+      ],
+      child: IndexedStack(
+        index: controller.bottomNavIndex,
+        children: controller.isLoading
+            ? [Center(child: CPI(false))]
+            : controller.pages,
+      ),
     );
   }
 }

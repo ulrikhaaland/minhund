@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
+import 'package:minhund/model/offer.dart';
 import 'package:minhund/model/partner/partner_offer.dart';
 import 'package:minhund/presentation/home/partner/partner-offer/partner_offer_reserve.dart';
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';

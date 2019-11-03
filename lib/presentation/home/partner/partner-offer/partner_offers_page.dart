@@ -1,10 +1,10 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/helper.dart';
-import 'package:minhund/model/partner/partner-reservation/customer_reservation.dart';
+import 'package:minhund/model/customer/customer_reservation.dart';
+import 'package:minhund/model/offer.dart';
 import 'package:minhund/model/partner/partner-reservation/partner_reservation.dart';
 import 'package:minhund/model/partner/partner.dart';
 import 'package:minhund/model/partner/partner_offer.dart';
@@ -19,8 +19,8 @@ import 'package:minhund/service/service_provider.dart';
 class PartnerOffersPageController extends BottomNavigationController {
   final Partner partner;
 
-  List<PartnerOffer> activeOffers = [];
-  List<PartnerOffer> inActiveOffers = [];
+  List<Offer> activeOffers = [];
+  List<Offer> inActiveOffers = [];
 
   bool loading = true;
 
@@ -33,22 +33,23 @@ class PartnerOffersPageController extends BottomNavigationController {
 
   @override
   Widget get fab => Fab(
-      onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PartnerCRUDOffer(
+      onPressed: () =>
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            PartnerOffer partnerOffer = PartnerOffer();
+            partnerOffer.partnerReservation = PartnerReservation();
+            partnerOffer.partnerId = partner.id;
+
+            PartnerCRUDOffer(
               controller: PartnerCRUDOfferController(
                 pageState: PageState.create,
-                offer: PartnerOffer(
-                    partnerReservation: PartnerReservation(),
-                    partnerId: partner.id),
+                offer: partnerOffer,
                 partnerId: partner.id,
                 onCreate: (offer) {
                   partner.offers.add(offer);
                 },
               ),
-            ),
-          )));
+            );
+          })));
 
   @override
   void initState() {

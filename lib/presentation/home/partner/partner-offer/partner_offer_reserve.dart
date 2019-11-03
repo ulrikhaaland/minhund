@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
-import 'package:minhund/model/partner/partner-reservation/customer_reservation.dart';
+import 'package:minhund/model/customer/customer_reservation.dart';
 import 'package:minhund/model/partner/partner-reservation/partner_reservation.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
