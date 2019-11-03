@@ -22,12 +22,12 @@ class LeverageController extends BottomNavigationController {
 
   @override
   void initState() {
-    getOffers():
+    // getOffers():
     super.initState();
   }
 
   void getOffers() {
-    PartnerOfferProvider().getCollection()
+    // PartnerOfferProvider().getCollection()
   }
 }
 

@@ -220,7 +220,7 @@ class RootPage extends BaseView {
       ServiceProvider.instance.screenService.getBambooFactor(context),
     );
 
-    // controller.auth.signOut();
+    controller.auth.signOut();
 
     if (!controller.introDone) {
       return Intro(
@@ -253,16 +253,12 @@ class RootPage extends BaseView {
                 controller.setState(() => controller.newUser = false)),
       );
     } else if (controller._user != null) {
-      if (controller.userContext == UserContext.user)
-        // controller._user.dog =
-        //     controller._user.dogs[controller._user.currentDogIndex];
-
-        return BottomNavigation(
-          controller: BottomNavigationController(
-            userContext: controller.userContext,
-            user: controller._user,
-          ),
-        );
+      return BottomNavigation(
+        controller: BottomNavigationController(
+          userContext: controller.userContext,
+          user: controller._user,
+        ),
+      );
     }
     return Container();
   }
