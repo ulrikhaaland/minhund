@@ -16,11 +16,13 @@ class JournalProvider extends CrudProvider {
     QuerySnapshot qSnap = await super.getCollection(id: id + path);
     List<JournalCategoryItem> list = <JournalCategoryItem>[];
 
-    qSnap.documents.forEach((doc) async {
-      JournalCategoryItem journalItem = JournalCategoryItem.fromJson(doc.data);
-      journalItem.docRef = doc.reference;
-      list.add(journalItem);
-    });
+    if (qSnap.documents.isNotEmpty)
+      for (DocumentSnapshot doc in qSnap.documents) {
+        JournalCategoryItem journalItem =
+            JournalCategoryItem.fromJson(doc.data);
+        journalItem.docRef = doc.reference;
+        list.add(journalItem);
+      }
 
     return list;
   }

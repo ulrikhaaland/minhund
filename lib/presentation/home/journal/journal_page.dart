@@ -66,13 +66,7 @@ class JournalPageController extends BottomNavigationController {
     user.dogs.forEach((dog) async {
       dog.journalItems =
           await JournalProvider().getCollection(id: dog.docRef.path);
-      if (dog.journalItems.isNotEmpty) {
-        dog.journalItems.forEach((item) async {
-          item.journalEventItems =
-              await JournalEventProvider().getCollection(id: item.docRef.path);
-          setState(() {});
-        });
-      }
+      setState(() {});
     });
   }
 }

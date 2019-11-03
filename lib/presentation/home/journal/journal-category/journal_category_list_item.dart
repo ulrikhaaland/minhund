@@ -5,6 +5,7 @@ import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/home/journal/journal-event/journal_event_page.dart';
+import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 
 class JournalCategoryListItemController extends BaseController {
@@ -16,13 +17,25 @@ class JournalCategoryListItemController extends BaseController {
 
   final User user;
 
+  bool isLoading = true;
+
   JournalCategoryListItemController(
       {this.item, this.dog, this.onUpdate, this.user});
 
   @override
   void initState() {
     if (item.journalEventItems == null) item.journalEventItems = [];
+    getEvents();
+
     super.initState();
+  }
+
+  Future<void> getEvents() async {
+    item.journalEventItems =
+        await JournalEventProvider().getCollection(id: item.docRef.path);
+    setState(() {
+      isLoading = false;
+    });
   }
 }
 
@@ -35,7 +48,7 @@ class JournalCategoryListItem extends BaseView {
 
   @override
   Widget build(BuildContext context) {
-    if (!mounted) return Container();
+    if (!mounted || controller.isLoading) return Container();
     return LayoutBuilder(
       builder: (context, con) {
         return InkWell(
