@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:minhund/model/partner/partner-reservation/partner_reservation.dart';
+import 'package:minhund/model/partner/partner.dart';
 
 import '../offer.dart';
 

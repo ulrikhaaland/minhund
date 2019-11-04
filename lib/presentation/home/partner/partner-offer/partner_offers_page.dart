@@ -19,8 +19,8 @@ import 'package:minhund/service/service_provider.dart';
 class PartnerOffersPageController extends BottomNavigationController {
   final Partner partner;
 
-  List<Offer> activeOffers = [];
-  List<Offer> inActiveOffers = [];
+  List<PartnerOffer> activeOffers = [];
+  List<PartnerOffer> inActiveOffers = [];
 
   bool loading = true;
 
@@ -37,6 +37,7 @@ class PartnerOffersPageController extends BottomNavigationController {
           Navigator.push(context, MaterialPageRoute(builder: (context) {
             PartnerOffer partnerOffer = PartnerOffer();
             partnerOffer.partnerReservation = PartnerReservation();
+            partnerOffer.partner = partner;
             partnerOffer.partnerId = partner.id;
 
             return PartnerCRUDOffer(
@@ -153,7 +154,7 @@ class PartnerOffersPage extends BottomNavigation {
       controller.inActiveOffers = [];
     }
 
-    if (controller.loading) return CPI(false);
+    if (controller.loading) return Center(child: CPI(false));
 
     controller.sortListByDate(offerItemList: controller.inActiveOffers);
     controller.sortListByDate(offerItemList: controller.activeOffers);

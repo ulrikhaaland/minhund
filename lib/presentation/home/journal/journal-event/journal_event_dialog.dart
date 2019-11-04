@@ -189,7 +189,9 @@ class JournalEventDialogController extends DialogTemplateController {
         categoryItem.journalEventItems.add(placeHolderEventItem);
 
         JournalEventProvider()
-            .create(model: placeHolderEventItem, id: categoryItem.docRef.path)
+            .create(
+                model: placeHolderEventItem,
+                id: categoryItem.docRef.path + "/eventItems")
             .then((item) {
           if (reminder != null) {
             reminder.eventId = item.documentID;

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:minhund/model/partner/partner-reservation/partner_reservation.dart';
+import 'package:minhund/model/partner/partner.dart';
 
 part 'offer.g.dart';
 
@@ -12,20 +13,21 @@ class Offer {
       this.price,
       this.imgUrl,
       this.endOfOffer,
-      this.partnerId,
       this.partnerReservation,
       this.id,
+      this.partnerId,
       this.createdAt,
       this.type});
   String id;
-  String partnerId;
   DateTime createdAt;
   String title;
   double price;
+  Partner partner;
   String desc;
   String imgUrl;
   DateTime endOfOffer;
   String type;
+  String partnerId;
   @JsonKey(ignore: true)
   DocumentReference docRef;
   PartnerReservation partnerReservation;

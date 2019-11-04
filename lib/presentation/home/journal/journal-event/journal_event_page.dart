@@ -121,10 +121,10 @@ class JournalEventPageController extends MasterPageController {
           return 0;
       });
       eventItemList.sort((a, b) {
-        if (a.sortIndex != null && b.sortIndex != null) {
-          return a.sortIndex.compareTo(b.sortIndex);
-        } else
-          return 0;
+        a.sortIndex = a.sortIndex ?? eventItemList.length + 1;
+        b.sortIndex = b.sortIndex ?? eventItemList.length + 1;
+
+        return a.sortIndex.compareTo(b.sortIndex ?? eventItemList.length + 1);
       });
 
       // eventItemList.forEach((item) {

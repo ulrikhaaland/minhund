@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:minhund/model/offer.dart';
+import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/provider/offer_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import '../../../bottom_navigation.dart';
@@ -50,42 +51,37 @@ class OfferPage extends BottomNavigation {
   Widget buildContent(BuildContext context) {
     if (!mounted || controller.isLoading) return Container();
 
-    return StaggeredGridView.countBuilder(
-      crossAxisCount: 4,
-      itemCount: controller.offers.length,
-      itemBuilder: (BuildContext context, int index) => CustomerOfferListItem(
-        offer: controller.offers[index],
-        index: index,
-      ),
-      staggeredTileBuilder: (int index) => new StaggeredTile.fit(
-        2,
-      ),
+    return Stack(
+      children: <Widget>[
+        SingleChildScrollView(
+          child: Column(
+              children: controller.offers
+                  .map((offer) => offer.imgUrl != null
+                      ? CustomImage(
+                          controller: CustomImageController(
+                            imgUrl: offer.imgUrl,
+                          ),
+                        )
+                      : Container())
+                  .toList()),
+        ),
+        Container(
+          color: ServiceProvider
+              .instance.instanceStyleService.appStyle.backgroundColor,
+        ),
+        StaggeredGridView.countBuilder(
+          crossAxisCount: 4,
+          itemCount: controller.offers.length,
+          itemBuilder: (BuildContext context, int index) =>
+              CustomerOfferListItem(
+            offer: controller.offers[index],
+            index: index,
+          ),
+          staggeredTileBuilder: (int index) => new StaggeredTile.fit(
+            2,
+          ),
+        ),
+      ],
     );
-
-    // return GridView.builder(
-    //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-    //     crossAxisCount: 2,
-    //   ),
-    //   itemCount: controller.offers.length,
-    //   scrollDirection: Axis.vertical,
-    //   itemBuilder: (context, index) {
-    //     return CustomerOfferListItem(
-    //       offer: controller.offers[index],
-    //       index: index,
-    //     );
-    //   },
-    // );
-    // This creates two columns with two items in each column
-    // return GridView.count(
-    //   childAspectRatio: 0.5,
-    //   crossAxisCount: 2,
-    //   children: List<CustomerOfferListItem>.generate(controller.offers.length,
-    //       (index) {
-    //     return CustomerOfferListItem(
-    //       offer: controller.offers[index],
-    //       index: index,
-    //     );
-    //   }, growable: true),
-    // );
   }
 }

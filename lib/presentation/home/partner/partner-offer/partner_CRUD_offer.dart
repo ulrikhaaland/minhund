@@ -160,6 +160,7 @@ class PartnerCRUDOfferController extends MasterPageController {
       enabled: enabled,
       minDateTime: DateTime.now(),
       validate: false,
+      asListTile: true,
       label: "Sluttdato for tilbudet",
       onConfirmed: (date) {
         offer.endOfOffer = date;
@@ -230,6 +231,7 @@ class PartnerCRUDOfferController extends MasterPageController {
     offerReserveController = PartnerOfferReserveController(
       offerId: offer.id,
       enabled: enabled,
+      pageState: pageState,
       reservation: offer.partnerReservation,
     );
     super.initState();

@@ -2,18 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/offer.dart';
+import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/service/service_provider.dart';
+import 'package:provider/provider.dart';
 
 import 'customer_offer_page.dart';
 
 class CustomerOfferListItem extends StatefulWidget {
-  final Offer offer;
+  Offer offer;
 
   final int index;
 
-  const CustomerOfferListItem({Key key, this.offer, this.index})
-      : super(key: key);
+  CustomerOfferListItem({Key key, this.offer, this.index}) : super(key: key);
   @override
   _CustomerOfferListItemState createState() => _CustomerOfferListItemState();
 }
@@ -44,7 +45,10 @@ class _CustomerOfferListItemState extends State<CustomerOfferListItem> {
           context,
           MaterialPageRoute(
             builder: (context) => CustomerOfferPage(
-              controller: CustomerOfferPageController(),
+              controller: CustomerOfferPageController(
+                offer: widget.offer,
+                userId: Provider.of<User>(context).id,
+              ),
             ),
           )),
       child: Padding(
@@ -95,7 +99,21 @@ class _CustomerOfferListItemState extends State<CustomerOfferListItem> {
                       style: ServiceProvider
                           .instance.instanceStyleService.appStyle.body1Black,
                       overflow: TextOverflow.ellipsis,
-                    )
+                    ),
+                    if (offer.partner.name != null)
+                      Text(
+                        offer.partner.name,
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.body1Black,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    if (offer.partner.address.city != null)
+                      Text(
+                        offer.partner.address.city,
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.coloredText,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                   ],
                 ),
               ),

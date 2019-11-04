@@ -146,7 +146,9 @@ class CustomImage extends BaseView {
                         image: controller.imageFile != null
                             ? FileImage(controller.imageFile)
                             : controller.imgUrl != null
-                                ? AdvancedNetworkImage(controller.imgUrl)
+                                ? AdvancedNetworkImage(
+                                    controller.imgUrl,
+                                  )
                                 : null,
                       )
                     : null,
@@ -163,6 +165,7 @@ class CustomImage extends BaseView {
                     ? icon
                     : null,
           );
+
           if (controller.edit)
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,6 +194,7 @@ class CustomImage extends BaseView {
                 ),
               ],
             );
+
           return squaredImage;
         }
 

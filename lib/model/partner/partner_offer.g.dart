@@ -13,12 +13,16 @@ PartnerOffer _$PartnerOfferFromJson(Map json) {
     sortIndex: json['sortIndex'] as int,
   )
     ..id = json['id'] as String
-    ..partnerId = json['partnerId'] as String
     ..createdAt = json['createdAt'] == null
         ? null
         : DateTime.parse(json['createdAt'] as String)
     ..title = json['title'] as String
     ..price = (json['price'] as num)?.toDouble()
+    ..partner = json['partner'] == null
+        ? null
+        : Partner.fromJson((json['partner'] as Map)?.map(
+            (k, e) => MapEntry(k as String, e),
+          ))
     ..desc = json['desc'] as String
     ..imgUrl = json['imgUrl'] as String
     ..endOfOffer = json['endOfOffer'] == null
@@ -35,10 +39,10 @@ PartnerOffer _$PartnerOfferFromJson(Map json) {
 Map<String, dynamic> _$PartnerOfferToJson(PartnerOffer instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'partnerId': instance.partnerId,
       'createdAt': instance.createdAt?.toIso8601String(),
       'title': instance.title,
       'price': instance.price,
+      'partner': instance.partner.toJson(),
       'desc': instance.desc,
       'imgUrl': instance.imgUrl,
       'endOfOffer': instance.endOfOffer?.toIso8601String(),

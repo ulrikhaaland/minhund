@@ -12,6 +12,7 @@ import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/file_provider.dart';
 import 'package:minhund/provider/partner/partner_provider.dart';
+import 'package:minhund/provider/user_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 
 class PartnerPageController extends BottomNavigationController {
@@ -107,7 +108,7 @@ class PartnerPageController extends BottomNavigationController {
   }) {
     return Container(
       alignment: Alignment.centerLeft,
-      height: (constraints.minHeight ?? 520) * 0.1,
+      height: (constraints.minHeight ?? 600) * 0.1,
       child: Column(
         children: <Widget>[
           Row(

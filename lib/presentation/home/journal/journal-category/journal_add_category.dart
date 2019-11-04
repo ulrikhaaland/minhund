@@ -72,11 +72,12 @@ class JournalAddCategoryController extends DialogTemplateController {
     super.initState();
   }
 
-  void onSaved() {
+  Future<void> onSaved() async {
     if (canSave) {
       if (pageState == PageState.create) {
         journalCategoryItems.add(singleCategoryItem);
-        JournalProvider().create(model: singleCategoryItem, id: dogDocRefPath);
+        await JournalProvider()
+            .create(model: singleCategoryItem, id: dogDocRefPath);
       } else {
         JournalProvider().update(model: singleCategoryItem);
       }
@@ -125,7 +126,7 @@ class JournalAddCategory extends DialogTemplate {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 PrimaryTextField(
-                  autoFocus: true,
+                  autoFocus: controller.pageState == PageState.create,
                   initValue: controller.singleCategoryItem.title,
                   textCapitalization: TextCapitalization.sentences,
                   textFieldType: TextFieldType.ordinary,
@@ -145,12 +146,14 @@ class JournalAddCategory extends DialogTemplate {
                   onFieldSubmitted: () => controller.onSaved(),
                 ),
                 if (controller.pageState == PageState.edit)
-                  SecondaryButton(
-                    topPadding: 0,
-                    text: "Slett",
-                    color: ServiceProvider
-                        .instance.instanceStyleService.appStyle.pink,
-                    onPressed: () => controller.onDelete(),
+                  Center(
+                    child: SecondaryButton(
+                      topPadding: 0,
+                      text: "Slett",
+                      color: ServiceProvider
+                          .instance.instanceStyleService.appStyle.pink,
+                      onPressed: () => controller.onDelete(),
+                    ),
                   ),
               ],
             ),

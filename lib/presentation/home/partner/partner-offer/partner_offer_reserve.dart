@@ -15,11 +15,14 @@ class PartnerOfferReserveController extends BaseController {
 
   PartnerReservation reservation;
 
+  final PageState pageState;
+
   bool expanded;
 
   String offerId;
 
-  PartnerOfferReserveController({this.enabled, this.reservation, this.offerId});
+  PartnerOfferReserveController(
+      {this.enabled, this.reservation, this.offerId, this.pageState});
 
   @override
   void initState() {
@@ -126,33 +129,34 @@ class PartnerOfferReserve extends BaseView {
                       icon: Icon(Icons.info_outline),
                     ),
                     if (controller.reservation.canReserve) ...[
-                      SecondaryButton(
-                        textColor: ServiceProvider
-                            .instance.instanceStyleService.appStyle.textGrey,
-                        onPressed: () => showCustomDialog(
-                          context: context,
-                          child: ReservationDialog(
-                            customerReservations:
-                                controller.reservation.customerReservations,
+                      if (controller.pageState != PageState.create)
+                        SecondaryButton(
+                          textColor: ServiceProvider
+                              .instance.instanceStyleService.appStyle.textGrey,
+                          onPressed: () => showCustomDialog(
+                            context: context,
+                            child: ReservationDialog(
+                              customerReservations:
+                                  controller.reservation.customerReservations,
+                            ),
                           ),
+                          color: Colors.white,
+                          text: controller.reservation.customerReservations
+                                      .length ==
+                                  0
+                              ? "Ingen reservasjoner"
+                              : controller.reservation.customerReservations
+                                          .length >
+                                      1
+                                  ? controller.reservation.customerReservations
+                                          .length
+                                          .toString() +
+                                      " reservasjoner"
+                                  : controller.reservation.customerReservations
+                                          .length
+                                          .toString() +
+                                      " reservasjon",
                         ),
-                        color: Colors.white,
-                        text: controller
-                                    .reservation.customerReservations.length ==
-                                0
-                            ? "Ingen reservasjoner"
-                            : controller.reservation.customerReservations
-                                        .length >
-                                    1
-                                ? controller
-                                        .reservation.customerReservations.length
-                                        .toString() +
-                                    " reservasjoner"
-                                : controller
-                                        .reservation.customerReservations.length
-                                        .toString() +
-                                    " reservasjon",
-                      ),
                       IconButton(
                         icon: Icon(controller.expanded
                             ? Icons.arrow_drop_up

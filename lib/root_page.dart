@@ -147,6 +147,9 @@ class RootPageController extends BaseController {
 
     _user = Partner.fromJson(partnerDocSnap.data);
     _user.docRef = partnerDocSnap.reference;
+
+    UserProvider().updateFcmToken(_user, firebaseMessaging);
+
     setState(() {});
   }
 
