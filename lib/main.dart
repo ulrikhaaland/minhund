@@ -11,10 +11,9 @@ import 'package:bot_toast/bot_toast.dart';
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    statusBarColor: Color.fromARGB(255, 233, 242, 248), //top bar color
+    statusBarColor: Colors.white, //top bar color
     statusBarIconBrightness: Brightness.dark, //top bar icons
-    systemNavigationBarColor:
-        Color.fromARGB(255, 233, 242, 248), //bottom bar color
+    systemNavigationBarColor: Colors.white, //bottom bar color
     systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
   ));
   ServiceProvider.instance.screenService = ScreenService();

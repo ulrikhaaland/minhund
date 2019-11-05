@@ -27,9 +27,6 @@ class OfferPageController extends BottomNavigationController {
   Widget get actionOne => null;
 
   @override
-  Widget get actionTwo => null;
-
-  @override
   void initState() {
     getOffers();
     super.initState();

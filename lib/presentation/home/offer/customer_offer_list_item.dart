@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/offer.dart';
@@ -14,16 +13,24 @@ class CustomerOfferListItem extends StatefulWidget {
 
   final int index;
 
+  CustomerOfferPageController customerOfferPageController;
+
   CustomerOfferListItem({Key key, this.offer, this.index}) : super(key: key);
   @override
   _CustomerOfferListItemState createState() => _CustomerOfferListItemState();
 }
 
 class _CustomerOfferListItemState extends State<CustomerOfferListItem> {
-  Stream<DocumentSnapshot> listener;
-
   @override
   void initState() {
+    widget.offer.docRef.snapshots().listen((doc) {
+      setState(() {
+        widget.offer = Offer.fromJson(doc.data);
+
+        if (widget.customerOfferPageController != null)
+          widget.customerOfferPageController.refresh();
+      });
+    });
     super.initState();
   }
 
@@ -41,16 +48,21 @@ class _CustomerOfferListItemState extends State<CustomerOfferListItem> {
     Offer offer = widget.offer;
 
     return GestureDetector(
-      onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CustomerOfferPage(
-              controller: CustomerOfferPageController(
-                offer: widget.offer,
-                userId: Provider.of<User>(context).id,
-              ),
-            ),
-          )),
+      onTap: () {
+        User user = Provider.of<User>(context);
+        if (widget.customerOfferPageController == null)
+          widget.customerOfferPageController = CustomerOfferPageController(
+            offer: widget.offer,
+            user: user,
+          );
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CustomerOfferPage(
+                  controller: widget.customerOfferPageController),
+            ));
+      },
       child: Padding(
         padding: EdgeInsets.only(
             left: widget.index.isEven ? padding : padding,

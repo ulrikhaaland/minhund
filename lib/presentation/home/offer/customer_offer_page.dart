@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/offer.dart';
+import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/service/service_provider.dart';
@@ -11,9 +12,9 @@ import 'customer_reserve_dialog.dart';
 class CustomerOfferPageController extends MasterPageController {
   Offer offer;
 
-  final String userId;
+  final User user;
 
-  CustomerOfferPageController({this.offer, this.userId});
+  CustomerOfferPageController({this.offer, this.user});
   @override
   // TODO: implement actionOne
   Widget get actionOne => null;
@@ -100,11 +101,12 @@ class CustomerOfferPage extends MasterPage {
                 text: "Reserver",
                 color: ServiceProvider
                     .instance.instanceStyleService.appStyle.skyBlue,
-                onPressed: () => showDialog(
+                onPressed: () => showCustomDialog(
                     context: context,
                     child: CustomerReserveDialog(
                       controller: CustomerReserveDialogController(
-                        userId: controller.userId,
+                        user: controller.user,
+                        offer: offer,
                       ),
                     )),
               )

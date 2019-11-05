@@ -204,6 +204,13 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                               onChanged: (val) => widget.onChanged(val),
                               onSubmitted: (val) => widget.onFieldSubmitted(),
                               decoration: InputDecoration(
+                                prefixText: widget.prefixText,
+                                prefixStyle: widget.style ??
+                                    ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .textFieldInput,
                                 hintText: !widget.asListTile
                                     ? widget.hintText ?? null
                                     : null,

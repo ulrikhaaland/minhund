@@ -153,7 +153,7 @@ class RootPageController extends BaseController {
     setState(() {});
   }
 
-  Future prepareNewUser() async {
+  Future<void> prepareNewUser() async {
     _user = User(
         email: firebaseUser.email == "" ? null : firebaseUser.email,
         id: firebaseUser.uid == "" ? null : firebaseUser.uid,
@@ -171,7 +171,6 @@ class RootPageController extends BaseController {
       id: _user.id,
     );
     setState(() {});
-    return;
   }
 
   Future prepareUser({DocumentSnapshot userDocSnap}) async {

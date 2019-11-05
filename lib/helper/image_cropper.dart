@@ -26,10 +26,10 @@ class CustomImageCropper {
       // maxHeight: 512,
     );
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Color.fromARGB(255, 233, 242, 248), //top bar color
+      statusBarColor: ServiceProvider.instance.instanceStyleService.appStyle
+          .backgroundColor, //top bar color
       statusBarIconBrightness: Brightness.dark, //top bar icons
-      systemNavigationBarColor:
-          Color.fromARGB(255, 233, 242, 248), //bottom bar color
+      systemNavigationBarColor: Colors.white, //bottom bar color
       systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
     ));
     return croppedFile;

@@ -27,12 +27,10 @@ abstract class MasterPage extends BaseView {
     if (!mounted) return Container();
 
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: ServiceProvider
-          .instance.instanceStyleService.appStyle.backgroundColor,
-      //  Color.fromARGB(255, 233, 242, 248), //top bar color
+      statusBarColor: ServiceProvider.instance.instanceStyleService.appStyle
+          .backgroundColor, //top bar color
       statusBarIconBrightness: Brightness.dark, //top bar icons
-      systemNavigationBarColor: Colors.white,
-      // Color.fromARGB(255, 233, 242, 248), //bottom bar color
+      systemNavigationBarColor: Colors.white, //bottom bar color
       systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
     ));
 

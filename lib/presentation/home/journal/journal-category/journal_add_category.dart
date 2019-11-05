@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/journal_category_item.dart';
-import 'package:minhund/presentation/base_controller.dart';
-import 'package:minhund/presentation/base_view.dart';
-import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/buttons/save_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_pop_button.dart';
@@ -42,17 +39,14 @@ class JournalAddCategoryController extends DialogTemplateController {
       this.singleCategoryItem});
 
   @override
-  // TODO: implement actionOne
   Widget get actionOne => PopButton();
 
   @override
-  // TODO: implement actionTwo
   Widget get actionTwo => SaveButton(
         controller: saveBtnCtrlr,
       );
 
   @override
-  // TODO: implement title
   String get title => pageState == PageState.create ? "Legg til ny" : "Rediger";
 
   @override
