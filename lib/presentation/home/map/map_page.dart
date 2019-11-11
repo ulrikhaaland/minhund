@@ -11,6 +11,16 @@ import 'map-options/map_options_page.dart';
 enum MapPageState { noCurrentLocation, map, options }
 
 class MapPageController extends BottomNavigationController {
+  static final MapPageController _instance = MapPageController._internal();
+
+  factory MapPageController() {
+    return _instance;
+  }
+
+  MapPageController._internal() {
+    print("Map Page built");
+  }
+
   Completer<GoogleMapController> mapController = Completer();
 
   LocationData currentLocation;
@@ -18,10 +28,6 @@ class MapPageController extends BottomNavigationController {
   Location location = new Location();
 
   MapPageState mapPageState = MapPageState.noCurrentLocation;
-
-  MapPageController() {
-    print("Map Page built");
-  }
 
   @override
   void initState() {

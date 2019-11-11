@@ -8,11 +8,19 @@ import '../../../bottom_navigation.dart';
 import 'customer_offer_list_item.dart';
 
 class OfferPageController extends BottomNavigationController {
+  static final OfferPageController _instance = OfferPageController._internal();
+
+  factory OfferPageController() {
+    return _instance;
+  }
+
+  OfferPageController._internal() {
+    print("Offer Page built");
+  }
+
   List<Offer> offers;
 
   bool isLoading = true;
-
-  OfferPageController();
 
   @override
   FloatingActionButton get fab => null;

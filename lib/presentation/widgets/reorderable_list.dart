@@ -28,10 +28,10 @@ class _ReorderableListState<T> extends State<ReorderableList> {
     ScrollController _scrollController =
         PrimaryScrollController.of(context) ?? ScrollController();
 
-    return ReorderableListView(
-      children: widget.widgetList,
-      onReorder: _onReorder,
-    );
+    // return ReorderableListView(
+    //   children: widget.widgetList,
+    //   onReorder: _onReorder,
+    // );
 
     return CustomScrollView(
       controller: _scrollController,

@@ -54,9 +54,7 @@ class BottomNavigationController extends MasterPageController {
 
     if (userContext == UserContext.user) {
       journal = JournalPage(
-        controller: JournalPageController(
-          user: user,
-        ),
+        controller: JournalPageController(),
       );
 
       mapLocation = MapPage(

@@ -9,19 +9,27 @@ import 'package:minhund/presentation/widgets/reorderable_list.dart';
 import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/service/service_provider.dart';
+import 'package:provider/provider.dart';
 import '../../../bottom_navigation.dart';
 import 'journal-category/journal_category_list_item.dart';
 
 class JournalPageController extends BottomNavigationController {
-  final User user;
+  static final JournalPageController _instance =
+      JournalPageController._internal();
+
+  factory JournalPageController() {
+    return _instance;
+  }
+
+  JournalPageController._internal() {
+    print("Journal Page built");
+  }
+
+  User user;
 
   Dog dog;
 
-  JournalPageController({
-    this.user,
-  }) {
-    print("Journal Page built");
-  }
+  bool isLoading = true;
 
   @override
   FloatingActionButton get fab => FloatingActionButton(
@@ -34,7 +42,7 @@ class JournalPageController extends BottomNavigationController {
           child: JournalAddCategory(
             controller: JournalAddCategoryController(
               journalCategoryItems: dog.journalItems,
-              childOnSaved: () => refresh(),
+              childOnSaved: () => null,
               dogDocRefPath: dog.docRef.path,
               pageState: PageState.create,
             ),
@@ -56,9 +64,6 @@ class JournalPageController extends BottomNavigationController {
 
   @override
   void initState() {
-    dog = user.dog;
-    dog.profileImage.controller.imageSizePercentage = 5;
-    getJournalItems();
     super.initState();
   }
 
@@ -68,6 +73,7 @@ class JournalPageController extends BottomNavigationController {
           await JournalProvider().getCollection(id: dog.docRef.path);
       setState(() {});
     });
+    isLoading = false;
   }
 }
 
@@ -80,12 +86,18 @@ class JournalPage extends BottomNavigation {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
+    if (controller.user == null) controller.user = Provider.of<User>(context);
+
+    controller.dog = controller.user.dog;
+    controller.dog.profileImage.controller.imageSizePercentage = 5;
+    if (controller.isLoading) controller.getJournalItems();
+
     getTimeDifference(time: controller.dog.birthDate, daysMonthsYears: true);
 
     return SingleChildScrollView(
       child: Container(
         height: ServiceProvider.instance.screenService
-            .getHeightByPercentage(context, 90),
+            .getHeightByPercentage(context, 88),
         padding: EdgeInsets.only(
             left: getDefaultPadding(context) * 2,
             right: getDefaultPadding(context) * 2),

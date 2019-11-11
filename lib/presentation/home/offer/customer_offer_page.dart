@@ -61,11 +61,14 @@ class CustomerOfferPage extends MasterPage {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             if (offer.imgUrl != null)
-              CustomImage(
-                controller: CustomImageController(
-                    imgUrl: offer.imgUrl,
-                    customImageType: CustomImageType.squared,
-                    imageSizePercentage: 50),
+              Hero(
+                tag: "img${offer.id}",
+                child: CustomImage(
+                  controller: CustomImageController(
+                      imgUrl: offer.imgUrl,
+                      customImageType: CustomImageType.squared,
+                      imageSizePercentage: 50),
+                ),
               ),
             Container(
               height: padding * 4,
@@ -141,10 +144,6 @@ class CustomerOfferPage extends MasterPage {
                             style: ServiceProvider.instance.instanceStyleService
                                 .appStyle.descTitle,
                           ),
-                        if (offer.partner.websiteUrl != null)
-                          Text(offer.partner.websiteUrl,
-                              style: ServiceProvider.instance
-                                  .instanceStyleService.appStyle.body1),
                         if (offer.partner.address != null)
                           Row(
                             children: <Widget>[
@@ -164,6 +163,10 @@ class CustomerOfferPage extends MasterPage {
                                         .body1Black),
                             ],
                           ),
+                        if (offer.partner.websiteUrl != null)
+                          Text(offer.partner.websiteUrl,
+                              style: ServiceProvider.instance
+                                  .instanceStyleService.appStyle.body1),
                         if (offer.partner.openingHours != null) ...[
                           if (offer.partner.openingHours.dayFrom != null &&
                               offer.partner.openingHours.dayTo != null)

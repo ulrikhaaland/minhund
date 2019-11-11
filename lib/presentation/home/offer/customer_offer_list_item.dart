@@ -15,7 +15,6 @@ class CustomerOfferListItemController extends BaseController {
 
   final int index;
 
-
   CustomerOfferListItemController({this.index, this.offer});
 
   @override
@@ -24,7 +23,6 @@ class CustomerOfferListItemController extends BaseController {
       offer = Offer.fromJson(doc.data);
       offer.docRef = doc.reference;
 
-     
       refresh();
     });
     super.initState();
@@ -57,10 +55,11 @@ class CustomerOfferListItem extends BaseView {
             context,
             MaterialPageRoute(
               builder: (context) => CustomerOfferPage(
-                  controller: CustomerOfferPageController(
-            offer: offer,
-            user: user,
-          ),),
+                controller: CustomerOfferPageController(
+                  offer: offer,
+                  user: user,
+                ),
+              ),
             ));
       },
       child: Padding(
@@ -86,12 +85,14 @@ class CustomerOfferListItem extends BaseView {
                   children: <Widget>[
                     if (offer.imgUrl != null)
                       Container(
-                        alignment: Alignment.center,
-                        child: CustomImage(
-                          controller: CustomImageController(
-                              imgUrl: offer.imgUrl,
-                              imageSizePercentage: 25,
-                              customImageType: CustomImageType.squared),
+                        child: Hero(
+                          tag: "img${offer.id}",
+                          child: CustomImage(
+                            controller: CustomImageController(
+                                imgUrl: offer.imgUrl,
+                                imageSizePercentage: 25,
+                                customImageType: CustomImageType.squared),
+                          ),
                         ),
                       ),
                     Container(
