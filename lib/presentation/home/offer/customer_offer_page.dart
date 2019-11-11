@@ -33,7 +33,7 @@ class CustomerOfferPageController extends MasterPageController {
 
   @override
   // TODO: implement title
-  String get title => offer.title;
+  String get title => offer.title ?? "";
 
   @override
   void initState() {
@@ -142,40 +142,26 @@ class CustomerOfferPage extends MasterPage {
                                 .appStyle.descTitle,
                           ),
                         if (offer.partner.websiteUrl != null)
-                          InkWell(
-                            onTap: () {
-                                const url = 'https://flutter.dev';
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'Could not launch $url';
-  }
-                            },
-                                                      child: Text(
-                              offer.partner.websiteUrl,
-                              style: ServiceProvider
-                                  .instance.instanceStyleService.appStyle.body1
-                                  .copyWith(
-                                      color: ServiceProvider.instance
-                                          .instanceStyleService.appStyle.leBleu,
-                                      fontWeight: FontWeight.bold),
-                            ),
-                          ),
+                          Text(offer.partner.websiteUrl,
+                              style: ServiceProvider.instance
+                                  .instanceStyleService.appStyle.body1),
                         if (offer.partner.address != null)
                           Row(
                             children: <Widget>[
                               if (offer.partner.address.address != null)
-                                Text(
-                                  offer.partner.address.address + ",",
-                                  style: ServiceProvider.instance
-                                      .instanceStyleService.appStyle.body1Black,
-                                ),
+                                Text(offer.partner.address.address + ",",
+                                    style: ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .body1Black),
                               if (offer.partner.address.city != null)
-                                Text(
-                                  offer.partner.address.city,
-                                  style: ServiceProvider.instance
-                                      .instanceStyleService.appStyle.body1Black,
-                                ),
+                                Text(offer.partner.address.city,
+                                    style: ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .body1Black),
                             ],
                           ),
                         if (offer.partner.openingHours != null) ...[
@@ -230,6 +216,52 @@ class CustomerOfferPage extends MasterPage {
                         ],
                       ],
                     ),
+                  ],
+                ),
+              ),
+              Container(
+                width: ServiceProvider.instance.screenService
+                    .getHeightByPercentage(context, 50),
+                child: Row(
+                  children: <Widget>[
+                    if (offer.partner.websiteUrl != null)
+                      SecondaryButton(
+                        text: "Nettsted",
+                        width: ServiceProvider.instance.screenService
+                            .getHeightByPercentage(context, 20),
+                        onPressed: () async {
+                          String url = "https://" + offer.partner.websiteUrl;
+                          if (await canLaunch(url)) {
+                            await launch(url);
+                          } else {
+                            throw 'Could not launch $url';
+                          }
+                        },
+                        color: ServiceProvider
+                            .instance.instanceStyleService.appStyle.leBleu,
+                      ),
+                    Container(
+                      width: padding * 4,
+                    ),
+                    if (offer.partner.longitude != null &&
+                        offer.partner.latitude != null)
+                      SecondaryButton(
+                        text: "Veibeskrivelse",
+                        width: ServiceProvider.instance.screenService
+                            .getHeightByPercentage(context, 20),
+                        onPressed: () async {
+                          if (offer.partner.latitude != null &&
+                              offer.partner.longitude != null) {
+                            String googleUrl =
+                                'https://www.google.com/maps/search/?api=1&query=${offer.partner.latitude},${offer.partner.longitude}';
+                            if (await canLaunch(googleUrl)) {
+                              await launch(googleUrl);
+                            } else {
+                              throw 'Could not open the map.';
+                            }
+                          }
+                        },
+                      ),
                   ],
                 ),
               )

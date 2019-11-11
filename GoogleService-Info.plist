@@ -30,6 +30,11 @@
 	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+    	<string>googlechromes</string>
+    	<string>comgooglemaps</string>
+	</array>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:685102100437:ios:26782f0abc64c1d25b175c</string>
 	<key>DATABASE_URL</key>
