@@ -71,8 +71,10 @@ class OfferPage extends BottomNavigation {
           itemCount: controller.offers.length,
           itemBuilder: (BuildContext context, int index) =>
               CustomerOfferListItem(
-            offer: controller.offers[index],
-            index: index,
+            controller: CustomerOfferListItemController(
+              offer: controller.offers[index],
+              index: index,
+            ),
           ),
           staggeredTileBuilder: (int index) => new StaggeredTile.fit(
             2,

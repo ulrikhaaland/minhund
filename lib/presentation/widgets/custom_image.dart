@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/helper/image_cropper.dart';
 import 'package:minhund/presentation/base_controller.dart';
@@ -124,7 +123,7 @@ class CustomImage extends BaseView {
                         ? icon
                         : null,
                 backgroundImage: controller.imgUrl != null
-                    ? AdvancedNetworkImage(controller.imgUrl)
+                    ? NetworkImage(controller.imgUrl)
                     : controller.imageFile != null
                         ? FileImage(controller.imageFile)
                         : null,
@@ -146,7 +145,7 @@ class CustomImage extends BaseView {
                         image: controller.imageFile != null
                             ? FileImage(controller.imageFile)
                             : controller.imgUrl != null
-                                ? AdvancedNetworkImage(
+                                ? NetworkImage(
                                     controller.imgUrl,
                                   )
                                 : null,

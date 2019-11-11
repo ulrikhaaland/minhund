@@ -2,34 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/offer.dart';
 import 'package:minhund/model/user.dart';
+import 'package:minhund/presentation/base_controller.dart';
+import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'customer_offer_page.dart';
 
-class CustomerOfferListItem extends StatefulWidget {
+class CustomerOfferListItemController extends BaseController {
   Offer offer;
 
   final int index;
 
-  CustomerOfferPageController customerOfferPageController;
 
-  CustomerOfferListItem({Key key, this.offer, this.index}) : super(key: key);
-  @override
-  _CustomerOfferListItemState createState() => _CustomerOfferListItemState();
-}
+  CustomerOfferListItemController({this.index, this.offer});
 
-class _CustomerOfferListItemState extends State<CustomerOfferListItem> {
   @override
   void initState() {
-    widget.offer.docRef.snapshots().listen((doc) {
-      setState(() {
-        widget.offer = Offer.fromJson(doc.data);
+    offer.docRef.snapshots().listen((doc) {
+      offer = Offer.fromJson(doc.data);
+      offer.docRef = doc.reference;
 
-        if (widget.customerOfferPageController != null)
-          widget.customerOfferPageController.refresh();
-      });
+     
+      refresh();
     });
     super.initState();
   }
@@ -38,6 +34,12 @@ class _CustomerOfferListItemState extends State<CustomerOfferListItem> {
   void dispose() {
     super.dispose();
   }
+}
+
+class CustomerOfferListItem extends BaseView {
+  final CustomerOfferListItemController controller;
+
+  CustomerOfferListItem({this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -45,28 +47,26 @@ class _CustomerOfferListItemState extends State<CustomerOfferListItem> {
 
     double padding = getDefaultPadding(context);
 
-    Offer offer = widget.offer;
+    Offer offer = controller.offer;
 
     return GestureDetector(
       onTap: () {
         User user = Provider.of<User>(context);
-        if (widget.customerOfferPageController == null)
-          widget.customerOfferPageController = CustomerOfferPageController(
-            offer: widget.offer,
-            user: user,
-          );
 
         Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => CustomerOfferPage(
-                  controller: widget.customerOfferPageController),
+                  controller: CustomerOfferPageController(
+            offer: offer,
+            user: user,
+          ),),
             ));
       },
       child: Padding(
         padding: EdgeInsets.only(
-            left: widget.index.isEven ? padding : padding,
-            right: widget.index.isOdd ? padding : 0,
+            left: controller.index.isEven ? padding : padding,
+            right: controller.index.isOdd ? padding : 0,
             top: padding,
             bottom: padding),
         child: Material(

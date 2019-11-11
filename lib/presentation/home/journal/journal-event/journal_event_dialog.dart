@@ -288,7 +288,7 @@ class JournalEventDialog extends DialogTemplate {
               builder: (context, constraints) {
                 controller.datePickerController = DateTimePickerController(
                     validate: false,
-                    width: constraints.maxWidth / 2.3,
+                    width: constraints.maxWidth / 2.1,
                     overrideInitialDate:
                         controller.placeHolderEventItem.timeStamp == null
                             ? true
@@ -319,7 +319,7 @@ class JournalEventDialog extends DialogTemplate {
                     validate: false,
                     time: true,
                     dateFormat: "HH-mm",
-                    width: constraints.maxWidth / 2.27,
+                    width: constraints.maxWidth / 2.1,
                     overrideInitialDate:
                         controller.placeHolderEventItem.timeStamp == null
                             ? true

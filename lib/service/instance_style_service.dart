@@ -36,6 +36,7 @@ class InstanceStyleService {
     print('InstanceStyleService: setStandardStyle');
 
     _appStyle.backgroundColor = new Color.fromARGB(255, 245, 246, 247);
+    _appStyle.dialogBackgroundColor = new Color.fromARGB(255, 233, 239, 245);
 
     _appStyle.pink = new Color.fromARGB(255, 230, 115, 153);
     _appStyle.skyBlue = new Color.fromARGB(255, 161, 196, 253);
@@ -248,7 +249,7 @@ class InstanceStyleService {
       fontSize: screenHeight * 0.028 * factor,
       fontWeight: FontWeight.bold,
       fontStyle: FontStyle.normal,
-      color: _appStyle.imperial,
+      color: _appStyle.leBleu,
     );
 
     _appStyle.disabledColoredText = new TextStyle(

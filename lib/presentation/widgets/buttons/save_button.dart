@@ -36,8 +36,8 @@ class SaveButton extends BaseView {
                   .instance.instanceStyleService.appStyle.backgroundColor,
           shape: BoxShape.circle,
         ),
-        height: iconSizeStandard * 1.4,
-        width: iconSizeStandard * 1.4,
+        height: iconSizeStandard * 1.2,
+        width: iconSizeStandard * 1.2,
         child: InkWell(
           borderRadius: BorderRadius.circular(
             iconSizeStandard * 0.7,

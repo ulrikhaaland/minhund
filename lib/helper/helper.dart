@@ -368,7 +368,7 @@ Future<void> showCustomDialog({
     builder: (con) {
       return Dialog(
         backgroundColor: ServiceProvider
-            .instance.instanceStyleService.appStyle.backgroundColor,
+            .instance.instanceStyleService.appStyle.dialogBackgroundColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(ServiceProvider
                   .instance.instanceStyleService.appStyle.borderRadius ??

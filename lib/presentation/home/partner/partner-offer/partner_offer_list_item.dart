@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/partner/partner_offer.dart';
 import 'package:minhund/presentation/base_controller.dart';

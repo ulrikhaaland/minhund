@@ -47,7 +47,7 @@ class JournalAddCategoryController extends DialogTemplateController {
       );
 
   @override
-  String get title => pageState == PageState.create ? "Legg til ny" : "Rediger";
+  String get title => pageState == PageState.create ? "Ny kategori" : "Rediger";
 
   @override
   void initState() {
@@ -136,7 +136,7 @@ class JournalAddCategory extends DialogTemplate {
                   },
                   textInputType: TextInputType.text,
                   textInputAction: TextInputAction.done,
-                  hintText: "Kategori-navn",
+                  hintText: "Navn",
                   onFieldSubmitted: () => controller.onSaved(),
                 ),
                 if (controller.pageState == PageState.edit)

@@ -6,7 +6,7 @@ import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'customer_reserve_dialog.dart';
 
 class CustomerOfferPageController extends MasterPageController {
@@ -37,9 +37,6 @@ class CustomerOfferPageController extends MasterPageController {
 
   @override
   void initState() {
-    offer.docRef.snapshots().listen((doc) => setState(() {
-          offer = Offer.fromJson(doc.data);
-        }));
     super.initState();
   }
 }
@@ -109,6 +106,132 @@ class CustomerOfferPage extends MasterPage {
                         offer: offer,
                       ),
                     )),
+              ),
+            ],
+            if (offer.partner != null) ...[
+              Divider(
+                thickness: 1,
+              ),
+              Container(
+                height: padding * 4,
+              ),
+              Container(
+                alignment: Alignment.bottomCenter,
+                // decoration: BoxDecoration(border: Border.all()),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    if (offer.partner.imgUrl != null)
+                      CustomImage(
+                        controller: CustomImageController(
+                          imgUrl: offer.partner.imgUrl,
+                          customImageType: CustomImageType.circle,
+                          imageSizePercentage: 6,
+                        ),
+                      ),
+                    Container(
+                      width: padding,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        if (offer.partner.name != null)
+                          Text(
+                            offer.partner.name,
+                            style: ServiceProvider.instance.instanceStyleService
+                                .appStyle.descTitle,
+                          ),
+                        if (offer.partner.websiteUrl != null)
+                          InkWell(
+                            onTap: () {
+                                const url = 'https://flutter.dev';
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
+  }
+                            },
+                                                      child: Text(
+                              offer.partner.websiteUrl,
+                              style: ServiceProvider
+                                  .instance.instanceStyleService.appStyle.body1
+                                  .copyWith(
+                                      color: ServiceProvider.instance
+                                          .instanceStyleService.appStyle.leBleu,
+                                      fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        if (offer.partner.address != null)
+                          Row(
+                            children: <Widget>[
+                              if (offer.partner.address.address != null)
+                                Text(
+                                  offer.partner.address.address + ",",
+                                  style: ServiceProvider.instance
+                                      .instanceStyleService.appStyle.body1Black,
+                                ),
+                              if (offer.partner.address.city != null)
+                                Text(
+                                  offer.partner.address.city,
+                                  style: ServiceProvider.instance
+                                      .instanceStyleService.appStyle.body1Black,
+                                ),
+                            ],
+                          ),
+                        if (offer.partner.openingHours != null) ...[
+                          if (offer.partner.openingHours.dayFrom != null &&
+                              offer.partner.openingHours.dayTo != null)
+                            Row(
+                              children: <Widget>[
+                                Text(
+                                  "Hverdager: ",
+                                  style: ServiceProvider.instance
+                                      .instanceStyleService.appStyle.italic,
+                                ),
+                                Text(
+                                  formatDate(
+                                          time: true,
+                                          date: offer
+                                              .partner.openingHours.dayFrom) +
+                                      "-" +
+                                      formatDate(
+                                          time: true,
+                                          date:
+                                              offer.partner.openingHours.dayTo),
+                                  style: ServiceProvider.instance
+                                      .instanceStyleService.appStyle.body1Black,
+                                ),
+                              ],
+                            ),
+                          if (offer.partner.openingHours.weekendFrom != null &&
+                              offer.partner.openingHours.weekendTo != null)
+                            Row(
+                              children: <Widget>[
+                                Text(
+                                  "Helger: ",
+                                  style: ServiceProvider.instance
+                                      .instanceStyleService.appStyle.italic,
+                                ),
+                                Text(
+                                  formatDate(
+                                          time: true,
+                                          date: offer.partner.openingHours
+                                              .weekendFrom) +
+                                      "-" +
+                                      formatDate(
+                                          time: true,
+                                          date: offer
+                                              .partner.openingHours.weekendTo),
+                                  style: ServiceProvider.instance
+                                      .instanceStyleService.appStyle.body1Black,
+                                ),
+                              ],
+                            )
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
               )
             ],
           ],

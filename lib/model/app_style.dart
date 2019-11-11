@@ -53,11 +53,12 @@ class AppStyle {
     this.elevation,
     this.descTitle,
     this.transparentDisabledColoredText,
+    this.dialogBackgroundColor,
   });
 
   Color themeColor;
   Color backgroundColor;
-
+  Color dialogBackgroundColor;
   Color pink;
   Color lightBlue;
   Color green;

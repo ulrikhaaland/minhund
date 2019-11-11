@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:reorderables/reorderables.dart';
 
 class ReorderableList<T> extends StatefulWidget {
@@ -26,6 +27,11 @@ class _ReorderableListState<T> extends State<ReorderableList> {
 
     ScrollController _scrollController =
         PrimaryScrollController.of(context) ?? ScrollController();
+
+    return ReorderableListView(
+      children: widget.widgetList,
+      onReorder: _onReorder,
+    );
 
     return CustomScrollView(
       controller: _scrollController,
