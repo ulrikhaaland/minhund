@@ -113,16 +113,15 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
       width: widget.width ??
           ServiceProvider.instance.screenService
               .getWidthByPercentage(context, 80),
-      height: ServiceProvider.instance.screenService.getHeightByPercentage(
-          context,
-          widget.validate || widget.maxLines > 1
-              ? !widget.canSave ? 11.5 : widget.maxLines > 1 ? 15 : 10
-              : 11.5),
+      // height: ServiceProvider.instance.screenService.getHeightByPercentage(
+      //     context,
+      //     widget.validate || widget.maxLines > 1
+      //         ? !widget.canSave ? 11.5 : widget.maxLines > 1 ? 15 : 10
+      //         : 11.5),
       child: Padding(
         padding: EdgeInsets.only(
             top: widget.paddingTop ?? 0, bottom: widget.paddingBottom ?? 0),
         child: Stack(
-          // crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             if (!widget.canSave)
               Positioned(
@@ -185,7 +184,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                             controller: widget.textEditingController ??
                                 textEditingController,
                             textCapitalization: widget.textCapitalization ??
-                                TextCapitalization.words,
+                                TextCapitalization.sentences,
                             maxLines: widget.maxLines?.toInt() ?? 1,
                             textAlign: widget.textAlign ?? TextAlign.start,
                             focusNode: widget.focusNode,
@@ -246,7 +245,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                             controller: widget.textEditingController ??
                                 textEditingController,
                             textCapitalization: widget.textCapitalization ??
-                                TextCapitalization.words,
+                                TextCapitalization.sentences,
                             maxLines: widget.maxLines?.toInt() ?? 1,
                             textAlign: widget.textAlign ?? TextAlign.start,
                             focusNode: widget.focusNode,

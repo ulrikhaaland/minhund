@@ -11,6 +11,7 @@ import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/file_provider.dart';
+import 'package:minhund/provider/offer_provider.dart';
 import 'package:minhund/provider/partner/partner_provider.dart';
 import 'package:minhund/provider/user_provider.dart';
 import 'package:minhund/service/service_provider.dart';
@@ -32,6 +33,8 @@ class PartnerPageController extends MasterPageController {
   ScrollController scrollController;
 
   File imageFile;
+
+  SecondaryButton openingHours;
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
@@ -64,6 +67,8 @@ class PartnerPageController extends MasterPageController {
 
                     PartnerProvider().update(model: partner);
 
+                    PartnerProvider().updateOffers(model: partner);
+
                     setState(() {
                       pageState = PageState.read;
                     });
@@ -95,11 +100,26 @@ class PartnerPageController extends MasterPageController {
           imageFile = imgFile;
         },
         edit: pageState == PageState.edit,
-        imageSizePercentage: 10,
+        imageSizePercentage: 20,
         imageFile: imageFile,
         imgUrl: partner.imgUrl,
       ),
     );
+
+    openingHours = SecondaryButton(
+      color: ServiceProvider.instance.instanceStyleService.appStyle.leBleu,
+      // textColor: ServiceProvider
+      //     .instance.instanceStyleService.appStyle.textGrey,
+      text: "Åpningstider",
+      onPressed: () => showCustomDialog(
+        context: context,
+        child: PartnerOpeningHours(
+          controller:
+              PartnerOpeningHoursController(openingHours: partner.openingHours),
+        ),
+      ),
+    );
+
     super.initState();
   }
 
@@ -198,6 +218,10 @@ class PartnerPage extends MasterPage {
             child: Column(
               children: <Widget>[
                 controller.customImage,
+                Container(
+                  height: padding * 4,
+                ),
+                controller.openingHours,
                 Container(
                   height: padding * 4,
                 ),
@@ -306,19 +330,7 @@ class PartnerPage extends MasterPage {
                 Container(
                   height: padding * 4,
                 ),
-                SecondaryButton(
-                  color: Colors.white,
-                  textColor: ServiceProvider
-                      .instance.instanceStyleService.appStyle.textGrey,
-                  text: "Åpningstider",
-                  onPressed: () => showCustomDialog(
-                    context: context,
-                    child: PartnerOpeningHours(
-                      controller: PartnerOpeningHoursController(
-                          openingHours: controller.partner.openingHours),
-                    ),
-                  ),
-                ),
+                controller.openingHours,
                 Container(
                   height: padding * 4,
                 ),

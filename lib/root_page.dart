@@ -129,15 +129,15 @@ class RootPageController extends BaseController {
         if (partnerDocSnap.exists) {
           preparePartner(partnerDocSnap: partnerDocSnap);
         } else {
-          prepareNewUser();
+          await prepareNewUser();
         }
       }
+      return;
       // if (_user != null) Navigator.pop(context);
     }
   }
 
   void prepareUser({DocumentSnapshot userDocSnap}) async {
-
     _user = User.fromJson(userDocSnap.data);
     _user.docRef = userDocSnap.reference;
 
@@ -167,7 +167,7 @@ class RootPageController extends BaseController {
         dogs: [],
         currentDogIndex: 0);
 
-    _user.docRef = await UserProvider().set(id: _user.id, model: _user);
+    return _user.docRef = await UserProvider().set(id: _user.id, model: _user);
   }
 
   Future asAnon() async {
@@ -208,7 +208,7 @@ class RootPage extends BaseView {
       ServiceProvider.instance.screenService.getBambooFactor(context),
     );
 
-    // controller.auth.signOut();
+    controller.auth.signOut();
 
     if (!controller.introDone) {
       return Intro(
@@ -224,7 +224,7 @@ class RootPage extends BaseView {
           rootPageController: controller,
           auth: controller.auth,
           returnUser: () {
-            controller.getUserContext();
+            // controller.getUserContext();
           },
         ),
       );

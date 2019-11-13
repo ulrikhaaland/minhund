@@ -121,8 +121,8 @@ class JournalAddCategory extends DialogTemplate {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Container(height: padding * 6),
                 PrimaryTextField(
+                  asListTile: true,
                   autoFocus: controller.pageState == PageState.create,
                   initValue: controller.singleCategoryItem.title,
                   textCapitalization: TextCapitalization.sentences,
@@ -145,7 +145,7 @@ class JournalAddCategory extends DialogTemplate {
                 if (controller.pageState == PageState.edit)
                   Center(
                     child: SecondaryButton(
-                      topPadding: 0,
+                      // topPadding: 0,
                       text: "Slett",
                       color: ServiceProvider
                           .instance.instanceStyleService.appStyle.pink,

@@ -86,17 +86,18 @@ class CustomerOfferPage extends MasterPage {
                 style: ServiceProvider
                     .instance.instanceStyleService.appStyle.body1Black,
               ),
-            if (offer.partnerReservation.canReserve &&
-                offer.partnerReservation.amount  > 0) ...[
+            if (offer.partnerReservation.canReserve) ...[
               Container(
                 height: padding * 4,
               ),
-              Text(
-                offer.partnerReservation.amount.toString() +
-                    " stk tilgjengelig",
-                style: ServiceProvider
-                    .instance.instanceStyleService.appStyle.italic,
-              ),
+              if (offer.partnerReservation.amount != null &&
+                  offer.partnerReservation.amount > 0)
+                Text(
+                  offer.partnerReservation.amount.toString() +
+                      " stk tilgjengelig",
+                  style: ServiceProvider
+                      .instance.instanceStyleService.appStyle.italic,
+                ),
               SecondaryButton(
                 text: "Reserver",
                 color: ServiceProvider
@@ -116,11 +117,9 @@ class CustomerOfferPage extends MasterPage {
                 thickness: 1,
               ),
               Container(
-                height: padding * 4,
+                height: padding * 2,
               ),
               Container(
-                alignment: Alignment.bottomCenter,
-                // decoration: BoxDecoration(border: Border.all()),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[

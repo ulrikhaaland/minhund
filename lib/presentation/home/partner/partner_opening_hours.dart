@@ -164,6 +164,8 @@ class PartnerOpeningHours extends DialogTemplate {
                         width: constraints.maxWidth / 2.25,
                         child: DateTimePicker(
                             controller: DateTimePickerController(
+                              asListTile: true,
+
                                 onConfirmed: (time) =>
                                     controller.openingHours.dayFrom = time,
                                 label: "Fra",
@@ -176,6 +178,8 @@ class PartnerOpeningHours extends DialogTemplate {
                         width: constraints.maxWidth / 2.25,
                         child: DateTimePicker(
                           controller: DateTimePickerController(
+                              asListTile: true,
+
                               onConfirmed: (time) =>
                                   controller.openingHours.dayTo = time,
                               label: "Til",
@@ -203,6 +207,8 @@ class PartnerOpeningHours extends DialogTemplate {
                         width: constraints.maxWidth / 2.25,
                         child: DateTimePicker(
                           controller: DateTimePickerController(
+                              asListTile: true,
+
                               onConfirmed: (time) =>
                                   controller.openingHours.weekendFrom = time,
                               label: "Fra",
@@ -216,6 +222,7 @@ class PartnerOpeningHours extends DialogTemplate {
                         width: constraints.maxWidth / 2.25,
                         child: DateTimePicker(
                             controller: DateTimePickerController(
+                              asListTile: true,
                                 onConfirmed: (time) =>
                                     controller.openingHours.weekendTo = time,
                                 label: "Til",

@@ -137,7 +137,9 @@ class CustomImage extends BaseView {
 
       case CustomImageType.squared:
         {
-          Widget squaredImage = Container(
+          Widget squaredImage = AspectRatio( 
+            aspectRatio: 1,
+            child: Container(
             decoration: BoxDecoration(
                 image: controller.imgUrl != null || controller.imageFile != null
                     ? DecorationImage(
@@ -163,9 +165,9 @@ class CustomImage extends BaseView {
                 : controller.imageFile == null && controller.imgUrl == null
                     ? icon
                     : null,
-          );
+          ),);
 
-          if (controller.edit)
+          if (controller.edit || controller.withLabel)
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,

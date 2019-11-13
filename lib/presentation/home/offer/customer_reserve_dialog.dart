@@ -35,25 +35,26 @@ class CustomerReserveDialogController extends DialogTemplateController {
   Widget get actionTwo => reservationCompleted == false
       ? SaveButton(
           controller: SaveButtonController(onPressed: () async {
-            if (offer.partnerReservation.amount >= reservationAmount) {
-              offer.partnerReservation.amount -= reservationAmount;
+            if (offer.partnerReservation.amount != null) {
+              if (offer.partnerReservation.amount < reservationAmount) {
+                Navigator.of(context).pop();
+              } else {
+                offer.partnerReservation.amount -= reservationAmount;
+                Firestore.instance.runTransaction((tx) {
+                  return tx.update(offer.docRef, offer.toJson());
+                });
+              }
+            }
+            Firestore.instance
+                .document(offer.docRef.path + "/reservations/${user.id}")
+                .setData({
+              "timestamp": DateTime.now(),
+              "amount": reservationAmount,
+              "phoneNumber": phoneNumber,
+              "messageToStore": messageToStore,
+            });
 
-              Firestore.instance.runTransaction((tx) {
-                return tx.update(offer.docRef, offer.toJson());
-              });
-
-              Firestore.instance
-                  .document(offer.docRef.path + "/reservations/${user.id}")
-                  .setData({
-                "timestamp": DateTime.now(),
-                "amount": reservationAmount,
-                "phoneNumber": phoneNumber,
-                "messageToStore": messageToStore,
-              });
-
-              setState(() => reservationCompleted = true);
-            } else
-              Navigator.of(context).pop();
+            setState(() => reservationCompleted = true);
           }),
         )
       : null;
@@ -148,7 +149,9 @@ class CustomerReserveDialog extends DialogTemplate {
                 height: padding * 6,
               ),
               PrimaryTextField(
+                paddingBottom: padding * 2,
                 hintText: "Telefonnummer",
+                prefixText: "+47 ",
                 asListTile: true,
                 initValue: controller.phoneNumber,
                 textFieldType: TextFieldType.ordinary,

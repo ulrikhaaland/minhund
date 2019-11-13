@@ -112,8 +112,8 @@ class LoginPage extends BaseView {
                                 controller: EmailLoginController(
                                     auth: controller.auth,
                                     returnUser: () async {
-                                      
-                                      controller.returnUser();
+                                      await controller.rootPageController
+                                          .getUserContext();
                                       Navigator.of(context).pop();
                                     }),
                               )),
@@ -124,7 +124,8 @@ class LoginPage extends BaseView {
                       width: ServiceProvider.instance.screenService
                           .getWidthByPercentage(context, 70),
                       decoration: BoxDecoration(
-                          color: ServiceProvider.instance.instanceStyleService.appStyle.green,
+                          color: ServiceProvider
+                              .instance.instanceStyleService.appStyle.green,
                           borderRadius: BorderRadius.circular(ServiceProvider
                               .instance
                               .instanceStyleService

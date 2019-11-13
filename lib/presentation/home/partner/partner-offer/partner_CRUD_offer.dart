@@ -170,6 +170,7 @@ class PartnerCRUDOfferController extends MasterPageController {
     );
 
     customImageController = CustomImageController(
+      
       edit: pageState != PageState.read,
       customImageType: CustomImageType.squared,
       imgUrl: offer.imgUrl,

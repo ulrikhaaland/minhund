@@ -60,6 +60,7 @@ class DogInfoController extends BaseController {
     if (dog.address == null) dog.address = Address();
     textFields = <Widget>[
       PrimaryTextField(
+        paddingBottom: getDefaultPadding(context) * 2,
         asListTile: true,
         initValue: dog?.name,
         onSaved: (val) => dog?.name = val.trim(),
@@ -70,6 +71,7 @@ class DogInfoController extends BaseController {
         textInputType: TextInputType.text,
       ),
       PrimaryTextField(
+        paddingBottom: getDefaultPadding(context) * 2,
         asListTile: true,
         initValue: dog?.race,
         onSaved: (val) => dog?.race = val.trim(),
@@ -80,6 +82,7 @@ class DogInfoController extends BaseController {
         textInputType: TextInputType.text,
       ),
       PrimaryTextField(
+        paddingBottom: getDefaultPadding(context) * 2,
         asListTile: true,
         validate: true,
         initValue: dog?.weigth,
@@ -92,6 +95,7 @@ class DogInfoController extends BaseController {
         maxLength: 4,
       ),
       PrimaryTextField(
+        paddingBottom: getDefaultPadding(context) * 2,
         asListTile: true,
         validate: true,
         initValue: dog?.address?.address,
@@ -104,6 +108,7 @@ class DogInfoController extends BaseController {
         textCapitalization: TextCapitalization.words,
       ),
       PrimaryTextField(
+        paddingBottom: getDefaultPadding(context) * 2,
         asListTile: true,
         validate: true,
         initValue: dog?.address?.city,
@@ -116,6 +121,7 @@ class DogInfoController extends BaseController {
         textCapitalization: TextCapitalization.words,
       ),
       PrimaryTextField(
+        paddingBottom: getDefaultPadding(context) * 2,
         asListTile: true,
         initValue: dog?.address?.county,
         onSaved: (val) => dog?.address?.county = val.trim(),
@@ -131,6 +137,7 @@ class DogInfoController extends BaseController {
         controller: dateTimePickerController,
       ),
       PrimaryTextField(
+        paddingBottom: getDefaultPadding(context) * 2,
         asListTile: true,
         initValue: dog?.chipNumber,
         onSaved: (val) => dog?.chipNumber = val.trim(),

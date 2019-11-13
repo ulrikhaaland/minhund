@@ -180,15 +180,18 @@ class DateTimePicker extends BaseView {
   @override
   Widget build(BuildContext context) {
     canSave = controller.canSave;
-    return PrimaryTextField(
-      asListTile: controller.asListTile,
-      autoFocus: false,
-      enabled: controller.enabled,
-      validate: controller.validate ?? true,
-      textEditingController: controller._textCtrlr,
-      focusNode: controller._textNode,
-      hintText: controller.label,
-      width: controller.width,
+    return Padding(
+      padding:  EdgeInsets.only(bottom: getDefaultPadding(context) * 2),
+      child: PrimaryTextField(
+        asListTile: controller.asListTile,
+        autoFocus: false,
+        enabled: controller.enabled,
+        validate: controller.validate ?? true,
+        textEditingController: controller._textCtrlr,
+        focusNode: controller._textNode,
+        hintText: controller.label,
+        width: controller.width,
+      ),
     );
   }
 }

@@ -9,7 +9,6 @@ import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 import 'package:provider/provider.dart';
-import '../../../bottom_navigation.dart';
 import 'journal-category/journal_category_list_item.dart';
 
 class JournalPageController extends MasterPageController {
@@ -37,6 +36,7 @@ class JournalPageController extends MasterPageController {
         foregroundColor: Colors.white,
         child: Icon(Icons.add),
         onPressed: () => showCustomDialog(
+          dialogSize: DialogSize.medium,
           context: context,
           child: JournalAddCategory(
             controller: JournalAddCategoryController(
@@ -59,7 +59,6 @@ class JournalPageController extends MasterPageController {
   Widget get bottomNav => null;
 
   @override
-  // TODO: implement actionTwoList
   List<Widget> get actionTwoList => null;
 
   void getJournalItems() {
