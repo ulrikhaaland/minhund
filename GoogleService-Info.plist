@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>685102100437-16ub1qetmt6divnd5cnfurckjcti30sf.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.685102100437-16ub1qetmt6divnd5cnfurckjcti30sf</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>685102100437-u75rcd0gnjo9c0g3337uoeevjpfh34is.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDjILNWq-WeW5R_yK0In1we4HzM9ZZ_Wrw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>685102100437</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.minhund</string>
+	<key>PROJECT_ID</key>
+	<string>minhund-e8648</string>
+	<key>STORAGE_BUCKET</key>
+	<string>minhund-e8648.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+    	<string>googlechromes</string>
+    	<string>comgooglemaps</string>
+	</array>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:685102100437:ios:26782f0abc64c1d25b175c</string>
+	<key>DATABASE_URL</key>
+	<string>https://minhund-e8648.firebaseio.com</string>
+</dict>
+</plist>
