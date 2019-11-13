@@ -51,8 +51,8 @@ class DogInfoController extends BaseController {
   @override
   void initState() {
     dateTimePickerController = DateTimePickerController(
-      validate: true,
-      asListTile: true,
+        validate: true,
+        asListTile: true,
         onConfirmed: (date) => dog?.birthDate = date,
         initialDate: dog?.birthDate,
         title: "Fødselsdato",
@@ -97,7 +97,7 @@ class DogInfoController extends BaseController {
         initValue: dog?.address?.address,
         onSaved: (val) => dog?.address?.address = val.trim(),
         hintText: "Adresse",
-        onFieldSubmitted: () =>textFieldNext(40),
+        onFieldSubmitted: () => textFieldNext(40),
         autocorrect: false,
         textInputType: TextInputType.text,
         textInputAction: TextInputAction.next,
@@ -106,7 +106,6 @@ class DogInfoController extends BaseController {
       PrimaryTextField(
         asListTile: true,
         validate: true,
-
         initValue: dog?.address?.city,
         onSaved: (val) => dog?.address?.city = val.trim(),
         hintText: "By",
@@ -116,22 +115,19 @@ class DogInfoController extends BaseController {
         textInputType: TextInputType.text,
         textCapitalization: TextCapitalization.words,
       ),
-      
       PrimaryTextField(
         asListTile: true,
-        validate: true,
-
         initValue: dog?.address?.county,
         onSaved: (val) => dog?.address?.county = val.trim(),
         hintText: "Fylke",
-        onFieldSubmitted: () => dateTimePickerController.openDatePicker(context) ,
+        onFieldSubmitted: () =>
+            dateTimePickerController.openDatePicker(context),
         autocorrect: false,
         textInputType: TextInputType.text,
         textInputAction: TextInputAction.next,
         textCapitalization: TextCapitalization.words,
       ),
       DateTimePicker(
-        
         controller: dateTimePickerController,
       ),
       PrimaryTextField(
@@ -199,20 +195,19 @@ class DogInfo extends BaseView {
       child: FocusScope(
         node: controller._node,
         child: Column(
-            children: <Widget>[
-              controller.dog.profileImage,
-              Container(
-                height: getDefaultPadding(context),
-              ),
-              Column(
-               
-                children: controller.textFields,
-              ),
-              PrimaryButton(
-                controller: controller.primaryButtonController,
-              ),
-            ],
-          ),
+          children: <Widget>[
+            controller.dog.profileImage,
+            Container(
+              height: getDefaultPadding(context),
+            ),
+            Column(
+              children: controller.textFields,
+            ),
+            PrimaryButton(
+              controller: controller.primaryButtonController,
+            ),
+          ],
+        ),
       ),
     );
   }

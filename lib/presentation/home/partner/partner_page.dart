@@ -14,8 +14,9 @@ import 'package:minhund/provider/file_provider.dart';
 import 'package:minhund/provider/partner/partner_provider.dart';
 import 'package:minhund/provider/user_provider.dart';
 import 'package:minhund/service/service_provider.dart';
+import 'package:minhund/utilities/master_page.dart';
 
-class PartnerPageController extends BottomNavigationController {
+class PartnerPageController extends MasterPageController {
   PageState pageState;
 
   final Partner partner;
@@ -147,9 +148,17 @@ class PartnerPageController extends BottomNavigationController {
       ),
     );
   }
+
+  @override
+  // TODO: implement actionOne
+  Widget get actionOne => null;
+
+  @override
+  // TODO: implement fab
+  Widget get fab => null;
 }
 
-class PartnerPage extends BottomNavigation {
+class PartnerPage extends MasterPage {
   final PartnerPageController controller;
 
   PartnerPage({this.controller});

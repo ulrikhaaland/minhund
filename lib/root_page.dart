@@ -10,6 +10,7 @@ import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/intro/user_intro.dart';
 import 'package:minhund/presentation/login/login_page.dart';
 import 'package:minhund/provider/user_provider.dart';
+import 'package:provider/provider.dart';
 import 'model/user.dart';
 import 'presentation/base_view.dart';
 import 'service/service_provider.dart';
@@ -33,8 +34,7 @@ class RootPageController extends BaseController {
   User _user;
   bool introDone = false;
 
-
-  bool newUser = true;
+  bool newUser = false;
 
   @override
   void initState() {
@@ -132,15 +132,11 @@ class RootPageController extends BaseController {
           prepareNewUser();
         }
       }
-      if(_user != null)
-      Navigator.pop(context);
+      // if (_user != null) Navigator.pop(context);
     }
   }
 
   void prepareUser({DocumentSnapshot userDocSnap}) async {
-
-    newUser = false;
-
 
     _user = User.fromJson(userDocSnap.data);
     _user.docRef = userDocSnap.reference;
@@ -151,16 +147,15 @@ class RootPageController extends BaseController {
   }
 
   void preparePartner({DocumentSnapshot partnerDocSnap}) {
-
     _user = Partner.fromJson(partnerDocSnap.data);
     _user.docRef = partnerDocSnap.reference;
 
     UserProvider().updateFcmToken(_user, firebaseMessaging);
-
-    
   }
 
   Future<void> prepareNewUser() async {
+    newUser = true;
+
     _user = User(
         email: firebaseUser.email == "" ? null : firebaseUser.email,
         id: firebaseUser.uid == "" ? null : firebaseUser.uid,
@@ -173,8 +168,6 @@ class RootPageController extends BaseController {
         currentDogIndex: 0);
 
     _user.docRef = await UserProvider().set(id: _user.id, model: _user);
-
-    
   }
 
   Future asAnon() async {
@@ -215,7 +208,7 @@ class RootPage extends BaseView {
       ServiceProvider.instance.screenService.getBambooFactor(context),
     );
 
-    controller.auth.signOut();
+    // controller.auth.signOut();
 
     if (!controller.introDone) {
       return Intro(
@@ -243,9 +236,12 @@ class RootPage extends BaseView {
                 controller.setState(() => controller.newUser = false)),
       );
     } else if (controller._user != null && !controller.newUser) {
-      return BottomNavigation(
-        controller: BottomNavigationController(
-          user: controller._user,
+      return MultiProvider(
+        providers: [
+          Provider<User>.value(value: controller._user),
+        ],
+        child: BottomNavigation(
+          controller: BottomNavigationController(),
         ),
       );
     }

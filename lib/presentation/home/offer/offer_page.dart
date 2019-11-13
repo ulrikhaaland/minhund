@@ -4,10 +4,11 @@ import 'package:minhund/model/offer.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/provider/offer_provider.dart';
 import 'package:minhund/service/service_provider.dart';
+import 'package:minhund/utilities/master_page.dart';
 import '../../../bottom_navigation.dart';
 import 'customer_offer_list_item.dart';
 
-class OfferPageController extends BottomNavigationController {
+class OfferPageController extends MasterPageController {
   static final OfferPageController _instance = OfferPageController._internal();
 
   factory OfferPageController() {
@@ -45,9 +46,13 @@ class OfferPageController extends BottomNavigationController {
     offers.shuffle();
     setState(() => isLoading = false);
   }
+
+  @override
+  // TODO: implement actionTwoList
+  List<Widget> get actionTwoList => null;
 }
 
-class OfferPage extends BottomNavigation {
+class OfferPage extends MasterPage {
   final OfferPageController controller;
 
   OfferPage({this.controller});

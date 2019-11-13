@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/presentation/home/journal/journal_page.dart';
@@ -18,12 +20,20 @@ import 'model/user.dart';
 import 'presentation/home/partner/partner_page.dart';
 
 class BottomNavigationController extends MasterPageController {
+  static final BottomNavigationController _instance =
+      BottomNavigationController._internal();
+
+  factory BottomNavigationController() {
+    return _instance;
+  }
+
+  BottomNavigationController._internal() {
+    print("Bottom Navigation Page built");
+  }
   Widget bottomNavigationBar;
   int bottomNavIndex = 0;
 
-  final User user;
-
-  BottomNavigationController({this.user});
+  User user;
 
   // User Pages
   JournalPage journal;
@@ -35,22 +45,42 @@ class BottomNavigationController extends MasterPageController {
   PartnerPage partnerPage;
   PartnerOffersPage partnerOffersPage;
 
-  List<BottomNavigation> pages;
+  List<Widget> pages;
 
   bool _isLoading = true;
 
   @override
   void initState() {
+    super.initState();
+  }
+
+  init() async {
     bottomNavigationBar = BottomNav(
-      isUser: user is User,
+      isPartner: user is Partner,
       onTabChanged: (index) {
-        bottomNavIndex = index;
-        refresh();
+        setState(() {
+          bottomNavIndex = index;
+        });
       },
     );
+    if (user is Partner) {
+      partnerPage = PartnerPage(
+        controller:
+            PartnerPageController(pageState: PageState.read, partner: user),
+      );
 
-    if (user is User) {
-      getDogs();
+      partnerOffersPage = PartnerOffersPage(
+        controller: PartnerOffersPageController(
+          partner: user,
+        ),
+      );
+
+      pages = <Widget>[
+        partnerPage,
+        partnerOffersPage,
+      ];
+    } else if (user is User) {
+      await getDogs();
 
       journal = JournalPage(
         controller: JournalPageController(),
@@ -68,29 +98,15 @@ class BottomNavigationController extends MasterPageController {
         controller: OfferPageController(),
       );
 
-      pages = <BottomNavigation>[journal, mapLocation, offerPage, profile];
-    } else if (user is Partner) {
-      partnerPage = PartnerPage(
-        controller:
-            PartnerPageController(pageState: PageState.read, partner: user),
-      );
-
-      partnerOffersPage = PartnerOffersPage(
-        controller: PartnerOffersPageController(
-          partner: user,
-        ),
-      );
-
-      pages = <BottomNavigation>[
-        partnerPage,
-        partnerOffersPage,
-      ];
-      _isLoading = false;
+      pages = <Widget>[journal, mapLocation, offerPage, profile];
     } else {
       dispose();
     }
-
-    super.initState();
+    Timer(
+        Duration(milliseconds: 50),
+        () => setState(() {
+              _isLoading = false;
+            }));
   }
 
   @override
@@ -150,6 +166,11 @@ class BottomNavigation extends MasterPage {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
+    if (controller.user == null) {
+      controller.user = Provider.of<User>(context);
+      controller.init();
+    }
+
     if (!controller._isLoading) {
       if (controller.user.dog != null) if (controller.user.dog.profileImage ==
           null) {
@@ -164,16 +185,11 @@ class BottomNavigation extends MasterPage {
       }
     }
 
-    return MultiProvider(
-      providers: [
-        Provider<User>.value(value: controller.user),
-      ],
-      child: IndexedStack(
-        index: controller.bottomNavIndex,
-        children: controller._isLoading
-            ? [Center(child: CPI(false))]
-            : controller.pages,
-      ),
+    return IndexedStack(
+      index: controller.bottomNavIndex,
+      children: controller._isLoading
+          ? [Center(child: CPI(false))]
+          : controller.pages,
     );
   }
 }

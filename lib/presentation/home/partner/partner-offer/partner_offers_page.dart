@@ -15,8 +15,9 @@ import 'package:minhund/presentation/widgets/circular_progress_indicator.dart';
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
 import 'package:minhund/provider/partner/partner_offer_provider.dart';
 import 'package:minhund/service/service_provider.dart';
+import 'package:minhund/utilities/master_page.dart';
 
-class PartnerOffersPageController extends BottomNavigationController {
+class PartnerOffersPageController extends MasterPageController {
   final Partner partner;
 
   List<PartnerOffer> activeOffers = [];
@@ -128,9 +129,17 @@ class PartnerOffersPageController extends BottomNavigationController {
       PartnerOfferProvider().update(model: oldItem);
     }
   }
+
+  @override
+  // TODO: implement actionOne
+  Widget get actionOne => null;
+
+  @override
+  // TODO: implement actionTwoList
+  List<Widget> get actionTwoList => null;
 }
 
-class PartnerOffersPage extends BottomNavigation {
+class PartnerOffersPage extends MasterPage {
   final PartnerOffersPageController controller;
 
   PartnerOffersPage({this.controller});

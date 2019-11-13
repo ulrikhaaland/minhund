@@ -5,12 +5,13 @@ import 'package:location/location.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/service/service_provider.dart';
+import 'package:minhund/utilities/master_page.dart';
 import '../../../bottom_navigation.dart';
 import 'map-options/map_options_page.dart';
 
 enum MapPageState { noCurrentLocation, map, options }
 
-class MapPageController extends BottomNavigationController {
+class MapPageController extends MasterPageController {
   static final MapPageController _instance = MapPageController._internal();
 
   factory MapPageController() {
@@ -80,9 +81,13 @@ class MapPageController extends BottomNavigationController {
 
   @override
   Widget get actionTwo => null;
+
+  @override
+  // TODO: implement actionTwoList
+  List<Widget> get actionTwoList => null;
 }
 
-class MapPage extends BottomNavigation {
+class MapPage extends MasterPage {
   final MapPageController controller;
 
   static final CameraPosition _kGooglePlex = CameraPosition(

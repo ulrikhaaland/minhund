@@ -7,10 +7,11 @@ import 'package:minhund/presentation/home/profile/user_profile.dart';
 import 'package:minhund/presentation/widgets/expandable_card.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/service/service_provider.dart';
+import 'package:minhund/utilities/master_page.dart';
 import 'package:provider/provider.dart';
 import '../../../bottom_navigation.dart';
 
-class ProfilePageController extends BottomNavigationController {
+class ProfilePageController extends MasterPageController {
   User user;
 
   static final ProfilePageController _instance =
@@ -35,9 +36,12 @@ class ProfilePageController extends BottomNavigationController {
 
   @override
   Widget get actionOne => null;
+
+  @override
+  List<Widget> get actionTwoList => null;
 }
 
-class ProfilePage extends BottomNavigation {
+class ProfilePage extends MasterPage {
   final ProfilePageController controller;
 
   ProfilePage({this.controller});

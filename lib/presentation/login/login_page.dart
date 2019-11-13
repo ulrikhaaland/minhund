@@ -114,7 +114,7 @@ class LoginPage extends BaseView {
                                     returnUser: () async {
                                       
                                       controller.returnUser();
-                                      // Navigator.of(context).pop();
+                                      Navigator.of(context).pop();
                                     }),
                               )),
                     ),

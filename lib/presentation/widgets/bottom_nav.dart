@@ -6,9 +6,9 @@ import 'package:minhund/service/service_provider.dart';
 class BottomNav extends StatefulWidget {
   final Function(int index) onTabChanged;
 
-  final bool isUser;
+  final bool isPartner;
 
-  const BottomNav({Key key, this.onTabChanged, this.isUser})
+  const BottomNav({Key key, this.onTabChanged, this.isPartner})
       : super(key: key);
 
   @override
@@ -26,7 +26,7 @@ class _BottomNavState extends State<BottomNav> {
         inactiveIconColor: ServiceProvider
             .instance.instanceStyleService.appStyle.inactiveIconColor,
         onTabChangedListener: (tab) => widget.onTabChanged(tab),
-        tabs: widget.isUser
+        tabs: !widget.isPartner
             ? [
                 TabData(
                   title: "",

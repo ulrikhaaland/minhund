@@ -7,11 +7,12 @@ import 'package:minhund/presentation/home/journal/journal-category/journal_add_c
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
 import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/service/service_provider.dart';
+import 'package:minhund/utilities/master_page.dart';
 import 'package:provider/provider.dart';
 import '../../../bottom_navigation.dart';
 import 'journal-category/journal_category_list_item.dart';
 
-class JournalPageController extends BottomNavigationController {
+class JournalPageController extends MasterPageController {
   static final JournalPageController _instance =
       JournalPageController._internal();
 
@@ -54,14 +55,12 @@ class JournalPageController extends BottomNavigationController {
   @override
   Widget get actionOne => null;
 
-
   @override
   Widget get bottomNav => null;
 
   @override
-  void initState() {
-    super.initState();
-  }
+  // TODO: implement actionTwoList
+  List<Widget> get actionTwoList => null;
 
   void getJournalItems() {
     user.dogs.forEach((dog) async {
@@ -73,7 +72,7 @@ class JournalPageController extends BottomNavigationController {
   }
 }
 
-class JournalPage extends BottomNavigation {
+class JournalPage extends MasterPage {
   final JournalPageController controller;
 
   JournalPage({this.controller});
@@ -101,48 +100,44 @@ class JournalPage extends BottomNavigation {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Flexible(
-              child: Container(
-                height: ServiceProvider.instance.screenService
-                    .getHeightByPercentage(context, 7.5 * 1.8),
-                child: Card(
-                  color: Colors.white,
-                  elevation: ServiceProvider
-                      .instance.instanceStyleService.appStyle.elevation,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(ServiceProvider
-                        .instance.instanceStyleService.appStyle.borderRadius),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(getDefaultPadding(context)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Flexible(
-                              child: Text(
-                                controller.dog.name,
-                                style: ServiceProvider.instance
-                                    .instanceStyleService.appStyle.title,
-                                overflow: TextOverflow.ellipsis,
-                              ),
+              child: Card(
+                color: Colors.white,
+                elevation: ServiceProvider
+                    .instance.instanceStyleService.appStyle.elevation,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ServiceProvider
+                      .instance.instanceStyleService.appStyle.borderRadius),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(getDefaultPadding(context)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Flexible(
+                            child: Text(
+                              controller.dog.name,
+                              style: ServiceProvider
+                                  .instance.instanceStyleService.appStyle.title,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            Flexible(
-                              child: Text(
-                                "${controller.dog.race}, ${getTimeDifference(time: controller.dog.birthDate, daysMonthsYears: true)}, ${controller.dog.weigth} kilo",
-                                style: ServiceProvider.instance
-                                    .instanceStyleService.appStyle.body1,
-                                overflow: TextOverflow.clip,
-                              ),
+                          ),
+                          Flexible(
+                            child: Text(
+                              "${controller.dog.race}, ${getTimeDifference(time: controller.dog.birthDate, daysMonthsYears: true)}, ${controller.dog.weigth} kilo",
+                              style: ServiceProvider
+                                  .instance.instanceStyleService.appStyle.body1,
+                              overflow: TextOverflow.clip,
                             ),
-                          ],
-                        ),
-                        controller.user.dog.profileImage
-                      ],
-                    ),
+                          ),
+                        ],
+                      ),
+                      controller.user.dog.profileImage
+                    ],
                   ),
                 ),
               ),
