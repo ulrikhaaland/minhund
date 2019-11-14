@@ -11,8 +11,6 @@ class Partner extends User {
   Partner({
     this.fcmList,
     this.address,
-    this.latitude,
-    this.longitude,
     this.imgUrl,
     this.websiteUrl,
     this.offers,

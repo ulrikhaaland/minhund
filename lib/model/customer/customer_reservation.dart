@@ -9,11 +9,15 @@ class CustomerReservation {
       {this.customerId,
       this.id,
       this.reservationName,
+      this.message,
+      this.phoneNumber,
       this.reservedAt,
       this.amount});
   String customerId;
   String id;
+  String message;
   String reservationName;
+  String phoneNumber;
   int amount;
   DateTime reservedAt;
   @JsonKey(ignore: true)

@@ -70,9 +70,6 @@ class _ReservationDialogState extends State<ReservationDialog> {
                                 style: ServiceProvider.instance
                                     .instanceStyleService.appStyle.timestamp,
                               ),
-                              Container(
-                                height: padding,
-                              ),
                               Row(
                                 children: <Widget>[
                                   Text(
@@ -103,6 +100,46 @@ class _ReservationDialogState extends State<ReservationDialog> {
                                             .appStyle
                                             .body1Black),
                                   ],
+                                ),
+                              if (reservation.phoneNumber != null)
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      "Tlf: ",
+                                      style: ServiceProvider.instance
+                                          .instanceStyleService.appStyle.italic,
+                                    ),
+                                    Text(reservation.phoneNumber ?? "N/A",
+                                        style: ServiceProvider
+                                            .instance
+                                            .instanceStyleService
+                                            .appStyle
+                                            .body1Black),
+                                  ],
+                                ),
+                              if (reservation.message != null)
+                                Expanded(
+                                  child: Row(
+                                    children: <Widget>[
+                                      Text(
+                                        "Melding: ",
+                                        style: ServiceProvider
+                                            .instance
+                                            .instanceStyleService
+                                            .appStyle
+                                            .italic,
+                                      ),
+                                      Text(
+                                        reservation.message.toString() ?? "N/A",
+                                        style: ServiceProvider
+                                            .instance
+                                            .instanceStyleService
+                                            .appStyle
+                                            .body1Black,
+                                        overflow: TextOverflow.clip,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                             ],
                           ),

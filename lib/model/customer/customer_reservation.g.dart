@@ -11,6 +11,8 @@ CustomerReservation _$CustomerReservationFromJson(Map<String, dynamic> json) {
     customerId: json['customerId'] as String,
     id: json['id'] as String,
     reservationName: json['reservationName'] as String,
+    message: json['message'] as String,
+    phoneNumber: json['phoneNumber'] as String,
     reservedAt: json['reservedAt'] == null
         ? null
         : DateTime.parse(json['reservedAt'] as String),
@@ -24,6 +26,8 @@ Map<String, dynamic> _$CustomerReservationToJson(
       'customerId': instance.customerId,
       'id': instance.id,
       'reservationName': instance.reservationName,
+      'message': instance.message,
+      'phoneNumber': instance.phoneNumber,
       'amount': instance.amount,
       'reservedAt': instance.reservedAt?.toIso8601String(),
     };

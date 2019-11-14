@@ -229,8 +229,9 @@ class EmailLogin extends MasterPage {
                         .getHeightByPercentage(context, 4.5),
                     width: ServiceProvider.instance.screenService
                         .getWidthByPercentage(context, 40),
-                    color: ServiceProvider
-                        .instance.instanceStyleService.appStyle.pink,
+                    color: ServiceProvider.instance.instanceStyleService.appStyle.backgroundColor,
+                    
+                    textColor: ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
                     text: "Glemt passord?",
                     onPressed: () => Navigator.push(
                         context,

@@ -34,6 +34,8 @@ class PartnerPageController extends MasterPageController {
 
   File imageFile;
 
+  bool isLoading;
+
   SecondaryButton openingHours;
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
@@ -58,14 +60,22 @@ class PartnerPageController extends MasterPageController {
               )
             : SaveButton(
                 controller: SaveButtonController(
-                  onPressed: () async {
-                    if (partner.imgUrl == null)
-                      partner.imgUrl = await FileProvider().uploadFile(
-                          file: imageFile, path: "partners/${partner.id}/logo");
-
+                  onPressed: () {
                     _formKey.currentState.save();
+                    
+                    if (partner.imgUrl == null)
+                      FileProvider()
+                          .uploadFile(
+                              file: imageFile,
+                              path: "partners/${partner.id}/logo")
+                          .then((url) {
+                        partner.imgUrl = url;
+                        PartnerProvider().update(model: partner);
+                      });
+                    else
+                      PartnerProvider().update(model: partner);
 
-                    PartnerProvider().update(model: partner);
+                    
 
                     PartnerProvider().updateOffers(model: partner);
 
@@ -296,6 +306,7 @@ class PartnerPage extends MasterPage {
       ),
       PrimaryTextField(
         hintText: "Email",
+        textCapitalization: TextCapitalization.none,
         initValue: controller.partner.email,
         onFieldSubmitted: () => textFieldNext(height: 0),
         asListTile: true,
@@ -312,6 +323,7 @@ class PartnerPage extends MasterPage {
           hintText: "Nettsted, (mittnettsted.no)",
           initValue: controller.partner.websiteUrl,
           textInputAction: TextInputAction.done,
+        textCapitalization: TextCapitalization.none,
           prefixText: "www.",
           asListTile: true,
           onSaved: (val) => controller.partner.websiteUrl = val),

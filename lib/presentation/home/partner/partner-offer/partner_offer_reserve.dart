@@ -117,7 +117,7 @@ class PartnerOfferReserve extends BaseView {
                                 height: padding * 2,
                               ),
                               Text(
-                                "Gir kunder muligeten til å reservere ditt tilbud i appen.\n\nFor hver reservasjon vil antallet synke automatisk og du vil få en notifikasjon samt informasjon om kunden som gjorde reservasjonen.",
+                                "Gir kunder muligeten til å reservere ditt tilbud i appen.\n\nFor hver reservasjon vil antallet synke automatisk og du vil få en notifikasjon samt informasjon om kunden som gjorde reservasjonen.\n\nNår du sletter en kundereservasjon (f.eks etter henting) gir det kunden muligheten til å gjøre en ny reservasjon på samme vare.",
                                 style: ServiceProvider.instance
                                     .instanceStyleService.appStyle.body1,
                                 textAlign: TextAlign.start,

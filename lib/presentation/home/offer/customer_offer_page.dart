@@ -86,7 +86,8 @@ class CustomerOfferPage extends MasterPage {
                 style: ServiceProvider
                     .instance.instanceStyleService.appStyle.body1Black,
               ),
-            if (offer.partnerReservation.canReserve) ...[
+            if (offer.partnerReservation.canReserve &&
+                offer.partnerReservation.amount > 0) ...[
               Container(
                 height: padding * 2,
               ),

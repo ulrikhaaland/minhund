@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
+import 'package:minhund/model/customer/customer_reservation.dart';
 import 'package:minhund/model/offer.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/widgets/buttons/save_button.dart';
@@ -16,56 +17,18 @@ class CustomerReserveDialogController extends DialogTemplateController {
 
   Offer offer;
 
-  int reservationAmount = 1;
-
   TextEditingController textEditingController =
       TextEditingController(text: "1");
 
-  String phoneNumber;
-
-  String messageToStore;
+  CustomerReservation customerReservation;
 
   bool reservationCompleted;
 
   CustomerReserveDialogController({this.user, this.offer});
-  @override
-  Widget get actionOne => PopButton();
-
-  @override
-  Widget get actionTwo => reservationCompleted == false
-      ? SaveButton(
-          controller: SaveButtonController(onPressed: () async {
-            if (offer.partnerReservation.amount != null) {
-              if (offer.partnerReservation.amount < reservationAmount) {
-                Navigator.of(context).pop();
-              } else {
-                offer.partnerReservation.amount -= reservationAmount;
-                Firestore.instance.runTransaction((tx) {
-                  return tx.update(offer.docRef, offer.toJson());
-                });
-              }
-            }
-            Firestore.instance
-                .document(offer.docRef.path + "/reservations/${user.id}")
-                .setData({
-              "timestamp": DateTime.now(),
-              "amount": reservationAmount,
-              "phoneNumber": phoneNumber,
-              "messageToStore": messageToStore,
-            });
-
-            setState(() => reservationCompleted = true);
-          }),
-        )
-      : null;
-
-  @override
-  String get title => reservationCompleted == false ? "Reserver" : "Reservert!";
 
   @override
   void initState() {
     checkIfAlreadyReserved();
-    phoneNumber = user.phoneNumber ?? "";
     super.initState();
   }
 
@@ -75,15 +38,58 @@ class CustomerReserveDialogController extends DialogTemplateController {
     super.dispose();
   }
 
+  @override
+  Widget get actionOne => PopButton();
+
+  @override
+  Widget get actionTwo => reservationCompleted == false
+      ? SaveButton(
+          controller: SaveButtonController(onPressed: () async {
+            if (offer.partnerReservation.amount != null) {
+              if (offer.partnerReservation.amount <
+                  customerReservation.amount) {
+                Navigator.of(context).pop();
+              } else {
+                offer.partnerReservation.amount -= customerReservation.amount;
+                Firestore.instance.runTransaction((tx) {
+                  return tx.update(offer.docRef, offer.toJson());
+                });
+              }
+            }
+
+            customerReservation.reservedAt = DateTime.now();
+            Firestore.instance
+                .document(offer.docRef.path + "/reservations/${user.id}")
+                .setData(
+                  customerReservation.toJson(),
+                );
+
+            setState(() => reservationCompleted = true);
+          }),
+        )
+      : null;
+
+  @override
+  String get title => reservationCompleted == false ? "Reserver" : "Reservert!";
+
   checkIfAlreadyReserved() async {
     DocumentSnapshot docSnap = await Firestore.instance
         .document(offer.docRef.path + "/reservations/${user.id}")
         .get();
     setState(() {
-      if (docSnap.exists)
+      if (docSnap.exists) {
+        customerReservation = CustomerReservation.fromJson(docSnap.data);
         reservationCompleted = true;
-      else
+      } else {
+        customerReservation = CustomerReservation(
+          amount: 1,
+          customerId: user.id,
+          reservationName: user.name ?? user.dog.name,
+          phoneNumber: user.phoneNumber ?? "",
+        );
+
         reservationCompleted = false;
+      }
     });
   }
 }
@@ -110,11 +116,19 @@ class CustomerReserveDialog extends DialogTemplate {
             children: <Widget>[
               if (controller.offer.partnerReservation.canReserveMultiple &&
                   controller.offer.partnerReservation.amount > 1) ...[
+                Text(
+                  "For dette tilbudet kan du maksimum reservere ${controller.offer.partnerReservation.canReserveMultipleAmount} stk",
+                  style: ServiceProvider
+                      .instance.instanceStyleService.appStyle.italic,
+                ),
+                Container(
+                  height: padding * 4,
+                ),
                 PrimaryTextField(
                   hintText: "Antall",
                   asListTile: true,
                   textEditingController: controller.textEditingController,
-                  initValue: controller.reservationAmount.toString(),
+                  initValue: controller.customerReservation.amount.toString(),
                   textFieldType: TextFieldType.ordinary,
                   textInputType: TextInputType.number,
                   onChanged: (val) {
@@ -124,7 +138,7 @@ class CustomerReserveDialog extends DialogTemplate {
                     } else if (reserveValue <=
                         controller.offer.partnerReservation
                             .canReserveMultipleAmount) {
-                      controller.reservationAmount = reserveValue;
+                      controller.customerReservation.amount = reserveValue;
                     } else {
                       controller.textEditingController.text = controller
                           .offer.partnerReservation.canReserveMultipleAmount
@@ -133,31 +147,38 @@ class CustomerReserveDialog extends DialogTemplate {
                     controller.setState(() {});
                   },
                 ),
-                Text(
-                  "For denne varen kan du maksimum reservere ${controller.offer.partnerReservation.canReserveMultipleAmount} stk",
-                  style: ServiceProvider
-                      .instance.instanceStyleService.appStyle.italic,
-                ),
               ] else ...[
                 Text(
-                  "For denne varen kan du kun reservere 1 stk",
+                  "For dette tilbudet kan du kun reservere 1 stk",
                   style: ServiceProvider
                       .instance.instanceStyleService.appStyle.italic,
                 ),
+                Container(
+                  height: padding * 4,
+                ),
               ],
-              Container(
-                height: padding * 6,
-              ),
               PrimaryTextField(
                 paddingBottom: padding * 2,
                 hintText: "Telefonnummer",
                 prefixText: "+47 ",
                 asListTile: true,
-                initValue: controller.phoneNumber,
+                initValue: controller.customerReservation.phoneNumber,
                 textFieldType: TextFieldType.ordinary,
                 textInputType: TextInputType.number,
                 onChanged: (val) {
-                  controller.phoneNumber = val;
+                  controller.customerReservation.phoneNumber = val;
+                },
+              ),
+               PrimaryTextField(
+                paddingBottom: padding * 2,
+                hintText: "Ditt navn",
+                asListTile: true,
+                initValue: controller.customerReservation.reservationName,
+                textCapitalization: TextCapitalization.words,
+                textFieldType: TextFieldType.ordinary,
+                textInputType: TextInputType.number,
+                onChanged: (val) {
+                  controller.customerReservation.reservationName = val;
                 },
               ),
               PrimaryTextField(
@@ -166,7 +187,7 @@ class CustomerReserveDialog extends DialogTemplate {
                 maxLines: 5,
                 textFieldType: TextFieldType.ordinary,
                 onChanged: (val) {
-                  controller.messageToStore = val;
+                  controller.customerReservation.message = val;
                 },
               ),
             ],
@@ -187,7 +208,7 @@ class CustomerReserveDialog extends DialogTemplate {
                 .getHeightByPercentage(context, 20),
           ),
           Text(
-            "Din reservasjon for ${controller.reservationAmount} stk ${controller.offer.title} kan hentes i butikk.",
+            "Din reservasjon for ${controller.customerReservation.amount} stk ${controller.offer.title} kan hentes i butikk${ controller.customerReservation.reservationName != null && controller.customerReservation.reservationName != "" ? " under navnet " + controller.customerReservation.reservationName : null}.",
             style: ServiceProvider.instance.instanceStyleService.appStyle.body1,
             textAlign: TextAlign.start,
           ),

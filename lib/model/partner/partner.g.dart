@@ -12,8 +12,6 @@ Partner _$PartnerFromJson(Map json) {
     address: json['address'] == null
         ? null
         : Address.fromJson(json['address'] as Map),
-    latitude: (json['latitude'] as num)?.toDouble(),
-    longitude: (json['longitude'] as num)?.toDouble(),
     imgUrl: json['imgUrl'] as String,
     websiteUrl: json['websiteUrl'] as String,
   )
@@ -47,7 +45,5 @@ Map<String, dynamic> _$PartnerToJson(Partner instance) => <String, dynamic>{
       'imgUrl': instance.imgUrl,
       'websiteUrl': instance.websiteUrl,
       'address': instance.address.toJson(),
-      'latitude': instance.latitude,
-      'longitude': instance.longitude,
       'openingHours': instance.openingHours.toJson(),
     };
