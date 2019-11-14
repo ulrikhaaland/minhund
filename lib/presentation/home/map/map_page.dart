@@ -142,7 +142,7 @@ class MapPage extends MasterPage {
               ),
               zoom: 8.4746,
             ),
-            // myLocationEnabled: true,
+            myLocationEnabled: false,
             onMapCreated: (GoogleMapController localController) {
               controller.mapController.complete(localController);
             },

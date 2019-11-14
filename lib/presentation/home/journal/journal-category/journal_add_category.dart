@@ -144,6 +144,10 @@ class JournalAddCategory extends DialogTemplate {
                   hintText: "Navn",
                   onFieldSubmitted: () => controller.onSaved(),
                 ),
+                Divider(),
+                Container(
+                  height: padding * 2,
+                ),
                 ColorPicker(
                   controller: ColorPickerController(
                     onChanged: (index) =>
@@ -152,6 +156,10 @@ class JournalAddCategory extends DialogTemplate {
                   ),
                 ),
                 if (controller.pageState == PageState.edit) ...[
+                  Container(
+                    height: padding * 2,
+                  ),
+                  Divider(),
                   Container(
                     height: padding * 6,
                   ),
