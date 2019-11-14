@@ -1,27 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/customer/customer_reservation.dart';
+import 'package:minhund/presentation/widgets/dialog/dialog_pop_button.dart';
+import 'package:minhund/presentation/widgets/dialog/dialog_template.dart';
 import 'package:minhund/service/service_provider.dart';
 
-class ReservationDialog extends StatefulWidget {
+class ReservationDialogController extends DialogTemplateController {
   final List<CustomerReservation> customerReservations;
 
-  const ReservationDialog({Key key, this.customerReservations})
-      : super(key: key);
-  @override
-  _ReservationDialogState createState() => _ReservationDialogState();
-}
+  ReservationDialogController({this.customerReservations});
 
-class _ReservationDialogState extends State<ReservationDialog> {
+  @override
+  Widget get actionOne => PopButton();
+
+  @override
+  Widget get actionTwo => null;
+
+  @override
+  String get title => "Reservasjoner";
+
   void deleteReservation({CustomerReservation reservation}) {
     setState(() {
-      widget.customerReservations.remove(reservation);
+      customerReservations.remove(reservation);
     });
     reservation.docRef.delete();
   }
+}
+
+class ReservationDialog extends DialogTemplate {
+  final ReservationDialogController controller;
+
+  ReservationDialog({this.controller});
 
   @override
-  Widget build(BuildContext context) {
+  Widget buildDialogContent(BuildContext context) {
     if (!mounted) return Container();
 
     double padding = getDefaultPadding(context);
@@ -33,18 +45,13 @@ class _ReservationDialogState extends State<ReservationDialog> {
             .getHeightByPercentage(context, 75),
         child: Column(
           children: <Widget>[
-            Text(
-              "Reservasjoner",
-              style: ServiceProvider
-                  .instance.instanceStyleService.appStyle.descTitle,
-            ),
             ListView.builder(
-              key: Key(widget.customerReservations.length.toString()),
+              key: Key(controller.customerReservations.length.toString()),
               shrinkWrap: true,
-              itemCount: widget.customerReservations.length,
+              itemCount: controller.customerReservations.length,
               itemBuilder: (context, index) {
                 CustomerReservation reservation =
-                    widget.customerReservations[index];
+                    controller.customerReservations[index];
                 return Row(
                   children: <Widget>[
                     Expanded(
@@ -70,22 +77,30 @@ class _ReservationDialogState extends State<ReservationDialog> {
                                 style: ServiceProvider.instance
                                     .instanceStyleService.appStyle.timestamp,
                               ),
-                              Row(
-                                children: <Widget>[
-                                  Text(
-                                    "Navn: ",
-                                    style: ServiceProvider.instance
-                                        .instanceStyleService.appStyle.italic,
-                                  ),
-                                  Text(reservation.reservationName ?? "N/A",
-                                      style: ServiceProvider
-                                          .instance
-                                          .instanceStyleService
-                                          .appStyle
-                                          .body1Black),
-                                ],
-                              ),
-                              if (reservation.amount != null)
+                              if (reservation.reservationName != null) ...[
+                                Container(
+                                  height: padding,
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Text(
+                                      "Navn: ",
+                                      style: ServiceProvider.instance
+                                          .instanceStyleService.appStyle.italic,
+                                    ),
+                                    Text(reservation.reservationName,
+                                        style: ServiceProvider
+                                            .instance
+                                            .instanceStyleService
+                                            .appStyle
+                                            .body1Black),
+                                  ],
+                                ),
+                              ],
+                              if (reservation.amount != null) ...[
+                                Container(
+                                  height: padding,
+                                ),
                                 Row(
                                   children: <Widget>[
                                     Text(
@@ -93,7 +108,7 @@ class _ReservationDialogState extends State<ReservationDialog> {
                                       style: ServiceProvider.instance
                                           .instanceStyleService.appStyle.italic,
                                     ),
-                                    Text(reservation.amount.toString() ?? "N/A",
+                                    Text(reservation.amount.toString(),
                                         style: ServiceProvider
                                             .instance
                                             .instanceStyleService
@@ -101,7 +116,11 @@ class _ReservationDialogState extends State<ReservationDialog> {
                                             .body1Black),
                                   ],
                                 ),
-                              if (reservation.phoneNumber != null)
+                              ],
+                              if (reservation.phoneNumber != null) ...[
+                                Container(
+                                  height: padding,
+                                ),
                                 Row(
                                   children: <Widget>[
                                     Text(
@@ -109,7 +128,7 @@ class _ReservationDialogState extends State<ReservationDialog> {
                                       style: ServiceProvider.instance
                                           .instanceStyleService.appStyle.italic,
                                     ),
-                                    Text(reservation.phoneNumber ?? "N/A",
+                                    Text(reservation.phoneNumber,
                                         style: ServiceProvider
                                             .instance
                                             .instanceStyleService
@@ -117,11 +136,16 @@ class _ReservationDialogState extends State<ReservationDialog> {
                                             .body1Black),
                                   ],
                                 ),
-                              if (reservation.message != null)
-                                Expanded(
-                                  child: Row(
-                                    children: <Widget>[
-                                      Text(
+                              ],
+                              if (reservation.message != null) ...[
+                                Container(
+                                  height: padding,
+                                ),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    IntrinsicHeight(
+                                      child: Text(
                                         "Melding: ",
                                         style: ServiceProvider
                                             .instance
@@ -129,8 +153,10 @@ class _ReservationDialogState extends State<ReservationDialog> {
                                             .appStyle
                                             .italic,
                                       ),
-                                      Text(
-                                        reservation.message.toString() ?? "N/A",
+                                    ),
+                                    Flexible(
+                                      child: Text(
+                                        reservation.message,
                                         style: ServiceProvider
                                             .instance
                                             .instanceStyleService
@@ -138,17 +164,18 @@ class _ReservationDialogState extends State<ReservationDialog> {
                                             .body1Black,
                                         overflow: TextOverflow.clip,
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
+                              ],
                             ],
                           ),
                         ),
                       ),
                     ),
                     IconButton(
-                      onPressed: () =>
-                          deleteReservation(reservation: reservation),
+                      onPressed: () => controller.deleteReservation(
+                          reservation: reservation),
                       icon: Icon(Icons.delete),
                       iconSize: ServiceProvider.instance.instanceStyleService
                           .appStyle.iconSizeStandard,

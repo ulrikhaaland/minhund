@@ -743,11 +743,13 @@ class JournalEventDialog extends DialogTemplate {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            controller.basicContainer2(
-                              child: Text(
-                                "Notat:",
-                                style: ServiceProvider.instance
-                                    .instanceStyleService.appStyle.descTitle,
+                            IntrinsicHeight(
+                                                          child: controller.basicContainer2(
+                                child: Text(
+                                  "Notat:",
+                                  style: ServiceProvider.instance
+                                      .instanceStyleService.appStyle.descTitle,
+                                ),
                               ),
                             ),
                             Container(

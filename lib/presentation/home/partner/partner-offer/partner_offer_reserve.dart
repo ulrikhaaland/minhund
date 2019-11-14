@@ -136,8 +136,10 @@ class PartnerOfferReserve extends BaseView {
                           onPressed: () => showCustomDialog(
                             context: context,
                             child: ReservationDialog(
-                              customerReservations:
-                                  controller.reservation.customerReservations,
+                              controller: ReservationDialogController(
+                                customerReservations:
+                                    controller.reservation.customerReservations,
+                              ),
                             ),
                           ),
                           color: Colors.white,
