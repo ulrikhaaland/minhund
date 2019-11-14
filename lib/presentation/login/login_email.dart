@@ -211,7 +211,8 @@ class EmailLogin extends MasterPage {
                   controller: controller.primaryButtonController,
                 ),
                 SecondaryButton(
-                  bottomPadding: controller.isLogin ? 0 : getDefaultPadding(context) * 2,
+                  bottomPadding:
+                      controller.isLogin ? 0 : getDefaultPadding(context) * 2,
                   width: ServiceProvider.instance.screenService
                       .getWidthByPercentage(context, 70),
                   onPressed: () {
@@ -229,9 +230,10 @@ class EmailLogin extends MasterPage {
                         .getHeightByPercentage(context, 4.5),
                     width: ServiceProvider.instance.screenService
                         .getWidthByPercentage(context, 40),
-                    color: ServiceProvider.instance.instanceStyleService.appStyle.backgroundColor,
-                    
-                    textColor: ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
+                    color: ServiceProvider
+                        .instance.instanceStyleService.appStyle.pink,
+
+                    // textColor: ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
                     text: "Glemt passord?",
                     onPressed: () => Navigator.push(
                         context,

@@ -10,6 +10,7 @@ import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/cloud_functions_provider.dart';
 import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/service/service_provider.dart';
+import 'package:minhund/utilities/color_picker.dart';
 
 class JournalAddCategoryController extends DialogTemplateController {
   double height;
@@ -55,7 +56,8 @@ class JournalAddCategoryController extends DialogTemplateController {
       singleCategoryItem = JournalCategoryItem(
           title: "",
           journalEventItems: [],
-          sortIndex: journalCategoryItems.length);
+          sortIndex: journalCategoryItems.length,
+          colorIndex: 1);
 
     if (singleCategoryItem.title.length > 0) canSave = true;
 
@@ -142,16 +144,26 @@ class JournalAddCategory extends DialogTemplate {
                   hintText: "Navn",
                   onFieldSubmitted: () => controller.onSaved(),
                 ),
-                if (controller.pageState == PageState.edit)
+                ColorPicker(
+                  controller: ColorPickerController(
+                    onChanged: (index) =>
+                        controller.singleCategoryItem.colorIndex = index,
+                    initIndex: controller.singleCategoryItem.colorIndex ?? 0,
+                  ),
+                ),
+                if (controller.pageState == PageState.edit) ...[
+                  Container(
+                    height: padding * 6,
+                  ),
                   Center(
                     child: SecondaryButton(
-                      // topPadding: 0,
-                      text: "Slett",
+                      text: "Slett kategori",
                       color: ServiceProvider
                           .instance.instanceStyleService.appStyle.pink,
                       onPressed: () => controller.onDelete(),
                     ),
                   ),
+                ],
               ],
             ),
           );

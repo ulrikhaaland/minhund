@@ -133,7 +133,7 @@ class BottomNavigationController extends MasterPageController {
     List<Dog> dogs = await DogProvider().getCollection(id: user.id);
     if (dogs.isNotEmpty) {
       user.dogs = dogs;
-      user.dog = dogs[0];
+      if (user.dog == null) user.dog = dogs[0];
     } else {
       user.dog = Dog(
         name: "Min Hund",

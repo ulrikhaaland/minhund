@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/user.dart';
-import 'package:minhund/presentation/info/dog/dog_info.dart';
-import 'package:minhund/presentation/info/user/user_info.dart';
+import 'package:minhund/presentation/info/dog_info.dart';
+import 'package:minhund/presentation/info/user_info.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 

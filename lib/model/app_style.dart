@@ -69,7 +69,9 @@ class AppStyle {
   Color titleOneColor;
   Color card;
 
+  List<Color> palette;
   List<Color> gradient;
+
   TextStyle textFieldError;
   TextStyle transparentDisabledColoredText;
   TextStyle disabledColoredText;

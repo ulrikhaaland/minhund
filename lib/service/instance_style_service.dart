@@ -53,6 +53,15 @@ class InstanceStyleService {
       // Color.fromARGB(255, 255, 236, 210)
     ];
 
+    _appStyle.palette = [
+      const Color(0xFF3f5261),
+      const Color(0xFF7a96f1),
+      const Color(0xFFe67399),
+      const Color(0xFFa1c4fd),
+      const Color(0xFF78dea6),
+      const Color(0xFF839acc),
+    ];
+
     _appStyle.title = new TextStyle(
       fontSize: screenHeight * 0.040 * factor,
       fontFamily: 'Apercu',
@@ -245,7 +254,7 @@ class InstanceStyleService {
     );
 
     _appStyle.coloredText = new TextStyle(
-     fontFamily: "Apercu",
+      fontFamily: "Apercu",
       fontSize: screenHeight * 0.018 * factor,
       fontWeight: FontWeight.normal,
       fontStyle: FontStyle.normal,

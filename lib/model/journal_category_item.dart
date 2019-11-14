@@ -6,8 +6,9 @@ part 'journal_category_item.g.dart';
 
 @JsonSerializable()
 class JournalCategoryItem {
-  JournalCategoryItem({this.title, this.journalEventItems, this.sortIndex});
-
+  JournalCategoryItem(
+      {this.title, this.journalEventItems, this.sortIndex, this.colorIndex});
+  int colorIndex;
   String id;
   String title;
   @JsonKey(ignore: true)

@@ -24,6 +24,12 @@ class OfferPageController extends MasterPageController {
   bool isLoading = true;
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   FloatingActionButton get fab => null;
 
   @override

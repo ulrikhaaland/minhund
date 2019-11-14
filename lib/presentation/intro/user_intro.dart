@@ -41,24 +41,29 @@ class UserIntroController extends MasterPageController {
       user.dogs = [];
     }
 
-    if (!user.dogs.contains(dog)) {
-      user.dogs.add(dog);
-    }
-
     dog.journalItems = <JournalCategoryItem>[
       JournalCategoryItem(
         title: "Veterinær",
         sortIndex: 0,
+        colorIndex: 1,
       ),
       JournalCategoryItem(
         title: "Kurs",
         sortIndex: 1,
+        colorIndex: 4,
       ),
       JournalCategoryItem(
         title: "Annet",
         sortIndex: 2,
+        colorIndex: 2,
       ),
     ];
+
+    user.dog = dog;
+
+    if (!user.dogs.contains(dog)) {
+      user.dogs.add(dog);
+    }
 
     await DogProvider().create(id: user.id, model: dog);
 

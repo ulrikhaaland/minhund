@@ -11,7 +11,6 @@ import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
-import 'package:minhund/service/service_provider.dart';
 
 enum CreateOrUpdateDog { create, update }
 
@@ -62,6 +61,7 @@ class DogInfoController extends BaseController {
       PrimaryTextField(
         paddingBottom: getDefaultPadding(context) * 2,
         asListTile: true,
+        validate: true,
         initValue: dog?.name,
         onSaved: (val) => dog?.name = val.trim(),
         onFieldSubmitted: () => textFieldNext(10),
@@ -73,6 +73,7 @@ class DogInfoController extends BaseController {
       PrimaryTextField(
         paddingBottom: getDefaultPadding(context) * 2,
         asListTile: true,
+        validate: true,
         initValue: dog?.race,
         onSaved: (val) => dog?.race = val.trim(),
         onFieldSubmitted: () => textFieldNext(20),
@@ -123,6 +124,7 @@ class DogInfoController extends BaseController {
       PrimaryTextField(
         paddingBottom: getDefaultPadding(context) * 2,
         asListTile: true,
+        validate: true,
         initValue: dog?.address?.county,
         onSaved: (val) => dog?.address?.county = val.trim(),
         hintText: "Fylke",

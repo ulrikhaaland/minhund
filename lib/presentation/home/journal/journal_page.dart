@@ -30,6 +30,12 @@ class JournalPageController extends MasterPageController {
   bool isLoading = true;
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   FloatingActionButton get fab => FloatingActionButton(
         backgroundColor:
             ServiceProvider.instance.instanceStyleService.appStyle.green,
@@ -84,6 +90,7 @@ class JournalPage extends MasterPage {
 
     controller.dog = controller.user.dog;
     controller.dog.profileImage.controller.imageSizePercentage = 10;
+    controller.dog.profileImage.controller.edit = false;
     if (controller.isLoading) controller.getJournalItems();
 
     getTimeDifference(time: controller.dog.birthDate, daysMonthsYears: true);
