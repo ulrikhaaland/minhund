@@ -211,7 +211,7 @@ class EmailLogin extends MasterPage {
                   controller: controller.primaryButtonController,
                 ),
                 SecondaryButton(
-                  bottomPadding: 0,
+                  bottomPadding: controller.isLogin ? 0 : getDefaultPadding(context) * 2,
                   width: ServiceProvider.instance.screenService
                       .getWidthByPercentage(context, 70),
                   onPressed: () {
@@ -226,7 +226,7 @@ class EmailLogin extends MasterPage {
                 if (controller.isLogin)
                   SecondaryButton(
                     height: ServiceProvider.instance.screenService
-                        .getHeightByPercentage(context, 3.5),
+                        .getHeightByPercentage(context, 4.5),
                     width: ServiceProvider.instance.screenService
                         .getWidthByPercentage(context, 40),
                     color: ServiceProvider

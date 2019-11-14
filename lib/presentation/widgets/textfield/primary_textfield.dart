@@ -113,14 +113,12 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
       width: widget.width ??
           ServiceProvider.instance.screenService
               .getWidthByPercentage(context, 80),
-      // height: ServiceProvider.instance.screenService.getHeightByPercentage(
-      //     context,
-      //     widget.validate || widget.maxLines > 1
-      //         ? !widget.canSave ? 11.5 : widget.maxLines > 1 ? 15 : 10
-      //         : 11.5),
+      height: !widget.canSave ?  ServiceProvider.instance.screenService
+          .getHeightByPercentage(context, 12.5 ) : null,
       child: Padding(
         padding: EdgeInsets.only(
-            top: widget.paddingTop ?? 0, bottom: widget.paddingBottom ?? 0),
+            top: widget.paddingTop ?? 0,
+            bottom: widget.paddingBottom ?? padding * 2),
         child: Stack(
           children: <Widget>[
             if (!widget.canSave)
@@ -134,6 +132,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                   child: Padding(
                     padding: EdgeInsets.only(left: padding * 2),
                     child: Card(
+                      elevation: 1,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(ServiceProvider
                             .instance
@@ -172,8 +171,10 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                       .instance.instanceStyleService.appStyle.borderRadius),
                 ),
                 child: Padding(
-                  padding:
-                      EdgeInsets.only(left: padding * 4, right: padding * 4, bottom: widget.prefixText == null ? padding *2 : 0),
+                  padding: EdgeInsets.only(
+                      left: padding * 4,
+                      right: padding * 4,
+                      bottom: widget.prefixText == null ? padding * 2 : 0),
                   child: Container(
                     child: widget.textFieldType == TextFieldType.ordinary
                         ? TextField(
@@ -188,8 +189,8 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                             maxLines: widget.maxLines?.toInt() ?? 1,
                             textAlign: widget.textAlign ?? TextAlign.start,
                             focusNode: widget.focusNode,
-                            textInputAction: widget.textInputAction ??
-                                TextInputAction.next,
+                            textInputAction:
+                                widget.textInputAction ?? TextInputAction.next,
                             cursorRadius: Radius.circular(1),
                             keyboardType:
                                 widget.textInputType ?? TextInputType.text,
@@ -204,27 +205,21 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                             decoration: InputDecoration(
                               prefixText: widget.prefixText,
                               prefixStyle: widget.style ??
-                                  ServiceProvider
-                                      .instance
-                                      .instanceStyleService
-                                      .appStyle
-                                      .textFieldInput,
+                                  ServiceProvider.instance.instanceStyleService
+                                      .appStyle.textFieldInput,
                               hintText: !widget.asListTile
                                   ? widget.hintText ?? null
                                   : null,
                               labelText: widget.labelText ?? null,
-                              hintStyle: ServiceProvider.instance
-                                  .instanceStyleService.appStyle.body1,
+                              hintStyle: ServiceProvider
+                                  .instance.instanceStyleService.appStyle.body1,
                               helperText: widget.helperText ?? null,
                               helperStyle: widget.helperStyle ??
-                                  ServiceProvider.instance
-                                      .instanceStyleService.appStyle.italic,
+                                  ServiceProvider.instance.instanceStyleService
+                                      .appStyle.italic,
                               labelStyle: widget.labelStyle ??
-                                  ServiceProvider
-                                      .instance
-                                      .instanceStyleService
-                                      .appStyle
-                                      .body1Black,
+                                  ServiceProvider.instance.instanceStyleService
+                                      .appStyle.body1Black,
                               counterStyle: TextStyle(
                                   color: Colors.green,
                                   fontFamily: "Montserrat"),
@@ -249,8 +244,8 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                             maxLines: widget.maxLines?.toInt() ?? 1,
                             textAlign: widget.textAlign ?? TextAlign.start,
                             focusNode: widget.focusNode,
-                            textInputAction: widget.textInputAction ??
-                                TextInputAction.next,
+                            textInputAction:
+                                widget.textInputAction ?? TextInputAction.next,
                             cursorRadius: Radius.circular(1),
                             keyboardType:
                                 widget.textInputType ?? TextInputType.text,
@@ -329,27 +324,27 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                             decoration: InputDecoration(
                               prefixText: widget.prefixText,
                               prefixStyle: widget.style ??
-                                  ServiceProvider
-                                      .instance
-                                      .instanceStyleService
-                                      .appStyle
-                                      .textFieldInput.copyWith(color: ServiceProvider.instance.instanceStyleService.appStyle.textGrey),
+                                  ServiceProvider.instance.instanceStyleService
+                                      .appStyle.textFieldInput
+                                      .copyWith(
+                                          color: ServiceProvider
+                                              .instance
+                                              .instanceStyleService
+                                              .appStyle
+                                              .textGrey),
                               hintText: !widget.asListTile
                                   ? widget.hintText ?? null
                                   : null,
                               labelText: widget.labelText ?? null,
-                              hintStyle: ServiceProvider.instance
-                                  .instanceStyleService.appStyle.body1,
+                              hintStyle: ServiceProvider
+                                  .instance.instanceStyleService.appStyle.body1,
                               helperText: widget.helperText ?? null,
                               helperStyle: widget.helperStyle ??
-                                  ServiceProvider.instance
-                                      .instanceStyleService.appStyle.italic,
+                                  ServiceProvider.instance.instanceStyleService
+                                      .appStyle.italic,
                               labelStyle: widget.labelStyle ??
-                                  ServiceProvider
-                                      .instance
-                                      .instanceStyleService
-                                      .appStyle
-                                      .body1Black,
+                                  ServiceProvider.instance.instanceStyleService
+                                      .appStyle.body1Black,
                               counterStyle: TextStyle(
                                   color: Colors.green,
                                   fontFamily: "Montserrat"),

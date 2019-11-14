@@ -151,11 +151,14 @@ class PartnerOfferListItem extends BaseView {
                           ),
                         ),
                         if (offer.imgUrl != null || offer.imageFile != null)
-                          CustomImage(
-                            controller: CustomImageController(
-                                imgUrl: offer.imgUrl,
-                                imageFile: offer.imageFile,
-                                customImageType: CustomImageType.squared),
+                          Container(
+                            height: ServiceProvider.instance.screenService.getHeightByPercentage(context, 20),
+                            child: CustomImage(
+                              controller: CustomImageController(
+                                  imgUrl: offer.imgUrl,
+                                  imageFile: offer.imageFile,
+                                  customImageType: CustomImageType.squared),
+                            ),
                           ),
                       ],
                     ),

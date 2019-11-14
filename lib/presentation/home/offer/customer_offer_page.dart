@@ -54,8 +54,7 @@ class CustomerOfferPage extends MasterPage {
     Offer offer = controller.offer;
 
     return Container(
-      width: ServiceProvider.instance.screenService
-          .getHeightByPercentage(context, 50),
+      padding: EdgeInsets.only(left: padding * 2, right: padding * 2),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -65,9 +64,10 @@ class CustomerOfferPage extends MasterPage {
                 tag: "img${offer.id}",
                 child: CustomImage(
                   controller: CustomImageController(
-                      imgUrl: offer.imgUrl,
-                      customImageType: CustomImageType.squared,
-                      imageSizePercentage: 50),
+                    imgUrl: offer.imgUrl,
+                    customImageType: CustomImageType.squared,
+                    imageSizePercentage: 50,
+                  ),
                 ),
               ),
             Container(
@@ -88,7 +88,7 @@ class CustomerOfferPage extends MasterPage {
               ),
             if (offer.partnerReservation.canReserve) ...[
               Container(
-                height: padding * 4,
+                height: padding * 2,
               ),
               if (offer.partnerReservation.amount != null &&
                   offer.partnerReservation.amount > 0)
@@ -101,7 +101,7 @@ class CustomerOfferPage extends MasterPage {
               SecondaryButton(
                 text: "Reserver",
                 color: ServiceProvider
-                    .instance.instanceStyleService.appStyle.skyBlue,
+                    .instance.instanceStyleService.appStyle.leBleu,
                 onPressed: () => showCustomDialog(
                     context: context,
                     child: CustomerReserveDialog(
@@ -240,7 +240,7 @@ class CustomerOfferPage extends MasterPage {
                           }
                         },
                         color: ServiceProvider
-                            .instance.instanceStyleService.appStyle.leBleu,
+                            .instance.instanceStyleService.appStyle.skyBlue,
                       ),
                     Container(
                       width: padding * 4,

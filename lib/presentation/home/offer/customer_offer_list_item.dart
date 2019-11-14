@@ -90,7 +90,7 @@ class CustomerOfferListItem extends BaseView {
                           child: CustomImage(
                             controller: CustomImageController(
                                 imgUrl: offer.imgUrl,
-                                imageSizePercentage: 30,
+                                imageSizePercentage: 40,
                                 customImageType: CustomImageType.squared),
                           ),
                         ),

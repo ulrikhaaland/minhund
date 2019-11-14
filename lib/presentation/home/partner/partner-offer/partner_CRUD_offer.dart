@@ -170,9 +170,9 @@ class PartnerCRUDOfferController extends MasterPageController {
     );
 
     customImageController = CustomImageController(
-      
       edit: pageState != PageState.read,
       customImageType: CustomImageType.squared,
+      imageSizePercentage: 80,
       imgUrl: offer.imgUrl,
       withLabel: true,
       onDelete: () {
@@ -393,7 +393,7 @@ class PartnerCRUDOffer extends MasterPage {
                     asListTile: true,
                     validate: false,
                     onSaved: (val) => controller.offer.desc = val,
-                    textInputType: TextInputType.number,
+                    textInputType: TextInputType.text,
                     initValue: controller.offer.desc,
                     textInputAction: TextInputAction.done,
                     textCapitalization: TextCapitalization.sentences,
@@ -423,7 +423,7 @@ class PartnerCRUDOffer extends MasterPage {
                               bottom: padding,
                               top: padding * 4),
                           child: Text(
-                            "Hvis tilbudet skal være synlig for kunder må det være aktivt, dette kan du endre når som helst.",
+                            "Hvis tilbudet skal være synlig for kunder må det være aktivt. Dette kan du endre når som helst.",
                             style: ServiceProvider
                                 .instance.instanceStyleService.appStyle.body1,
                             textAlign: TextAlign.start,

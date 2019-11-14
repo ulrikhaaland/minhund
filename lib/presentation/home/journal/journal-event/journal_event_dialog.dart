@@ -476,7 +476,7 @@ class JournalEventDialog extends DialogTemplate {
                                                       .placeHolderEventItem
                                                       .timeStamp
                                                       .isBefore(
-                                                          DateTime.now())) {
+                                                          DateTime.now()) && newValue != controller.reminderItems[0]) {
                                                     controller.reminderError =
                                                         true;
                                                     controller
@@ -597,7 +597,7 @@ class JournalEventDialog extends DialogTemplate {
                             PrimaryTextField(
                                 asListTile: true,
                                 initValue: controller.placeHolderEventItem.note,
-                                hintText: "Beskrivelse",
+                                hintText: "Notat",
                                 textCapitalization:
                                     TextCapitalization.sentences,
                                 textInputAction: TextInputAction.done,
@@ -745,7 +745,7 @@ class JournalEventDialog extends DialogTemplate {
                           children: <Widget>[
                             controller.basicContainer2(
                               child: Text(
-                                "Beskrivelse:",
+                                "Notat:",
                                 style: ServiceProvider.instance
                                     .instanceStyleService.appStyle.descTitle,
                               ),

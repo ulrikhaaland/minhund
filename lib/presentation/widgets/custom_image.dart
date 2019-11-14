@@ -137,35 +137,37 @@ class CustomImage extends BaseView {
 
       case CustomImageType.squared:
         {
-          Widget squaredImage = AspectRatio( 
-            aspectRatio: 1,
-            child: Container(
-            decoration: BoxDecoration(
-                image: controller.imgUrl != null || controller.imageFile != null
-                    ? DecorationImage(
-                        fit: BoxFit.fill,
-                        image: controller.imageFile != null
-                            ? FileImage(controller.imageFile)
-                            : controller.imgUrl != null
-                                ? NetworkImage(
-                                    controller.imgUrl,
-                                  )
-                                : null,
-                      )
-                    : null,
-                color: ServiceProvider
-                    .instance.instanceStyleService.appStyle.skyBlue,
-                borderRadius: BorderRadius.all(Radius.elliptical(20, 30))),
-            height: ServiceProvider.instance.screenService
-                .getWidthByPercentage(context, controller.imageSizePercentage),
-            width: ServiceProvider.instance.screenService
-                .getWidthByPercentage(context, controller.imageSizePercentage),
-            child: controller.isLoading
-                ? CPI(false)
-                : controller.imageFile == null && controller.imgUrl == null
-                    ? icon
-                    : null,
-          ),);
+          Widget squaredImage = Container(
+            // height: ServiceProvider.instance.screenService
+            //     .getHeightByPercentage(context, controller.imageSizePercentage),
+            child: AspectRatio(
+              aspectRatio: 1,
+              child: Container(
+                decoration: BoxDecoration(
+                    image: controller.imgUrl != null ||
+                            controller.imageFile != null
+                        ? DecorationImage(
+                            fit: BoxFit.fill,
+                            image: controller.imageFile != null
+                                ? FileImage(controller.imageFile)
+                                : controller.imgUrl != null
+                                    ? NetworkImage(
+                                        controller.imgUrl,
+                                      )
+                                    : null,
+                          )
+                        : null,
+                    color: ServiceProvider
+                        .instance.instanceStyleService.appStyle.skyBlue,
+                    borderRadius: BorderRadius.all(Radius.elliptical(20, 30))),
+                child: controller.isLoading
+                    ? CPI(false)
+                    : controller.imageFile == null && controller.imgUrl == null
+                        ? icon
+                        : null,
+              ),
+            ),
+          );
 
           if (controller.edit || controller.withLabel)
             return Column(
