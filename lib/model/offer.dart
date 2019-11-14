@@ -17,11 +17,15 @@ class Offer {
       this.id,
       this.partnerId,
       this.createdAt,
+      this.lat,
+      this.long,
       this.type});
   String id;
   DateTime createdAt;
   String title;
   double price;
+  double lat;
+  double long;
   Partner partner;
   String desc;
   String imgUrl;

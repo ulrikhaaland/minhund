@@ -8,22 +8,23 @@ part 'partner.g.dart';
 
 @JsonSerializable(anyMap: true)
 class Partner extends User {
-  Partner({
-    this.fcmList,
-    this.address,
-    this.imgUrl,
-    this.websiteUrl,
-    this.offers,
-    this.phoneNumber,
-  });
+  Partner(
+      {this.fcmList,
+      this.address,
+      this.imgUrl,
+      this.websiteUrl,
+      this.offers,
+      this.phoneNumber,
+      this.long,
+      this.lat});
 
   List<String> fcmList;
   String imgUrl;
   String websiteUrl;
   String phoneNumber;
   Address address;
-  double latitude;
-  double longitude;
+  double lat;
+  double long;
   OpeningHours openingHours;
   @JsonKey(ignore: true)
   List<PartnerOffer> offers;

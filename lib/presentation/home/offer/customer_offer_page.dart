@@ -246,17 +246,16 @@ class CustomerOfferPage extends MasterPage {
                     Container(
                       width: padding * 4,
                     ),
-                    if (offer.partner.longitude != null &&
-                        offer.partner.latitude != null)
+                    if (offer.partner.long != null && offer.partner.lat != null)
                       SecondaryButton(
                         text: "Veibeskrivelse",
                         width: ServiceProvider.instance.screenService
                             .getHeightByPercentage(context, 20),
                         onPressed: () async {
-                          if (offer.partner.latitude != null &&
-                              offer.partner.longitude != null) {
+                          if (offer.partner.lat != null &&
+                              offer.partner.long != null) {
                             String googleUrl =
-                                'https://www.google.com/maps/search/?api=1&query=${offer.partner.latitude},${offer.partner.longitude}';
+                                'https://www.google.com/maps/search/?api=1&query=${offer.partner.lat},${offer.partner.long}';
                             if (await canLaunch(googleUrl)) {
                               await launch(googleUrl);
                             } else {

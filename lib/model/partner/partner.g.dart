@@ -22,6 +22,8 @@ Partner _$PartnerFromJson(Map json) {
     ..currentDogIndex = json['currentDogIndex'] as int
     ..fcm = json['fcm'] as String
     ..appVersion = (json['appVersion'] as num)?.toDouble()
+    ..lat = (json['lat'] as num)?.toDouble()
+    ..long = (json['long'] as num)?.toDouble()
     ..allowsNotifications = json['allowsNotifications'] as bool
     ..notifications = json['notifications'] as int
     ..openingHours = json['openingHours'] == null

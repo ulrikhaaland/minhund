@@ -34,112 +34,6 @@ class MapPageController extends MasterPageController {
 
   @override
   void initState() {
-    // List<Place> places = [
-    //   Place(
-    //       name: "Hundehjørnet",
-    //       city: "Ski",
-    //       lat: 59.734253,
-    //       long: 10.818914,
-    //       type: "park"),
-    //   Place(
-    //       name: "Frogn Hundepark",
-    //       city: "Drøbak",
-    //       lat: 59.675537,
-    //       long: 10.639613,
-    //       type: "park"),
-    //   Place(
-    //       name: "Solbergfoss Hundepark",
-    //       city: "Spydeberg",
-    //       lat: 59.635737,
-    //       long: 11.150325,
-    //       type: "park"),
-    //   Place(
-    //       name: "Skraperudtjern Hundepark",
-    //       city: "Oslo",
-    //       lat: 59.87097,
-    //       long: 10.852909,
-    //       type: "park"),
-    //   Place(
-    //       name: "Hundesletta Ekeberg",
-    //       city: "Oslo",
-    //       lat: 59.893821,
-    //       long: 10.76627,
-    //       type: "park"),
-    //   Place(
-    //       name: "Varden Hundepark",
-    //       city: "Nesodden",
-    //       lat: 59.840399,
-    //       long: 10.648587,
-    //       type: "park"),
-    //   Place(
-    //       name: "Ola Narr Hundepark",
-    //       city: "Oslo",
-    //       lat: 59.921923,
-    //       long: 10.778897,
-    //       type: "park"),
-    //   Place(
-    //       name: "Grefsenkollveien",
-    //       city: "Oslo",
-    //       lat: 59.964346,
-    //       long: 10.801071,
-    //       type: "park"),
-    //   Place(
-    //       name: "Hundejordet Maridalen",
-    //       city: "Oslo",
-    //       lat: 59.967878,
-    //       long: 10.76538,
-    //       type: "park"),
-    //   Place(
-    //       name: "Stensparken Hundehage",
-    //       city: "Oslo",
-    //       lat: 59.929106,
-    //       long: 10.731685,
-    //       type: "park"),
-    //   Place(
-    //       name: "Hundejordet Vigelandsparken",
-    //       city: "Oslo",
-    //       lat: 59.929337,
-    //       long: 10.698706,
-    //       type: "park"),
-    //   Place(
-    //       name: "Storøyodden hundepark",
-    //       city: "Oslo",
-    //       lat: 59.889728,
-    //       long: 10.600496,
-    //       type: "park"),
-    //   Place(
-    //       name: "Kjørbotangen hundepark",
-    //       city: "Bærum",
-    //       lat: 59.895785,
-    //       long: 10.518909,
-    //       type: "park"),
-    //   Place(
-    //       name: "Vøyenenga hundepark",
-    //       city: "Bærum",
-    //       lat: 59.910446,
-    //       long: 10.484582,
-    //       type: "park"),
-    //   Place(
-    //       name: "Hundejordet lillestrøm",
-    //       city: "Lillestrøm",
-    //       lat: 59.969595,
-    //       long: 11.019415,
-    //       type: "park"),
-    //   Place(
-    //       name: "Nuggerud",
-    //       city: "Lørenskog",
-    //       lat: 59.928652,
-    //       long: 10.923024,
-    //       type: "park"),
-    // ];
-    // places.forEach((place) {
-    //   Firestore.instance.collection("places").add(place.toJson()).then((ref) {
-    //     place.id = ref.documentID;
-    //     ref.updateData({
-    //       "id": place.id,
-    //     });
-    //   });
-    // });
     getPlaces();
     getLocation();
     super.initState();
@@ -239,26 +133,24 @@ class MapPage extends MasterPage {
       return Stack(
         children: <Widget>[
           GoogleMap(
-            markers: controller.markers != null
-                ? controller.markers
-                : null,
+            markers: controller.markers != null ? controller.markers : null,
             mapType: MapType.normal,
             initialCameraPosition: CameraPosition(
               target: LatLng(
                 59.71949,
                 10.83576,
               ),
-              zoom: 14.4746,
+              zoom: 8.4746,
             ),
-            myLocationEnabled: true,
+            // myLocationEnabled: true,
             onMapCreated: (GoogleMapController localController) {
               controller.mapController.complete(localController);
             },
           ),
-          Align(
-            alignment: Alignment.topRight,
-            child: Text("data"),
-          ),
+          // Align(
+          //   alignment: Alignment.topRight,
+          //   child: Text("data"),
+          // ),
         ],
       );
     return Container();

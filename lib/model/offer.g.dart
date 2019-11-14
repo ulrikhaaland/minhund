@@ -11,6 +11,8 @@ Offer _$OfferFromJson(Map json) {
     title: json['title'] as String,
     desc: json['desc'] as String,
     price: (json['price'] as num)?.toDouble(),
+    lat: (json['lat'] as num)?.toDouble(),
+    long: (json['long'] as num)?.toDouble(),
     imgUrl: json['imgUrl'] as String,
     endOfOffer: json['endOfOffer'] == null
         ? null
