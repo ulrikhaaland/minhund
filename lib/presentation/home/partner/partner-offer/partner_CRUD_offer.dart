@@ -66,7 +66,7 @@ class PartnerCRUDOfferController extends MasterPageController {
             onPressed: () => setState(() {
               showCustomDialog(
                 context: context,
-                dialogSize: DialogSize.small,
+                dialogSize: DialogSize.medium,
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(
                       getDefaultPadding(context) * 2,
@@ -86,16 +86,7 @@ class PartnerCRUDOfferController extends MasterPageController {
                             .instance.instanceStyleService.appStyle.pink,
                         text: "Slett",
                         onPressed: () {
-                          if (offer.imgUrl == null)
-                            FileProvider().deleteFile(
-                                path: "partnerOffers/${offer.id}/image");
-
-                          CloudFunctionsProvider().recursiveUniversalDelete(
-                              path: "partnerOffers/${offer.id}");
-
-                          onDelete(offer);
-
-                          Navigator.of(context)..pop()..pop();
+                          deleteOffer();
                         },
                       )
                     ],
@@ -185,48 +176,8 @@ class PartnerCRUDOfferController extends MasterPageController {
 
     saveButtonController = SaveButtonController(
         canSave: canSave,
-        onPressed: () async {
-          if (canSave) {
-            if (service) {
-              offer.type = "service";
-            } else if (!service) {
-              offer.type = "product";
-            }
-
-            dateTimePickerController.enabled = false;
-
-            offerReserveController.enabled = false;
-
-            hasSaved = true;
-
-            customImageController.edit = false;
-
-            _formKey.currentState.save();
-
-            if (pageState == PageState.create) {
-              offer.createdAt = DateTime.now();
-              offer.docRef = await PartnerOfferProvider()
-                  .create(model: offer, id: "partnerOffers");
-
-              onCreate(offer);
-            }
-
-            if (offer.imageFile != null) {
-              offer.imgUrl = await FileProvider().uploadFile(
-                  file: offer.imageFile,
-                  path: "partnerOffers/${offer.id}/image");
-
-              customImageController.imgUrl = offer.imgUrl;
-            }
-
-            PartnerOfferProvider().update(model: offer);
-
-            if (pageState == PageState.edit) {
-              setState(() => pageState = PageState.read);
-            }
-
-            if (pageState == PageState.create) Navigator.pop(context);
-          }
+        onPressed: () {
+          createOrUpdateOffer();
         });
 
     offerReserveController = PartnerOfferReserveController(
@@ -254,6 +205,61 @@ class PartnerCRUDOfferController extends MasterPageController {
     _scopeNode.dispose();
     priceFocusNode.dispose();
     super.dispose();
+  }
+
+  Future<void> createOrUpdateOffer() async {
+    if (canSave) {
+      if (service) {
+        offer.type = "service";
+      } else if (!service) {
+        offer.type = "product";
+      }
+
+      dateTimePickerController.enabled = false;
+
+      offerReserveController.enabled = false;
+
+      hasSaved = true;
+
+      customImageController.edit = false;
+
+      _formKey.currentState.save();
+
+      if (pageState == PageState.create) {
+        offer.createdAt = DateTime.now();
+        offer.docRef = await PartnerOfferProvider()
+            .create(model: offer, id: "partnerOffers");
+
+        onCreate(offer);
+      }
+
+      if (offer.imageFile != null) {
+        offer.imgUrl = await FileProvider().uploadFile(
+            file: offer.imageFile, path: "partnerOffers/${offer.id}/image");
+
+        customImageController.imgUrl = offer.imgUrl;
+      }
+
+      PartnerOfferProvider().update(model: offer);
+
+      if (pageState == PageState.edit) {
+        setState(() => pageState = PageState.read);
+      }
+
+      if (pageState == PageState.create) Navigator.pop(context);
+    }
+  }
+
+  void deleteOffer() {
+    if (offer.imgUrl != null)
+      FileProvider().deleteFile(path: "partnerOffers/${offer.id}/image");
+
+    CloudFunctionsProvider()
+        .recursiveUniversalDelete(path: "partnerOffers/${offer.id}");
+
+    onDelete(offer);
+
+    Navigator.of(context)..pop()..pop();
   }
 }
 

@@ -27,16 +27,24 @@ class _IntroState extends State<Intro> {
           .instance.instanceStyleService.appStyle.backgroundColor,
       body: Center(
           child: ShowUp(
-        delay: _delay,
-        child: Text(
-          "Min Hund",
-          style: TextStyle(
-              fontFamily: "Apercu",
-              color: ServiceProvider
-                  .instance.instanceStyleService.appStyle.textGrey,
-              fontSize: 50),
-        ),
-      )),
+              delay: _delay,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  // Image.asset(
+                  //   "lib/assets/images/Layer4.png",
+                  //   scale: 3,
+                  // ),
+                  Text(
+                    "Min Hund",
+                    style: TextStyle(
+                        fontFamily: "Apercu",
+                        color: ServiceProvider
+                            .instance.instanceStyleService.appStyle.textGrey,
+                        fontSize: 50),
+                  ),
+                ],
+              ))),
     );
   }
 }

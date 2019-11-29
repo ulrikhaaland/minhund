@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:minhund/helper/auth.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/user.dart';
@@ -78,10 +79,18 @@ class ProfilePage extends MasterPage {
               color:
                   ServiceProvider.instance.instanceStyleService.appStyle.green,
             ),
-            ExpandableCard(
-              title: "Innstillinger",
-              color:
-                  ServiceProvider.instance.instanceStyleService.appStyle.pink,
+            GestureDetector(
+              onTap: () {
+
+                Provider.of<BaseAuth>(context).signOut();
+                controller.refresh();
+                Navigator.pop(context);
+              },
+              child: ExpandableCard(
+                title: "Innstillinger",
+                color:
+                    ServiceProvider.instance.instanceStyleService.appStyle.pink,
+              ),
             ),
             ExpandableCard(
               title: "Medlemsskap",

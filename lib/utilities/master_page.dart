@@ -76,24 +76,26 @@ abstract class MasterPage extends BaseView {
           appBar: appBar,
           bottomNavigationBar: controller.bottomNav,
           floatingActionButton: controller.fab,
-          body: LayoutBuilder(
-            builder: (context, con) {
-              return Container(
-                height: con.maxHeight,
-                child: Container(
-                    height: con.maxHeight,
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                          height: con.maxHeight * 0.02,
-                        ),
-                        Container(
-                            height: con.maxHeight * 0.98,
-                            child: buildContent(context)),
-                      ],
-                    )),
-              );
-            },
+          body: SafeArea(
+                      child: LayoutBuilder(
+              builder: (context, con) {
+                return Container(
+                  height: con.maxHeight,
+                  child: Container(
+                      height: con.maxHeight,
+                      child: Column(
+                        children: <Widget>[
+                          Container(
+                            height: con.maxHeight * 0.02,
+                          ),
+                          Container(
+                              height: con.maxHeight * 0.98,
+                              child: buildContent(context)),
+                        ],
+                      )),
+                );
+              },
+            ),
           )),
     );
   }

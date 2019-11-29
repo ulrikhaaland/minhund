@@ -17,6 +17,7 @@ PartnerOffer _$PartnerOfferFromJson(Map json) {
         ? null
         : DateTime.parse(json['createdAt'] as String)
     ..title = json['title'] as String
+    ..partnerId = json['partnerId'] as String
     ..price = (json['price'] as num)?.toDouble()
     ..partner = json['partner'] == null
         ? null
@@ -43,6 +44,7 @@ Map<String, dynamic> _$PartnerOfferToJson(PartnerOffer instance) =>
       'title': instance.title,
       'price': instance.price,
       'partner': instance.partner.toJson(),
+      'partnerId': instance.partnerId,
       'desc': instance.desc,
       'imgUrl': instance.imgUrl,
       'endOfOffer': instance.endOfOffer?.toIso8601String(),

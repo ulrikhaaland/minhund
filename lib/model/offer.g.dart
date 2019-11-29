@@ -14,6 +14,7 @@ Offer _$OfferFromJson(Map json) {
     lat: (json['lat'] as num)?.toDouble(),
     long: (json['long'] as num)?.toDouble(),
     imgUrl: json['imgUrl'] as String,
+    partnerId: json['partnerId'] as String,
     endOfOffer: json['endOfOffer'] == null
         ? null
         : DateTime.parse(json['endOfOffer'] as String),
@@ -41,6 +42,7 @@ Map<String, dynamic> _$OfferToJson(Offer instance) => <String, dynamic>{
       'price': instance.price,
       'partner': instance.partner.toJson(),
       'desc': instance.desc,
+      'partnerId': instance.partnerId,
       'imgUrl': instance.imgUrl,
       'endOfOffer': instance.endOfOffer?.toIso8601String(),
       'type': instance.type,

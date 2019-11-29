@@ -8,6 +8,7 @@ import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
+import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'journal_event_dialog.dart';
 
@@ -86,8 +87,16 @@ class JournalEventListItem extends BaseView {
                         value: controller.eventItem.completed,
                         onChanged: (val) async {
                           controller.eventItem.completed = val;
+
+                          controller.eventItem.sortIndex = null;
+
+                          JournalEventProvider()
+                              .update(model: controller.eventItem);
+
                           controller.setState(() {});
+
                           await Future.delayed(Duration(milliseconds: 250));
+
                           controller.onChanged(controller.eventItem);
                         },
                       ),

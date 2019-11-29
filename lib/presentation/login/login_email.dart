@@ -83,7 +83,7 @@ class EmailLoginController extends MasterPageController {
         obscure: true,
         textCapitalization: TextCapitalization.none,
         textInputAction: isLogin ? TextInputAction.done : TextInputAction.next,
-        onSaved: (val) => password = val.trim().toLowerCase(),
+        onSaved: (val) => password = val,
       ),
       PrimaryTextField(
         asListTile: true,
@@ -94,7 +94,7 @@ class EmailLoginController extends MasterPageController {
         textInputAction: TextInputAction.done,
         obscure: true,
         onFieldSubmitted: () => _node.unfocus(),
-        onSaved: (val) => confirmPassword = val.trim().toLowerCase(),
+        onSaved: (val) => confirmPassword = val,
       ),
     ];
   }
@@ -212,7 +212,7 @@ class EmailLogin extends MasterPage {
                 ),
                 SecondaryButton(
                   bottomPadding:
-                      controller.isLogin ? 0 : getDefaultPadding(context) * 2,
+                      getDefaultPadding(context) ,
                   width: ServiceProvider.instance.screenService
                       .getWidthByPercentage(context, 70),
                   onPressed: () {

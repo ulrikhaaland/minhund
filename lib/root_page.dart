@@ -150,6 +150,8 @@ class RootPageController extends BaseController {
     _user = Partner.fromJson(partnerDocSnap.data);
     _user.docRef = partnerDocSnap.reference;
 
+    _user.id = _user.docRef.documentID;
+
     UserProvider().updateFcmToken(_user, firebaseMessaging);
   }
 
@@ -239,6 +241,9 @@ class RootPage extends BaseView {
       return MultiProvider(
         providers: [
           Provider<User>.value(value: controller._user),
+          Provider<BaseAuth>.value(
+            value: controller.auth,
+          ),
         ],
         child: BottomNavigation(
           controller: BottomNavigationController(),

@@ -4,6 +4,8 @@ import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/service/service_provider.dart';
 
+typedef bool isLoading(bool loading);
+
 class SaveButtonController extends BaseController {
   bool canSave;
   final VoidCallback onPressed;

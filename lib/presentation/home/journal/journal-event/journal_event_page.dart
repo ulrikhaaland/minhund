@@ -1,9 +1,7 @@
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/journal_category_item.dart';
@@ -11,10 +9,7 @@ import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
 import 'package:minhund/presentation/home/journal/journal-event/journal_event_list_item.dart';
-import 'package:minhund/presentation/home/journal/journal_page.dart';
-import 'package:minhund/presentation/widgets/bottom_nav.dart';
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
-import 'package:minhund/provider/crud_provider.dart';
 import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
@@ -43,7 +38,7 @@ class JournalEventPageController extends MasterPageController {
   List<Widget> get actionTwoList => [
         IconButton(
           onPressed: () => showCustomDialog(
-            dialogSize: DialogSize.medium,
+              dialogSize: DialogSize.medium,
               context: context,
               child: JournalAddCategory(
                 controller: JournalAddCategoryController(
@@ -85,7 +80,7 @@ class JournalEventPageController extends MasterPageController {
                 parentDocRef: dog.docRef,
                 pageState: PageState.create,
                 onSave: (item) {
-                  refresh();
+                  onSaveItem(item);
                 },
               ),
             )),
@@ -99,7 +94,25 @@ class JournalEventPageController extends MasterPageController {
     super.initState();
   }
 
+  void sortItems() {
+    if (categoryItem.journalEventItems.isNotEmpty) {
+      upcomingEvents = categoryItem.journalEventItems
+          .where((item) => item.completed != true)
+          .toList();
+      completedEvents = categoryItem.journalEventItems
+          .where((item) => item.completed == true)
+          .toList();
+    } else {
+      upcomingEvents = [];
+      completedEvents = [];
+    }
+
+    sortListByDate(eventItemList: completedEvents);
+    sortListByDate(eventItemList: upcomingEvents);
+  }
+
   onSaveItem(JournalEventItem item) {
+    sortItems();
     if (item != null) {
       JournalEventItem journalEventItem =
           categoryItem.journalEventItems.firstWhere((i) => i.id == item.id);
@@ -111,6 +124,21 @@ class JournalEventPageController extends MasterPageController {
         categoryItem.journalEventItems.removeWhere((k) => k.id == item.id);
         categoryItem.journalEventItems.insert(index, item);
         print(categoryItem.journalEventItems[index].title);
+      }
+      //  Handles sorting on new/updated [JournalEventItem]
+      List<JournalEventItem> compare;
+      if (item.completed)
+        compare = completedEvents;
+      else
+        compare = upcomingEvents;
+      if (compare.isNotEmpty) if (compare[0] != item &&
+          (compare[0].timeStamp != null && item.timeStamp != null)) if (item
+              .timeStamp
+              .isBefore(compare[0].timeStamp) &&
+          compare[0].sortIndex != null) {
+        item.sortIndex = 0;
+
+        reOrder(compare.indexOf(item), item.sortIndex, compare);
       }
     }
     refresh();
@@ -125,10 +153,10 @@ class JournalEventPageController extends MasterPageController {
           return 0;
       });
       eventItemList.sort((a, b) {
-        a.sortIndex = a.sortIndex ?? eventItemList.length + 1;
-        b.sortIndex = b.sortIndex ?? eventItemList.length + 1;
+        int assortIndex = a.sortIndex ?? eventItemList.length + 1;
+        int bssortIndex = b.sortIndex ?? eventItemList.length + 1;
 
-        return a.sortIndex.compareTo(b.sortIndex ?? eventItemList.length + 1);
+        return assortIndex.compareTo(bssortIndex);
       });
 
       // eventItemList.forEach((item) {
@@ -172,20 +200,7 @@ class JournalEventPage extends MasterPage {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    if (controller.categoryItem.journalEventItems.isNotEmpty) {
-      controller.upcomingEvents = controller.categoryItem.journalEventItems
-          .where((item) => item.completed != true)
-          .toList();
-      controller.completedEvents = controller.categoryItem.journalEventItems
-          .where((item) => item.completed == true)
-          .toList();
-    } else {
-      controller.upcomingEvents = [];
-      controller.completedEvents = [];
-    }
-
-    controller.sortListByDate(eventItemList: controller.completedEvents);
-    controller.sortListByDate(eventItemList: controller.upcomingEvents);
+    controller.sortItems();
 
     double padding = getDefaultPadding(context);
 
@@ -219,21 +234,33 @@ class JournalEventPage extends MasterPage {
                   ),
                   tabs: <Widget>[
                     Tab(
-                        icon: Icon(
-                      Icons.timer,
-                      color: ServiceProvider
-                          .instance.instanceStyleService.appStyle.imperial,
-                      size: ServiceProvider
-                          .instance.instanceStyleService.appStyle.iconSizeBig,
-                    )),
+                      icon: Icon(
+                        Icons.timer,
+                        color: ServiceProvider
+                            .instance.instanceStyleService.appStyle.imperial,
+                        size: ServiceProvider.instance.instanceStyleService
+                            .appStyle.iconSizeStandard,
+                      ),
+                      child: Text(
+                        "Kommende",
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.body1,
+                      ),
+                    ),
                     Tab(
-                        icon: Icon(
-                      Icons.check,
-                      color: ServiceProvider
-                          .instance.instanceStyleService.appStyle.green,
-                      size: ServiceProvider
-                          .instance.instanceStyleService.appStyle.iconSizeBig,
-                    )),
+                      icon: Icon(
+                        Icons.check,
+                        color: ServiceProvider
+                            .instance.instanceStyleService.appStyle.green,
+                        size: ServiceProvider.instance.instanceStyleService
+                            .appStyle.iconSizeStandard,
+                      ),
+                      child: Text(
+                        "Fullførte",
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.body1,
+                      ),
+                    ),
                   ],
                 ),
               ),

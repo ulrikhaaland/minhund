@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -187,6 +188,8 @@ class JournalEventDialogController extends DialogTemplateController {
             reminder.timestamp.toIso8601String().split("T")[0];
       }
       if (eventItem == null) {
+        
+
         categoryItem.journalEventItems.add(placeHolderEventItem);
 
         JournalEventProvider()
@@ -473,10 +476,14 @@ class JournalEventDialog extends DialogTemplate {
                                                         .timeStamp !=
                                                     null) {
                                                   if (controller
-                                                      .placeHolderEventItem
-                                                      .timeStamp
-                                                      .isBefore(
-                                                          DateTime.now()) && newValue != controller.reminderItems[0]) {
+                                                          .placeHolderEventItem
+                                                          .timeStamp
+                                                          .isBefore(
+                                                              DateTime.now()) &&
+                                                      newValue !=
+                                                          controller
+                                                                  .reminderItems[
+                                                              0]) {
                                                     controller.reminderError =
                                                         true;
                                                     controller
@@ -600,7 +607,7 @@ class JournalEventDialog extends DialogTemplate {
                                 hintText: "Notat",
                                 textCapitalization:
                                     TextCapitalization.sentences,
-                                textInputAction: TextInputAction.done,
+                                textInputAction: TextInputAction.newline,
                                 textInputType: TextInputType.text,
                                 maxLines: 5,
                                 validate: false,
@@ -744,7 +751,7 @@ class JournalEventDialog extends DialogTemplate {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             IntrinsicHeight(
-                                                          child: controller.basicContainer2(
+                              child: controller.basicContainer2(
                                 child: Text(
                                   "Notat:",
                                   style: ServiceProvider.instance
