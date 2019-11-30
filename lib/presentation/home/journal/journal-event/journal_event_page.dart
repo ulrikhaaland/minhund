@@ -244,7 +244,7 @@ class JournalEventPage extends MasterPage {
                       child: Text(
                         "Kommende",
                         style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.body1,
+                            .instance.instanceStyleService.appStyle.italic,
                       ),
                     ),
                     Tab(
@@ -258,7 +258,7 @@ class JournalEventPage extends MasterPage {
                       child: Text(
                         "Fullførte",
                         style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.body1,
+                            .instance.instanceStyleService.appStyle.italic,
                       ),
                     ),
                   ],

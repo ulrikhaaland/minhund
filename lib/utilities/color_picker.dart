@@ -66,7 +66,6 @@ class ColorPicker extends BaseView {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              
               Text(
                 "Farge",
                 style: ServiceProvider

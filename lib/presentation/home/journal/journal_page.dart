@@ -134,7 +134,7 @@ class JournalPage extends MasterPage {
                           ),
                           Flexible(
                             child: Text(
-                              "${controller.dog.race}, ${getTimeDifference(time: controller.dog.birthDate, daysMonthsYears: true)}, ${controller.dog.weigth} kilo",
+                              "${controller.dog.race}, ${getTimeDifference(time: DateTime(2018, 3), daysMonthsYears: true)}, ${controller.dog.weigth} kilo",
                               style: ServiceProvider
                                   .instance.instanceStyleService.appStyle.body1,
                               overflow: TextOverflow.clip,

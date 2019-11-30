@@ -164,6 +164,9 @@ String getTimeDifference({DateTime time, bool daysMonthsYears}) {
   if (daysMonthsYears) {
     int days = DateTime.now().difference(time).inDays.abs();
     if (days > 365) {
+      if(days < 730) {
+        return "1 år";
+      }
       int years = (days / 365).round();
       days = (days % 365).round();
       return "$years år";

@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.5.0 <3.0.0"
+  sdk: ">=2.6.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -35,6 +35,7 @@ dependencies:
   image_picker: ^0.6.0+9
   image_cropper: 1.0.2
   firebase_storage: ^3.0.1
+  latlong: ^0.6.1
   # flutter_advanced_networkimage: ^0.5.0
   fancy_bottom_navigation: ^0.3.2
   bot_toast: ^2.0.0+2
@@ -62,7 +63,11 @@ flutter:
   uses-material-design: true
   # To add assets to your application, add an assets section, like this:
   assets:
-   - lib/assets/images/Layer4.png
+    - lib/assets/images/Layer4.png
+    - lib/assets/images/dogpark.ico
+    - lib/assets/images/dogparksvg.svg
+    - lib/assets/images/dogparkpng.png
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding assets from package dependencies, see
