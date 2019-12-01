@@ -39,6 +39,8 @@ Map<String, dynamic> _$PartnerToJson(Partner instance) => <String, dynamic>{
       'phoneNumber': instance.phoneNumber,
       'email': instance.email,
       'currentDogIndex': instance.currentDogIndex,
+      'lat': instance.lat,
+      'long': instance.long,
       'fcm': instance.fcm,
       'appVersion': instance.appVersion,
       'allowsNotifications': instance.allowsNotifications,

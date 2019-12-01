@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:location/location.dart';
 import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -32,12 +35,20 @@ class RootPageController extends BaseController {
   FirebaseUser firebaseUser;
 
   User _user;
+
+  LocationData currentLocation;
+
+  Location location = new Location();
+
   bool introDone = false;
 
   bool newUser = false;
 
   @override
   void initState() {
+    getLocation();
+    Timer.periodic(Duration(minutes: 5), (t) => getLocation());
+
     firebaseMessaging.configure(onLaunch: (Map<String, dynamic> msg) {
       print("onLaunch called");
       // handleMessage(msg);
@@ -176,6 +187,17 @@ class RootPageController extends BaseController {
     firebaseUser = await auth.asAnon();
     refresh();
   }
+
+  Future<void> getLocation() async {
+    try {
+      currentLocation = await location.getLocation();
+    } catch (e) {
+      if (e.code == 'PERMISSION_DENIED') {
+        print('Location permission denied');
+      }
+      currentLocation = null;
+    }
+  }
 }
 
 class RootPage extends BaseView {
@@ -240,6 +262,9 @@ class RootPage extends BaseView {
     } else if (controller._user != null && !controller.newUser) {
       return MultiProvider(
         providers: [
+          Provider<LocationData>.value(
+            value: controller.currentLocation,
+          ),
           Provider<User>.value(value: controller._user),
           Provider<BaseAuth>.value(
             value: controller.auth,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/journal_category_item.dart';
+import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
@@ -22,6 +23,8 @@ class JournalPageController extends MasterPageController {
   JournalPageController._internal() {
     print("Journal Page built");
   }
+
+  List<JournalEventItem> latestEvents = [];
 
   User user;
 
@@ -74,6 +77,19 @@ class JournalPageController extends MasterPageController {
       setState(() {});
     });
     isLoading = false;
+  }
+
+  getLatestEvent(JournalEventItem item) {
+    if (!latestEvents.contains(item)) latestEvents.add(item);
+    if (latestEvents.isNotEmpty)
+      latestEvents.sort((a, b) {
+        DateTime dateTimeA = a.timeStamp ?? DateTime(2050);
+        DateTime dateTimeB = b.timeStamp ?? DateTime(2050);
+
+        return dateTimeA.compareTo(dateTimeB);
+      });
+    print(latestEvents[0].title);
+    setState(() {});
   }
 }
 
@@ -140,6 +156,34 @@ class JournalPage extends MasterPage {
                               overflow: TextOverflow.clip,
                             ),
                           ),
+                          if (controller.latestEvents.isNotEmpty) ...[
+                            RichText(
+                              overflow: TextOverflow.ellipsis,
+                              text: TextSpan(children: <TextSpan>[
+                                TextSpan(
+                                    text: "Neste: ",
+                                    style: ServiceProvider.instance
+                                        .instanceStyleService.appStyle.italic),
+                                TextSpan(
+                                    text: controller.latestEvents[0].title,
+                                    style: ServiceProvider.instance
+                                        .instanceStyleService.appStyle.body1
+                                        .copyWith(
+                                            color: ServiceProvider
+                                                .instance
+                                                .instanceStyleService
+                                                .appStyle
+                                                .imperial)),
+                                TextSpan(
+                                    text: DateTime.now()
+                                        .difference(controller
+                                            .latestEvents[0].timeStamp)
+                                        .inDays.toString(),
+                                    style: ServiceProvider.instance
+                                        .instanceStyleService.appStyle.italic),
+                              ]),
+                            )
+                          ],
                         ],
                       ),
                       controller.user.dog.profileImage
@@ -182,6 +226,8 @@ class JournalPage extends MasterPage {
                           (item) => JournalCategoryListItem(
                             key: Key(item.id),
                             controller: JournalCategoryListItemController(
+                                returnLatest: (item) =>
+                                    controller.getLatestEvent(item),
                                 user: controller.user,
                                 onUpdate: () => controller.setState(() {}),
                                 dog: controller.dog,

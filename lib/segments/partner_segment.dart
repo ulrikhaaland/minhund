@@ -115,6 +115,7 @@ class PartnerSegment extends StatelessWidget {
         width: ServiceProvider.instance.screenService
             .getHeightByPercentage(context, 50),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             if (partner.websiteUrl != null)
               SecondaryButton(

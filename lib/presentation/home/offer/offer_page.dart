@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:latlong/latlong.dart';
+import 'package:location/location.dart';
 import 'package:minhund/model/offer.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/provider/offer_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
+import 'package:provider/provider.dart';
 import '../../../bottom_navigation.dart';
 import 'customer_offer_list_item.dart';
 
@@ -49,6 +52,20 @@ class OfferPageController extends MasterPageController {
 
   Future<void> getOffers() async {
     offers = await OfferProvider().getCollection(id: "partnerOffers");
+    LocationData locationData = Provider.of<LocationData>(context);
+    if (locationData != null)
+      for (Offer offer in offers) {
+        if (offer.partner.lat != null && offer.partner.long != null)
+          offer.distanceInKm = Distance().distance(
+              LatLng(locationData.latitude, locationData.longitude),
+              LatLng(offer.partner.lat, offer.partner.long));
+      }
+    offers.sort((a, b) {
+      if (a.distanceInKm != null && b.distanceInKm != null)
+        return a.distanceInKm.compareTo(b.distanceInKm);
+      else
+        return 0;
+    });
     offers.shuffle();
     setState(() => isLoading = false);
   }

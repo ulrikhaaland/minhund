@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/journal_category_item.dart';
+import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
@@ -18,10 +19,12 @@ class JournalCategoryListItemController extends BaseController {
 
   final User user;
 
+  final void Function(JournalEventItem item) returnLatest;
+
   bool isLoading = true;
 
   JournalCategoryListItemController(
-      {this.item, this.dog, this.onUpdate, this.user});
+      {this.item, this.dog, this.onUpdate, this.user, this.returnLatest});
 
   @override
   void initState() {
@@ -34,9 +37,27 @@ class JournalCategoryListItemController extends BaseController {
   Future<void> getEvents() async {
     item.journalEventItems =
         await JournalEventProvider().getCollection(id: item.docRef.path);
+
+    findLatestEvent();
+
     setState(() {
       isLoading = false;
     });
+  }
+
+  findLatestEvent() {
+    if (item.journalEventItems.isNotEmpty) {
+      List<JournalEventItem> upcoming =
+          item.journalEventItems.where((i) => i.completed != true).toList();
+      upcoming.sort((a, b) {
+        DateTime dateTimeA = a.timeStamp ?? DateTime(2050);
+        DateTime dateTimeB = b.timeStamp ?? DateTime(2050);
+
+        return dateTimeA.compareTo(dateTimeB);
+      });
+
+      returnLatest(upcoming[0]);
+    }
   }
 }
 

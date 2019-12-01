@@ -29,6 +29,7 @@ class Offer {
   Partner partner;
   String desc;
   String imgUrl;
+  double distanceInKm;
   DateTime endOfOffer;
   String type;
   String partnerId;

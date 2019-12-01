@@ -308,42 +308,39 @@ class PartnerCRUDOffer extends MasterPage {
                     child: Container(
                       width: ServiceProvider.instance.screenService
                           .getWidthByPercentage(context, 80),
-                      child: Row(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
-                          Expanded(
-                            child: CheckboxListTile(
-                              title: Text(
-                                "Vare",
-                                style: ServiceProvider.instance
-                                    .instanceStyleService.appStyle.smallTitle,
-                              ),
-                              value: !controller.service,
-                              onChanged: (val) => controller.enabled &&
-                                      val != !controller.service
-                                  ? controller.setState(() =>
-                                      controller.service = !controller.service)
-                                  : null,
-                              checkColor: Colors.white,
-                              activeColor: ServiceProvider
-                                  .instance.instanceStyleService.appStyle.green,
+                          CheckboxListTile(
+                            title: Text(
+                              "Vare",
+                              style: ServiceProvider.instance
+                                  .instanceStyleService.appStyle.smallTitle,
                             ),
+                            value: !controller.service,
+                            onChanged: (val) => controller.enabled &&
+                                    val != !controller.service
+                                ? controller.setState(() =>
+                                    controller.service = !controller.service)
+                                : null,
+                            checkColor: Colors.white,
+                            activeColor: ServiceProvider
+                                .instance.instanceStyleService.appStyle.green,
                           ),
-                          Expanded(
-                            child: CheckboxListTile(
-                              title: Text(
-                                "Tjeneste",
-                                style: ServiceProvider.instance
-                                    .instanceStyleService.appStyle.smallTitle,
-                              ),
-                              value: controller.service,
-                              onChanged: (val) => controller.enabled
-                                  ? controller.setState(() =>
-                                      controller.service = !controller.service)
-                                  : null,
-                              checkColor: Colors.white,
-                              activeColor: ServiceProvider
-                                  .instance.instanceStyleService.appStyle.green,
+                          CheckboxListTile( 
+                            title: Text(
+                              "Tjeneste",
+                              style: ServiceProvider.instance
+                                  .instanceStyleService.appStyle.smallTitle,
                             ),
+                            value: controller.service,
+                            onChanged: (val) => controller.enabled
+                                ? controller.setState(() =>
+                                    controller.service = !controller.service)
+                                : null,
+                            checkColor: Colors.white,
+                            activeColor: ServiceProvider
+                                .instance.instanceStyleService.appStyle.green,
                           ),
                         ],
                       ),
@@ -401,7 +398,7 @@ class PartnerCRUDOffer extends MasterPage {
                     onSaved: (val) => controller.offer.desc = val,
                     textInputType: TextInputType.text,
                     initValue: controller.offer.desc,
-                    textInputAction: TextInputAction.done,
+                    textInputAction: TextInputAction.newline,
                     textCapitalization: TextCapitalization.sentences,
                     maxLines: 5,
                   ),

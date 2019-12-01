@@ -113,8 +113,10 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
       width: widget.width ??
           ServiceProvider.instance.screenService
               .getWidthByPercentage(context, 80),
-      height: !widget.canSave ?  ServiceProvider.instance.screenService
-          .getHeightByPercentage(context, 12.5 ) : null,
+      height: !widget.canSave
+          ? ServiceProvider.instance.screenService
+              .getHeightByPercentage(context, 12.5)
+          : null,
       child: Padding(
         padding: EdgeInsets.only(
             top: widget.paddingTop ?? 0,
@@ -371,7 +373,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(left: padding * 2, bottom: padding),
+            padding: EdgeInsets.only(left: padding, bottom: padding),
             child: Text(
               widget.hintText,
               style:

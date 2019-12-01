@@ -14,6 +14,7 @@ import 'package:minhund/presentation/widgets/dialog/dialog_pop_button.dart';
 import 'package:minhund/segments/partner_segment.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'map-options/map_options_content.dart';
@@ -63,7 +64,6 @@ class MapPageController extends MasterPageController {
   @override
   void initState() {
     getPlaces();
-    getLocation();
     super.initState();
   }
 
@@ -332,6 +332,11 @@ class MapPage extends MasterPage {
   @override
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
+
+    controller.currentLocation = Provider.of<LocationData>(context);
+
+    if (controller.currentLocation != null)
+      controller.mapPageState = MapPageState.map;
 
     if (controller.mapPageState == MapPageState.noCurrentLocation) {
       return Container(
