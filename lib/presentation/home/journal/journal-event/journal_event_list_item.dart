@@ -17,6 +17,8 @@ class JournalEventListItemController extends BaseController {
 
   final void Function(JournalEventItem eventItem) onChanged;
 
+  final void Function(String eventItemId) onDeleteEvent;
+
   final Dog dog;
 
   final User user;
@@ -24,7 +26,12 @@ class JournalEventListItemController extends BaseController {
   final JournalCategoryItem categoryItem;
 
   JournalEventListItemController(
-      {this.eventItem, this.onChanged, this.dog, this.categoryItem, this.user});
+      {this.eventItem,
+      this.onChanged,
+      this.onDeleteEvent,
+      this.dog,
+      this.categoryItem,
+      this.user});
 }
 
 class JournalEventListItem extends BaseView {
@@ -41,6 +48,7 @@ class JournalEventListItem extends BaseView {
         child: JournalEventDialog(
           controller: JournalEventDialogController(
             user: controller.user,
+            onDelete: (id) => controller.onDeleteEvent(id),
             onSave: (item) => controller.onChanged(item),
             eventItem: controller.eventItem,
             categoryItem: controller.categoryItem,

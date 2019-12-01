@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/journal_category_item.dart';
@@ -31,6 +32,8 @@ class JournalPageController extends MasterPageController {
   Dog dog;
 
   bool isLoading = true;
+
+  int eventColorIndex = 0;
 
   @override
   void dispose() {
@@ -79,8 +82,18 @@ class JournalPageController extends MasterPageController {
     isLoading = false;
   }
 
-  getLatestEvent(JournalEventItem item) {
-    if (!latestEvents.contains(item)) latestEvents.add(item);
+  getLatestEvent(JournalEventItem item, int colorIndex, String deletedEventId) {
+    if (deletedEventId != null)
+      latestEvents.removeWhere((j) => j.id == deletedEventId);
+
+    JournalEventItem oldItem =
+        latestEvents.firstWhere((i) => i.id == item.id, orElse: () => null);
+    if (oldItem != null) {
+      latestEvents.remove(oldItem);
+    }
+
+    latestEvents.add(item);
+
     if (latestEvents.isNotEmpty)
       latestEvents.sort((a, b) {
         DateTime dateTimeA = a.timeStamp ?? DateTime(2050);
@@ -88,7 +101,7 @@ class JournalPageController extends MasterPageController {
 
         return dateTimeA.compareTo(dateTimeB);
       });
-    print(latestEvents[0].title);
+    if (item == latestEvents[0]) eventColorIndex = colorIndex;
     setState(() {});
   }
 }
@@ -111,94 +124,96 @@ class JournalPage extends MasterPage {
 
     getTimeDifference(time: controller.dog.birthDate, daysMonthsYears: true);
 
-    return SingleChildScrollView(
-      child: Container(
-        height: ServiceProvider.instance.screenService
-            .getHeightByPercentage(context, 88),
-        padding: EdgeInsets.only(
-            left: getDefaultPadding(context) * 2,
-            right: getDefaultPadding(context) * 2),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Flexible(
-              child: Card(
-                color: Colors.white,
-                elevation: ServiceProvider
-                    .instance.instanceStyleService.appStyle.elevation,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(ServiceProvider
-                      .instance.instanceStyleService.appStyle.borderRadius),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(getDefaultPadding(context)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Container(
+      padding: EdgeInsets.only(
+          left: getDefaultPadding(context) * 2,
+          right: getDefaultPadding(context) * 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Card(
+            color: Colors.white,
+            elevation: ServiceProvider
+                .instance.instanceStyleService.appStyle.elevation,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ServiceProvider
+                  .instance.instanceStyleService.appStyle.borderRadius),
+            ),
+            child: Padding(
+              padding: EdgeInsets.all(getDefaultPadding(context)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Flexible(
-                            child: Text(
-                              controller.dog.name,
-                              style: ServiceProvider
-                                  .instance.instanceStyleService.appStyle.title,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Flexible(
-                            child: Text(
-                              "${controller.dog.race}, ${getTimeDifference(time: DateTime(2018, 3), daysMonthsYears: true)}, ${controller.dog.weigth} kilo",
-                              style: ServiceProvider
-                                  .instance.instanceStyleService.appStyle.body1,
-                              overflow: TextOverflow.clip,
-                            ),
-                          ),
-                          if (controller.latestEvents.isNotEmpty) ...[
-                            RichText(
-                              overflow: TextOverflow.ellipsis,
-                              text: TextSpan(children: <TextSpan>[
-                                TextSpan(
-                                    text: "Neste: ",
-                                    style: ServiceProvider.instance
-                                        .instanceStyleService.appStyle.italic),
-                                TextSpan(
-                                    text: controller.latestEvents[0].title,
-                                    style: ServiceProvider.instance
-                                        .instanceStyleService.appStyle.body1
-                                        .copyWith(
-                                            color: ServiceProvider
-                                                .instance
-                                                .instanceStyleService
-                                                .appStyle
-                                                .imperial)),
-                                TextSpan(
-                                    text: DateTime.now()
-                                        .difference(controller
-                                            .latestEvents[0].timeStamp)
-                                        .inDays.toString(),
-                                    style: ServiceProvider.instance
-                                        .instanceStyleService.appStyle.italic),
-                              ]),
-                            )
-                          ],
-                        ],
+                      Text(
+                        controller.dog.name,
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.title,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      controller.user.dog.profileImage
+                      Text(
+                        "${controller.dog.race}, ${getTimeDifference(time: DateTime(2018, 3), daysMonthsYears: true)}, ${controller.dog.weigth} kilo",
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.body1,
+                        overflow: TextOverflow.clip,
+                      ),
                     ],
                   ),
+                  controller.user.dog.profileImage
+                ],
+              ),
+            ),
+          ),
+          if (controller.latestEvents.isNotEmpty)
+            Card(
+              color: Colors.white,
+              elevation: ServiceProvider
+                  .instance.instanceStyleService.appStyle.elevation,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(ServiceProvider
+                    .instance.instanceStyleService.appStyle.borderRadius),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(getDefaultPadding(context)),
+                child: RichText(
+                  key: Key(controller.latestEvents[0].timeStamp.toString()),
+                  overflow: TextOverflow.clip,
+                  text: TextSpan(children: <TextSpan>[
+                    TextSpan(
+                        text: "Neste: ",
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.italic),
+                    TextSpan(
+                        text: controller.latestEvents[0].title,
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.body1
+                            .copyWith(
+                                color: ServiceProvider
+                                    .instance
+                                    .instanceStyleService
+                                    .appStyle
+                                    .palette[controller.eventColorIndex])),
+                    TextSpan(
+                        text: " Om:" +
+                            formatDifference(
+                                date1: DateTime.now(),
+                                date2: controller.latestEvents[0].timeStamp),
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.italic),
+                  ]),
                 ),
               ),
             ),
-            Container(
-              height: getDefaultPadding(context) * 4,
-            ),
-            if (controller.dog.journalItems != null)
-              Container(
-                height: ServiceProvider.instance.screenService
-                    .getHeightByPercentage(context, 70),
+          Container(
+            height: getDefaultPadding(context) * 4,
+          ),
+          if (controller.dog.journalItems != null)
+            Expanded(
+              child: Container(
                 child: ReorderableList(
                     onReorder: (oldIndex, newIndex) {
                       JournalCategoryItem cItem =
@@ -226,8 +241,9 @@ class JournalPage extends MasterPage {
                           (item) => JournalCategoryListItem(
                             key: Key(item.id),
                             controller: JournalCategoryListItemController(
-                                returnLatest: (item) =>
-                                    controller.getLatestEvent(item),
+                                returnLatest: (item, colorIndex, id) =>
+                                    controller.getLatestEvent(
+                                        item, colorIndex, id),
                                 user: controller.user,
                                 onUpdate: () => controller.setState(() {}),
                                 dog: controller.dog,
@@ -236,8 +252,8 @@ class JournalPage extends MasterPage {
                         )
                         .toList()),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }

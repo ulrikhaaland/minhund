@@ -27,6 +27,8 @@ import 'package:minhund/service/service_provider.dart';
 class JournalEventDialogController extends DialogTemplateController {
   final void Function(JournalEventItem eventItem) onSave;
 
+  final void Function(String eventItemId) onDelete;
+
   JournalEventItem eventItem;
 
   JournalEventItem placeHolderEventItem;
@@ -76,6 +78,7 @@ class JournalEventDialogController extends DialogTemplateController {
 
   JournalEventDialogController(
       {this.eventItem,
+      this.onDelete,
       this.user,
       this.parentDocRef,
       this.onSave,
@@ -165,7 +168,7 @@ class JournalEventDialogController extends DialogTemplateController {
     categoryItem.journalEventItems
         .removeWhere((item) => item.id == placeHolderEventItem.id);
 
-    onSave(null);
+    onDelete(placeHolderEventItem.id);
 
     Navigator.pop(context);
   }
@@ -188,8 +191,6 @@ class JournalEventDialogController extends DialogTemplateController {
             reminder.timestamp.toIso8601String().split("T")[0];
       }
       if (eventItem == null) {
-        
-
         categoryItem.journalEventItems.add(placeHolderEventItem);
 
         JournalEventProvider()

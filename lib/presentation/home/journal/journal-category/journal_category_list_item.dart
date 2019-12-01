@@ -19,7 +19,9 @@ class JournalCategoryListItemController extends BaseController {
 
   final User user;
 
-  final void Function(JournalEventItem item) returnLatest;
+  final void Function(
+          JournalEventItem item, int colorIndex, String deletedEventId)
+      returnLatest;
 
   bool isLoading = true;
 
@@ -38,14 +40,14 @@ class JournalCategoryListItemController extends BaseController {
     item.journalEventItems =
         await JournalEventProvider().getCollection(id: item.docRef.path);
 
-    findLatestEvent();
+    findLatestEvent(null);
 
     setState(() {
       isLoading = false;
     });
   }
 
-  findLatestEvent() {
+  findLatestEvent(String deletedItemId) {
     if (item.journalEventItems.isNotEmpty) {
       List<JournalEventItem> upcoming =
           item.journalEventItems.where((i) => i.completed != true).toList();
@@ -56,7 +58,7 @@ class JournalCategoryListItemController extends BaseController {
         return dateTimeA.compareTo(dateTimeB);
       });
 
-      returnLatest(upcoming[0]);
+      returnLatest(upcoming[0], item.colorIndex, deletedItemId);
     }
   }
 }
@@ -89,6 +91,7 @@ class JournalCategoryListItem extends BaseView {
                         controller.setState(() {});
                       }
                     },
+                    onEventAction: (id) => controller.findLatestEvent(id),
                   ),
                 ),
               )),

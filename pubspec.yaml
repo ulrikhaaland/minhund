@@ -47,6 +47,7 @@ dependencies:
   json_serializable:
   build_runner: ^1.6.9
   reorderables: ^0.2.12
+  intl: ^0.16.0
 
 dev_dependencies:
   flutter_test:

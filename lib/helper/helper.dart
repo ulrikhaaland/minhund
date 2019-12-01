@@ -159,12 +159,22 @@ void scrollScreen(
   });
 }
 
+String formatDifference({DateTime date1, DateTime date2}) {
+  int diff = date1.difference(date2).inDays;
+
+  if (diff > 365) {
+    return " ${(diff / 365).round()} år ${(diff % 365)}";
+  } else if (diff > 1) {
+    return " ${(diff).round()} dager ${(diff % 24)} timer";
+  } else {}
+}
+
 String getTimeDifference({DateTime time, bool daysMonthsYears}) {
   String difference;
   if (daysMonthsYears) {
     int days = DateTime.now().difference(time).inDays.abs();
     if (days > 365) {
-      if(days < 730) {
+      if (days < 730) {
         return "1 år";
       }
       int years = (days / 365).round();
@@ -263,37 +273,6 @@ double getBigIconSize(BuildContext context) {
   }
 
   return _bigIconSize;
-}
-
-class KpiProgressColor {
-  final Color color;
-  final ProgressStatus status;
-
-  KpiProgressColor(this.color, this.status);
-}
-
-KpiProgressColor getKPIColorByPercentage(double percentage) {
-  ProgressStatus status;
-
-  double value = percentage ?? 0.0;
-
-  if (value == 0.0) {
-    status = ProgressStatus.undefined;
-  } else if (value >= 120.0) {
-    status = ProgressStatus.veryGood;
-  } else if (value >= 100.0) {
-    status = ProgressStatus.good;
-  } else if (value >= 80.0) {
-    status = ProgressStatus.bad;
-  } else if (value >= 80.0) {
-    status = ProgressStatus.bad;
-  } else {
-    status = ProgressStatus.veryBad;
-  }
-
-  return KpiProgressColor(
-      ServiceProvider.instance.themeService.getColorForProgressStatus(status),
-      status);
 }
 
 double getDefaultPadding(BuildContext context) {

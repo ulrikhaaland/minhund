@@ -24,12 +24,18 @@ class JournalEventPageController extends MasterPageController {
 
   final void Function(bool refreshParent) onUpdate;
 
+  final void Function(String deletedEventId) onEventAction;
+
   final Dog dog;
 
   final User user;
 
   JournalEventPageController(
-      {this.dog, this.user, this.categoryItem, this.onUpdate});
+      {this.dog,
+      this.user,
+      this.categoryItem,
+      this.onUpdate,
+      this.onEventAction});
 
   @override
   Widget get actionOne => null;
@@ -78,6 +84,7 @@ class JournalEventPageController extends MasterPageController {
                 user: user,
                 categoryItem: categoryItem,
                 parentDocRef: dog.docRef,
+                onDelete: (id) => onEventAction(id),
                 pageState: PageState.create,
                 onSave: (item) {
                   onSaveItem(item);
@@ -113,6 +120,7 @@ class JournalEventPageController extends MasterPageController {
 
   onSaveItem(JournalEventItem item) {
     sortItems();
+    // If item is null a delete item event has occured
     if (item != null) {
       JournalEventItem journalEventItem =
           categoryItem.journalEventItems.firstWhere((i) => i.id == item.id);
@@ -141,6 +149,7 @@ class JournalEventPageController extends MasterPageController {
         reOrder(compare.indexOf(item), item.sortIndex, compare);
       }
     }
+    onEventAction(null);
     refresh();
   }
 
@@ -281,6 +290,8 @@ class JournalEventPage extends MasterPage {
                               user: controller.user,
                               categoryItem: controller.categoryItem,
                               dog: controller.dog,
+                              onDeleteEvent: (id) =>
+                                  controller.onEventAction(id),
                               onChanged: (item) {
                                 controller.onSaveItem(item);
                               },
