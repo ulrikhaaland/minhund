@@ -41,6 +41,10 @@ class LoginPage extends BaseView {
               height: con.maxHeight,
               child: Column(
                 children: <Widget>[
+                  Container(
+                    height: ServiceProvider.instance.screenService
+                        .getHeightByPercentage(context, 5),
+                  ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[

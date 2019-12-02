@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:minhund/helper/helper.dart';
@@ -12,6 +14,7 @@ import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 import 'package:provider/provider.dart';
 import 'journal-category/journal_category_list_item.dart';
+import 'journal-event/journal_event_dialog.dart';
 
 class JournalPageController extends MasterPageController {
   static final JournalPageController _instance =
@@ -25,7 +28,8 @@ class JournalPageController extends MasterPageController {
     print("Journal Page built");
   }
 
-  List<JournalEventItem> latestEvents = [];
+  List<JournalEventItem> nextEvents = [];
+  List<JournalEventItem> completedEvents = [];
 
   User user;
 
@@ -33,7 +37,18 @@ class JournalPageController extends MasterPageController {
 
   bool isLoading = true;
 
-  int eventColorIndex = 0;
+  int nextEventColorIndex = 0;
+  int completedEventColorIndex = 0;
+
+  List<JournalCategoryListItemController> categoryControllers = [];
+
+  @override
+  void initState() {
+    Timer.periodic(Duration(minutes: 10), (_) {
+      categoryControllers.forEach((c) => c.findLatestEvent(null));
+    });
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -82,26 +97,64 @@ class JournalPageController extends MasterPageController {
     isLoading = false;
   }
 
-  getLatestEvent(JournalEventItem item, int colorIndex, String deletedEventId) {
-    if (deletedEventId != null)
-      latestEvents.removeWhere((j) => j.id == deletedEventId);
-
-    JournalEventItem oldItem =
-        latestEvents.firstWhere((i) => i.id == item.id, orElse: () => null);
-    if (oldItem != null) {
-      latestEvents.remove(oldItem);
+  getLatestEvent(
+      {JournalEventItem nextItem,
+      JournalEventItem completedItem,
+      int colorIndex,
+      String deletedEventId}) {
+    if (nextItem == null && completedItem == null) if (deletedEventId != null) {
+      if (nextEvents.firstWhere((j) => j.id == deletedEventId,
+              orElse: () => null) !=
+          null) {
+        nextEvents.removeWhere((j) => j.id == deletedEventId);
+      }
+      if (completedEvents.firstWhere((j) => j.id == deletedEventId,
+              orElse: () => null) !=
+          null) {
+        completedEvents.removeWhere((j) => j.id == deletedEventId);
+      }
     }
 
-    latestEvents.add(item);
+    if (nextItem != null) {
+      JournalEventItem oldItem =
+          nextEvents.firstWhere((i) => i.id == nextItem.id, orElse: () => null);
+      if (oldItem != null) {
+        nextEvents.remove(oldItem);
+      }
 
-    if (latestEvents.isNotEmpty)
-      latestEvents.sort((a, b) {
+      nextEvents.add(nextItem);
+      nextEvents.removeWhere((j) => j.timeStamp?.isBefore(DateTime.now()));
+    }
+    if (nextEvents.isNotEmpty) {
+      nextEvents.sort((a, b) {
         DateTime dateTimeA = a.timeStamp ?? DateTime(2050);
         DateTime dateTimeB = b.timeStamp ?? DateTime(2050);
 
         return dateTimeA.compareTo(dateTimeB);
       });
-    if (item == latestEvents[0]) eventColorIndex = colorIndex;
+      if (nextItem == nextEvents[0]) nextEventColorIndex = colorIndex;
+    }
+    if (completedItem != null) {
+      JournalEventItem oldItem = completedEvents
+          .firstWhere((i) => i.id == completedItem.id, orElse: () => null);
+      if (oldItem != null) {
+        completedEvents.remove(oldItem);
+      }
+
+      completedEvents.add(completedItem);
+      completedEvents.removeWhere((j) => j.timeStamp?.isAfter(DateTime.now()));
+    }
+    if (completedEvents.isNotEmpty) {
+      completedEvents.sort((a, b) {
+        DateTime dateTimeA = a.timeStamp ?? DateTime(2050);
+        DateTime dateTimeB = b.timeStamp ?? DateTime(2050);
+
+        return dateTimeA.compareTo(dateTimeB);
+      });
+      if (completedItem == completedEvents[0])
+        completedEventColorIndex = colorIndex;
+    }
+
     setState(() {});
   }
 }
@@ -131,45 +184,9 @@ class JournalPage extends MasterPage {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Card(
-            color: Colors.white,
-            elevation: ServiceProvider
-                .instance.instanceStyleService.appStyle.elevation,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(ServiceProvider
-                  .instance.instanceStyleService.appStyle.borderRadius),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(getDefaultPadding(context)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        controller.dog.name,
-                        style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.title,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        "${controller.dog.race}, ${getTimeDifference(time: DateTime(2018, 3), daysMonthsYears: true)}, ${controller.dog.weigth} kilo",
-                        style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.body1,
-                        overflow: TextOverflow.clip,
-                      ),
-                    ],
-                  ),
-                  controller.user.dog.profileImage
-                ],
-              ),
-            ),
-          ),
-          if (controller.latestEvents.isNotEmpty)
-            Card(
+          Flexible(
+            flex: 1,
+            child: Card(
               color: Colors.white,
               elevation: ServiceProvider
                   .instance.instanceStyleService.appStyle.elevation,
@@ -179,32 +196,149 @@ class JournalPage extends MasterPage {
               ),
               child: Padding(
                 padding: EdgeInsets.all(getDefaultPadding(context)),
-                child: RichText(
-                  key: Key(controller.latestEvents[0].timeStamp.toString()),
-                  overflow: TextOverflow.clip,
-                  text: TextSpan(children: <TextSpan>[
-                    TextSpan(
-                        text: "Neste: ",
-                        style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.italic),
-                    TextSpan(
-                        text: controller.latestEvents[0].title,
-                        style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.body1
-                            .copyWith(
-                                color: ServiceProvider
-                                    .instance
-                                    .instanceStyleService
-                                    .appStyle
-                                    .palette[controller.eventColorIndex])),
-                    TextSpan(
-                        text: " Om:" +
-                            formatDifference(
-                                date1: DateTime.now(),
-                                date2: controller.latestEvents[0].timeStamp),
-                        style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.italic),
-                  ]),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Flexible(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Flexible(
+                            child: Text(
+                              controller.dog.name,
+                              style: ServiceProvider
+                                  .instance.instanceStyleService.appStyle.title,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Text(
+                            "${controller.dog.race},${formatDifference(date2: controller.dog.birthDate, date1: DateTime.now())}, ${controller.dog.weigth} kilo",
+                            style: ServiceProvider
+                                .instance.instanceStyleService.appStyle.body1,
+                            overflow: TextOverflow.clip,
+                          ),
+                        ],
+                      ),
+                    ),
+                    controller.user.dog.profileImage
+                  ],
+                ),
+              ),
+            ),
+          ),
+          if (controller.nextEvents.isNotEmpty)
+            InkWell(
+              onTap: () => showCustomDialog(
+                context: context,
+                child: JournalEventDialog(
+                  controller: JournalEventDialogController(
+                    user: controller.user,
+                    canEdit: false,
+                    eventItem: controller.nextEvents[0],
+                    pageState: PageState.read,
+                  ),
+                ),
+              ),
+              child: Card(
+                color: Colors.white,
+                elevation: ServiceProvider
+                    .instance.instanceStyleService.appStyle.elevation,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ServiceProvider
+                      .instance.instanceStyleService.appStyle.borderRadius),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(getDefaultPadding(context)),
+                  child: RichText(
+                    key: Key(controller.nextEvents[0].timeStamp.toString()),
+                    overflow: TextOverflow.clip,
+                    text: TextSpan(children: <TextSpan>[
+                      TextSpan(
+                          text: "Neste: ",
+                          style: ServiceProvider
+                              .instance.instanceStyleService.appStyle.italic),
+                      TextSpan(
+                          text: controller.nextEvents[0].title,
+                          style: ServiceProvider
+                              .instance.instanceStyleService.appStyle.body1
+                              .copyWith(
+                                  color: ServiceProvider
+                                          .instance
+                                          .instanceStyleService
+                                          .appStyle
+                                          .palette[
+                                      controller.nextEventColorIndex])),
+                      if (controller.nextEvents[0].timeStamp != null)
+                        TextSpan(
+                            text: " " +
+                                formatDifference(
+                                    date2: DateTime.now(),
+                                    date1: controller.nextEvents[0].timeStamp,
+                                    futureString: true),
+                            style: ServiceProvider
+                                .instance.instanceStyleService.appStyle.italic),
+                    ]),
+                  ),
+                ),
+              ),
+            ),
+          if (controller.completedEvents.isNotEmpty)
+            InkWell(
+              onTap: () => showCustomDialog(
+                context: context,
+                child: JournalEventDialog(
+                  controller: JournalEventDialogController(
+                    user: controller.user,
+                    canEdit: false,
+                    eventItem: controller.completedEvents[0],
+                    pageState: PageState.read,
+                  ),
+                ),
+              ),
+              child: Card(
+                color: Colors.white,
+                elevation: ServiceProvider
+                    .instance.instanceStyleService.appStyle.elevation,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ServiceProvider
+                      .instance.instanceStyleService.appStyle.borderRadius),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(getDefaultPadding(context)),
+                  child: RichText(
+                    key:
+                        Key(controller.completedEvents[0].timeStamp.toString()),
+                    overflow: TextOverflow.clip,
+                    text: TextSpan(children: <TextSpan>[
+                      TextSpan(
+                          text: "Siste: ",
+                          style: ServiceProvider
+                              .instance.instanceStyleService.appStyle.italic),
+                      TextSpan(
+                          text: controller.completedEvents[0].title,
+                          style: ServiceProvider
+                              .instance.instanceStyleService.appStyle.body1
+                              .copyWith(
+                                  color: ServiceProvider
+                                          .instance
+                                          .instanceStyleService
+                                          .appStyle
+                                          .palette[
+                                      controller.completedEventColorIndex])),
+                      if (controller.completedEvents[0].timeStamp != null)
+                        TextSpan(
+                            text: " " +
+                                formatDifference(
+                                    date2: DateTime.now(),
+                                    date1:
+                                        controller.completedEvents[0].timeStamp,
+                                    futureString: false),
+                            style: ServiceProvider
+                                .instance.instanceStyleService.appStyle.italic),
+                    ]),
+                  ),
                 ),
               ),
             ),
@@ -212,46 +346,54 @@ class JournalPage extends MasterPage {
             height: getDefaultPadding(context) * 4,
           ),
           if (controller.dog.journalItems != null)
-            Expanded(
-              child: Container(
-                child: ReorderableList(
-                    onReorder: (oldIndex, newIndex) {
-                      JournalCategoryItem cItem =
-                          controller.dog.journalItems.removeAt(oldIndex);
+            Flexible(
+              flex: 4,
+              child: ReorderableList(
+                  onReorder: (oldIndex, newIndex) {
+                    JournalCategoryItem cItem =
+                        controller.dog.journalItems.removeAt(oldIndex);
 
-                      JournalCategoryItem oldItem = controller.dog.journalItems
-                          .firstWhere((i) => i.sortIndex == newIndex,
-                              orElse: () => null);
+                    JournalCategoryItem oldItem = controller.dog.journalItems
+                        .firstWhere((i) => i.sortIndex == newIndex,
+                            orElse: () => null);
 
-                      cItem.sortIndex = newIndex;
+                    cItem.sortIndex = newIndex;
 
-                      JournalProvider().update(model: cItem);
+                    JournalProvider().update(model: cItem);
 
-                      controller.dog.journalItems.insert(newIndex, cItem);
+                    controller.dog.journalItems.insert(newIndex, cItem);
 
-                      if (oldItem != null) {
-                        oldItem.sortIndex =
-                            controller.dog.journalItems.indexOf(oldItem);
+                    if (oldItem != null) {
+                      oldItem.sortIndex =
+                          controller.dog.journalItems.indexOf(oldItem);
 
-                        JournalProvider().update(model: oldItem);
-                      }
-                    },
-                    widgetList: controller.dog.journalItems
-                        .map(
-                          (item) => JournalCategoryListItem(
-                            key: Key(item.id),
-                            controller: JournalCategoryListItemController(
-                                returnLatest: (item, colorIndex, id) =>
+                      JournalProvider().update(model: oldItem);
+                    }
+                  },
+                  widgetList: controller.dog.journalItems.map((item) {
+                    JournalCategoryListItemController ctrlr =
+                        JournalCategoryListItemController(
+                            returnLatest:
+                                (nextItem, completedItem, colorIndex) =>
                                     controller.getLatestEvent(
-                                        item, colorIndex, id),
-                                user: controller.user,
-                                onUpdate: () => controller.setState(() {}),
-                                dog: controller.dog,
-                                item: item),
-                          ),
-                        )
-                        .toList()),
-              ),
+                                        nextItem: nextItem,
+                                        completedItem: completedItem,
+                                        colorIndex: colorIndex),
+                            returnDeletedId: (id) =>
+                                controller.getLatestEvent(deletedEventId: id),
+                            user: controller.user,
+                            onUpdate: () => controller.setState(() {}),
+                            dog: controller.dog,
+                            item: item);
+
+                    if (controller.categoryControllers.isNotEmpty)
+                      controller.categoryControllers
+                          .removeWhere((c) => c.item.id == ctrlr.item.id);
+
+                    controller.categoryControllers.add(ctrlr);
+                    return JournalCategoryListItem(
+                        key: Key(item.id), controller: ctrlr);
+                  }).toList()),
             ),
         ],
       ),

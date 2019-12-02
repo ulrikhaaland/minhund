@@ -106,6 +106,8 @@ class JournalEventListItem extends BaseView {
                           await Future.delayed(Duration(milliseconds: 250));
 
                           controller.onChanged(controller.eventItem);
+                         
+                            controller.onDeleteEvent(controller.eventItem.id);
                         },
                       ),
                     ),

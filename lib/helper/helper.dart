@@ -159,14 +159,33 @@ void scrollScreen(
   });
 }
 
-String formatDifference({DateTime date1, DateTime date2}) {
-  int diff = date1.difference(date2).inDays;
+String formatDifference({DateTime date1, DateTime date2, bool futureString}) {
+  int diff = date1.difference(date2).inDays.abs();
+
+  String returnString = "";
 
   if (diff > 365) {
-    return " ${(diff / 365).round()} år ${(diff % 365)}";
-  } else if (diff > 1) {
-    return " ${(diff).round()} dager ${(diff % 24)} timer";
-  } else {}
+    String months = "";
+    if (((diff % 365) / 30.42).truncate() > 0)
+      months =
+          "${((diff % 365) / 30.42).truncate()} ${((diff % 365) / 30.42).truncate() != 1 ? "måneder" : "måned"}";
+    returnString = "${(diff / 365).round()} år og $months";
+  } else if (diff > 0) {
+    returnString =
+        "${(diff).round()} ${diff != 1 ? "dager" : "dag"} og ${(diff % 24)} ${(diff % 24) != 1 ? "timer" : "time"}";
+  } else {
+    diff = date1.difference(date2).inMinutes.abs();
+    if (diff > 60) {
+      returnString =
+          "${(diff / 60).round()} ${(diff / 60).round() != 1 ? "timer" : "time"} og ${(diff % 60)} ${(diff % 60) != 1 ? "minutter" : "minutt"}";
+    } else if (diff > 0) {
+      returnString = "$diff ${diff != 1 ? "minutter" : "minutt"}";
+    }
+  }
+  if (futureString == true) return "Om " + returnString;
+  // I.E pastString
+  if (futureString == false) return returnString + " siden";
+  return returnString;
 }
 
 String getTimeDifference({DateTime time, bool daysMonthsYears}) {

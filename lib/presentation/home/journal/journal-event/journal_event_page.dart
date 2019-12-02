@@ -49,7 +49,10 @@ class JournalEventPageController extends MasterPageController {
               child: JournalAddCategory(
                 controller: JournalAddCategoryController(
                   singleCategoryItem: categoryItem,
-                  childOnSaved: () => refresh(),
+                  childOnSaved: () {
+                    onEventAction(null);
+                    refresh();
+                  },
                   childOnDelete: () {
                     dog.journalItems
                         .removeWhere((item) => item.id == categoryItem.id);
@@ -84,7 +87,7 @@ class JournalEventPageController extends MasterPageController {
                 user: user,
                 categoryItem: categoryItem,
                 parentDocRef: dog.docRef,
-                onDelete: (id) => onEventAction(id),
+                onDelete: (id) => setState(() => onEventAction(id)),
                 pageState: PageState.create,
                 onSave: (item) {
                   onSaveItem(item);
@@ -243,31 +246,53 @@ class JournalEventPage extends MasterPage {
                   ),
                   tabs: <Widget>[
                     Tab(
-                      icon: Icon(
-                        Icons.timer,
-                        color: ServiceProvider
-                            .instance.instanceStyleService.appStyle.imperial,
-                        size: ServiceProvider.instance.instanceStyleService
-                            .appStyle.iconSizeStandard,
-                      ),
-                      child: Text(
-                        "Kommende",
-                        style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.descTitle,
+                      // icon: Icon(
+                      //   Icons.check,
+                      //   color: ServiceProvider
+                      //       .instance.instanceStyleService.appStyle.green,
+                      //   size: ServiceProvider.instance.instanceStyleService
+                      //       .appStyle.iconSizeStandard,
+                      // ),
+                      child: Column(
+                        children: <Widget>[
+                          Icon(
+                            Icons.check,
+                            color: ServiceProvider
+                                .instance.instanceStyleService.appStyle.green,
+                            size: ServiceProvider.instance.instanceStyleService
+                                .appStyle.iconSizeStandard,
+                          ),
+                          Text(
+                            "Fullførte",
+                            style: ServiceProvider.instance.instanceStyleService
+                                .appStyle.descTitle,
+                          ),
+                        ],
                       ),
                     ),
                     Tab(
-                      icon: Icon(
-                        Icons.check,
-                        color: ServiceProvider
-                            .instance.instanceStyleService.appStyle.green,
-                        size: ServiceProvider.instance.instanceStyleService
-                            .appStyle.iconSizeStandard,
-                      ),
-                      child: Text(
-                        "Fullførte",
-                        style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.descTitle,
+                      // icon: Icon(
+                      //   Icons.timer,
+                      //   color: ServiceProvider
+                      //       .instance.instanceStyleService.appStyle.imperial,
+                      //   size: ServiceProvider.instance.instanceStyleService
+                      //       .appStyle.iconSizeStandard,
+                      // ),
+                      child: Column(
+                        children: <Widget>[
+                          Icon(
+                            Icons.timer,
+                            color: ServiceProvider.instance.instanceStyleService
+                                .appStyle.imperial,
+                            size: ServiceProvider.instance.instanceStyleService
+                                .appStyle.iconSizeStandard,
+                          ),
+                          Text(
+                            "Kommende",
+                            style: ServiceProvider.instance.instanceStyleService
+                                .appStyle.descTitle,
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -280,29 +305,6 @@ class JournalEventPage extends MasterPage {
                 children: <Widget>[
                   ReorderableList(
                     onReorder: (oldIndex, newIndex) => controller.reOrder(
-                        oldIndex, newIndex, controller.upcomingEvents),
-                    widgetList: controller.upcomingEvents
-                        .map(
-                          (item) => JournalEventListItem(
-                            key: Key(item.id ??
-                                Random().nextInt(99999999).toString()),
-                            controller: JournalEventListItemController(
-                              user: controller.user,
-                              categoryItem: controller.categoryItem,
-                              dog: controller.dog,
-                              onDeleteEvent: (id) =>
-                                  controller.onEventAction(id),
-                              onChanged: (item) {
-                                controller.onSaveItem(item);
-                              },
-                              eventItem: item,
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                  ReorderableList(
-                    onReorder: (oldIndex, newIndex) => controller.reOrder(
                         oldIndex, newIndex, controller.completedEvents),
                     widgetList: controller.completedEvents
                         .map(
@@ -313,6 +315,31 @@ class JournalEventPage extends MasterPage {
                               user: controller.user,
                               categoryItem: controller.categoryItem,
                               dog: controller.dog,
+                              onChanged: (item) {
+                                controller.onSaveItem(item);
+                              },
+                              eventItem: item,
+                              onDeleteEvent: (id) => controller
+                                  .setState(() => controller.onEventAction(id)),
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  ReorderableList(
+                    onReorder: (oldIndex, newIndex) => controller.reOrder(
+                        oldIndex, newIndex, controller.upcomingEvents),
+                    widgetList: controller.upcomingEvents
+                        .map(
+                          (item) => JournalEventListItem(
+                            key: Key(item.id ??
+                                Random().nextInt(99999999).toString()),
+                            controller: JournalEventListItemController(
+                              user: controller.user,
+                              categoryItem: controller.categoryItem,
+                              dog: controller.dog,
+                              onDeleteEvent: (id) => controller
+                                  .setState(() => controller.onEventAction(id)),
                               onChanged: (item) {
                                 controller.onSaveItem(item);
                               },

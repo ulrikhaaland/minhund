@@ -27,6 +27,10 @@ class JournalAddCategoryController extends DialogTemplateController {
 
   PageState pageState;
 
+  String categoryTitle;
+
+  int categoryColorIndex = 4;
+
   bool canSave = false;
 
   SaveButtonController saveBtnCtrlr;
@@ -58,7 +62,10 @@ class JournalAddCategoryController extends DialogTemplateController {
           journalEventItems: [],
           sortIndex: journalCategoryItems.length,
           colorIndex: 1);
-
+    else {
+      categoryTitle = singleCategoryItem.title;
+      categoryColorIndex = singleCategoryItem.colorIndex;
+    }
     if (singleCategoryItem.title.length > 0) canSave = true;
 
     saveBtnCtrlr = SaveButtonController(
@@ -70,6 +77,8 @@ class JournalAddCategoryController extends DialogTemplateController {
 
   Future<void> onSaved() async {
     if (canSave) {
+      singleCategoryItem.title = categoryTitle;
+      singleCategoryItem.colorIndex = categoryColorIndex;
       if (pageState == PageState.create) {
         journalCategoryItems.add(singleCategoryItem);
         await JournalProvider()
@@ -126,15 +135,16 @@ class JournalAddCategory extends DialogTemplate {
                 PrimaryTextField(
                   asListTile: true,
                   autoFocus: controller.pageState == PageState.create,
-                  initValue: controller.singleCategoryItem.title,
+                  initValue: controller.categoryTitle,
                   textCapitalization: TextCapitalization.sentences,
                   textFieldType: TextFieldType.ordinary,
                   onChanged: (val) {
-                    if (val.length > 0)
+                    if (val.length > 0) {
                       controller.canSave = true;
-                    else
+                      controller.categoryTitle = val;
+                    } else
                       controller.canSave = false;
-                    controller.singleCategoryItem.title = val;
+
                     controller.setState(() {
                       controller.saveBtnCtrlr.canSave = controller.canSave;
                     });
@@ -150,9 +160,8 @@ class JournalAddCategory extends DialogTemplate {
                 ),
                 ColorPicker(
                   controller: ColorPickerController(
-                    onChanged: (index) =>
-                        controller.singleCategoryItem.colorIndex = index,
-                    initIndex: controller.singleCategoryItem.colorIndex ?? 0,
+                    onChanged: (index) => controller.categoryColorIndex = index,
+                    initIndex: controller.categoryColorIndex ?? 0,
                   ),
                 ),
                 if (controller.pageState == PageState.edit) ...[

@@ -111,50 +111,46 @@ class PartnerSegment extends StatelessWidget {
           ],
         ),
       ),
-      Container(
-        width: ServiceProvider.instance.screenService
-            .getHeightByPercentage(context, 50),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            if (partner.websiteUrl != null)
-              SecondaryButton(
-                text: "Nettsted",
-                width: ServiceProvider.instance.screenService
-                    .getHeightByPercentage(context, 20),
-                onPressed: () async {
-                  String url = "https://" + partner.websiteUrl;
-                  if (await canLaunch(url)) {
-                    await launch(url);
-                  } else {
-                    throw 'Could not launch $url';
-                  }
-                },
-                color: ServiceProvider
-                    .instance.instanceStyleService.appStyle.skyBlue,
-              ),
-            Container(
-              width: padding * 4,
+      Row(
+        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          if (partner.websiteUrl != null)
+            SecondaryButton(
+              text: "Nettsted",
+              width: ServiceProvider.instance.screenService
+                  .getHeightByPercentage(context, 20),
+              onPressed: () async {
+                String url = "https://" + partner.websiteUrl;
+                if (await canLaunch(url)) {
+                  await launch(url);
+                } else {
+                  throw 'Could not launch $url';
+                }
+              },
+              color: ServiceProvider
+                  .instance.instanceStyleService.appStyle.skyBlue,
             ),
-            if (partner.long != null && partner.lat != null)
-              SecondaryButton(
-                text: "Veibeskrivelse",
-                width: ServiceProvider.instance.screenService
-                    .getHeightByPercentage(context, 20),
-                onPressed: () async {
-                  if (partner.lat != null && partner.long != null) {
-                    String googleUrl =
-                        'https://www.google.com/maps/search/?api=1&query=${partner.lat},${partner.long}';
-                    if (await canLaunch(googleUrl)) {
-                      await launch(googleUrl);
-                    } else {
-                      throw 'Could not open the map.';
-                    }
+          Container(
+            width: padding * 4,
+          ),
+          if (partner.long != null && partner.lat != null)
+            SecondaryButton(
+              text: "Veibeskrivelse",
+              width: ServiceProvider.instance.screenService
+                  .getHeightByPercentage(context, 20),
+              onPressed: () async {
+                if (partner.lat != null && partner.long != null) {
+                  String googleUrl =
+                      'https://www.google.com/maps/search/?api=1&query=${partner.lat},${partner.long}';
+                  if (await canLaunch(googleUrl)) {
+                    await launch(googleUrl);
+                  } else {
+                    throw 'Could not open the map.';
                   }
-                },
-              ),
-          ],
-        ),
+                }
+              },
+            ),
+        ],
       )
     ]);
   }

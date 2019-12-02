@@ -53,7 +53,7 @@ class JournalEventDialogController extends DialogTemplateController {
 
   bool hasFocus = true;
 
-  final FirebaseMessaging _fcm = FirebaseMessaging();
+  final bool canEdit;
 
   PageState pageState;
 
@@ -80,6 +80,7 @@ class JournalEventDialogController extends DialogTemplateController {
       {this.eventItem,
       this.onDelete,
       this.user,
+      this.canEdit,
       this.parentDocRef,
       this.onSave,
       this.pageState,
@@ -89,18 +90,20 @@ class JournalEventDialogController extends DialogTemplateController {
   Widget get actionOne => PopButton();
 
   @override
-  Widget get actionTwo => pageState != PageState.read
-      ? SaveButton(
-          controller: saveBtnCtrlr,
-        )
-      : IconButton(
-          onPressed: () => setState(() => pageState = PageState.edit),
-          icon: Icon(Icons.edit),
-          color:
-              ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
-          iconSize: ServiceProvider
-              .instance.instanceStyleService.appStyle.iconSizeStandard,
-        );
+  Widget get actionTwo => canEdit == false
+      ? null
+      : pageState != PageState.read
+          ? SaveButton(
+              controller: saveBtnCtrlr,
+            )
+          : IconButton(
+              onPressed: () => setState(() => pageState = PageState.edit),
+              icon: Icon(Icons.edit),
+              color: ServiceProvider
+                  .instance.instanceStyleService.appStyle.textGrey,
+              iconSize: ServiceProvider
+                  .instance.instanceStyleService.appStyle.iconSizeStandard,
+            );
 
   @override
   String get title {

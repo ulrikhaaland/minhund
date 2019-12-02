@@ -20,13 +20,22 @@ class JournalCategoryListItemController extends BaseController {
   final User user;
 
   final void Function(
-          JournalEventItem item, int colorIndex, String deletedEventId)
-      returnLatest;
+    JournalEventItem next,
+    JournalEventItem completed,
+    int colorIndex,
+  ) returnLatest;
+
+  final void Function(String deletedId) returnDeletedId;
 
   bool isLoading = true;
 
   JournalCategoryListItemController(
-      {this.item, this.dog, this.onUpdate, this.user, this.returnLatest});
+      {this.item,
+      this.dog,
+      this.onUpdate,
+      this.user,
+      this.returnLatest,
+      this.returnDeletedId});
 
   @override
   void initState() {
@@ -48,17 +57,30 @@ class JournalCategoryListItemController extends BaseController {
   }
 
   findLatestEvent(String deletedItemId) {
-    if (item.journalEventItems.isNotEmpty) {
-      List<JournalEventItem> upcoming =
-          item.journalEventItems.where((i) => i.completed != true).toList();
+    if (deletedItemId != null) {
+      returnDeletedId(deletedItemId);
+    } else if (item.journalEventItems.isNotEmpty) {
+      List<JournalEventItem> upcoming = item.journalEventItems
+          .where(
+              (i) => i.completed != true && i.timeStamp.isAfter(DateTime.now()))
+          .toList();
       upcoming.sort((a, b) {
         DateTime dateTimeA = a.timeStamp ?? DateTime(2050);
         DateTime dateTimeB = b.timeStamp ?? DateTime(2050);
 
         return dateTimeA.compareTo(dateTimeB);
       });
+      List<JournalEventItem> completed =
+          item.journalEventItems.where((i) => i.completed == true).toList();
+      completed.sort((a, b) {
+        DateTime dateTimeA = a.timeStamp ?? DateTime(2050);
+        DateTime dateTimeB = b.timeStamp ?? DateTime(2050);
 
-      returnLatest(upcoming[0], item.colorIndex, deletedItemId);
+        return dateTimeA.compareTo(dateTimeB);
+      });
+
+      returnLatest(upcoming.isNotEmpty ? upcoming[0] : null,
+          completed.isNotEmpty ? completed[0] : null, item.colorIndex);
     }
   }
 }
