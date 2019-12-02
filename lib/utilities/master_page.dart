@@ -77,7 +77,7 @@ abstract class MasterPage extends BaseView {
           bottomNavigationBar: controller.bottomNav,
           floatingActionButton: controller.fab,
           body: SafeArea(
-                      child: LayoutBuilder(
+            child: LayoutBuilder(
               builder: (context, con) {
                 return Container(
                   height: con.maxHeight,

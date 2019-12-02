@@ -149,7 +149,7 @@ class JournalPageController extends MasterPageController {
         DateTime dateTimeA = a.timeStamp ?? DateTime(2050);
         DateTime dateTimeB = b.timeStamp ?? DateTime(2050);
 
-        return dateTimeA.compareTo(dateTimeB);
+        return dateTimeB.compareTo(dateTimeA);
       });
       if (completedItem == completedEvents[0])
         completedEventColorIndex = colorIndex;
