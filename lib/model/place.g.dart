@@ -11,17 +11,17 @@ Place _$PlaceFromJson(Map json) {
     id: json['id'] as String,
     name: json['name'] as String,
     city: json['city'] as String,
-    type: json['type'] as String,
     lat: (json['lat'] as num)?.toDouble(),
     long: (json['long'] as num)?.toDouble(),
+    type: json['type'] as String,
   );
 }
 
 Map<String, dynamic> _$PlaceToJson(Place instance) => <String, dynamic>{
       'id': instance.id,
-      'city': instance.city,
       'name': instance.name,
       'type': instance.type,
+      'city': instance.city,
       'lat': instance.lat,
       'long': instance.long,
     };

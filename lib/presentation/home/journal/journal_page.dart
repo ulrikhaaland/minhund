@@ -214,7 +214,7 @@ class JournalPage extends MasterPage {
                             ),
                           ),
                           Text(
-                            "${controller.dog.race},${formatDifference(date2: controller.dog.birthDate, date1: DateTime.now())}, ${controller.dog.weigth} kilo",
+                            "${controller.dog.race}, ${formatDifference(date2: controller.dog.birthDate, date1: DateTime.now())}, ${controller.dog.weigth} kilo",
                             style: ServiceProvider
                                 .instance.instanceStyleService.appStyle.body1,
                             overflow: TextOverflow.clip,

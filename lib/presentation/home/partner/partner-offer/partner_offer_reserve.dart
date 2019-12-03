@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/customer/customer_reservation.dart';
+import 'package:minhund/model/offer.dart';
 import 'package:minhund/model/partner/partner-reservation/partner_reservation.dart';
+import 'package:minhund/model/partner/partner_offer.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/home/partner/partner-offer/reservations_dialog.dart';
@@ -17,12 +19,21 @@ class PartnerOfferReserveController extends BaseController {
 
   final PageState pageState;
 
+  final bool Function() checkIfOnline;
+
+  final PartnerOffer offer;
+
   bool expanded;
 
   String offerId;
 
   PartnerOfferReserveController(
-      {this.enabled, this.reservation, this.offerId, this.pageState});
+      {this.enabled,
+      this.reservation,
+      this.offerId,
+      this.pageState,
+      this.checkIfOnline,
+      this.offer});
 
   @override
   void initState() {
@@ -179,25 +190,40 @@ class PartnerOfferReserve extends BaseView {
                         .instance.instanceStyleService.appStyle.smallTitle,
                   ),
                   value: controller.reservation.canReserve,
-                  onChanged: (val) => controller.enabled
-                      ? controller.setState(() {
-                          controller.reservation.canReserve =
-                              !controller.reservation.canReserve;
+                  onChanged: (val) {
+                    if (!controller.checkIfOnline()) {
+                      controller.enabled
+                          ? controller.setState(() {
+                              controller.reservation.canReserve =
+                                  !controller.reservation.canReserve;
 
-                          controller.expanded = val;
+                              controller.expanded = val;
 
-                          if (val == false) {
-                            controller.reservation.amount = null;
-                            controller.reservation.notify = null;
-                            controller.reservation.canReserve = null;
-                            controller.reservation.canReserveMultipleAmount =
-                                null;
-                            controller.reservation.canReserveMultiple = null;
+                              if (val == false) {
+                                controller.reservation.amount = null;
+                                controller.reservation.notify = null;
+                                controller.reservation.canReserve = null;
+                                controller.reservation
+                                    .canReserveMultipleAmount = null;
+                                controller.reservation.canReserveMultiple =
+                                    null;
 
-                            controller.doCheck();
-                          }
-                        })
-                      : null,
+                                controller.doCheck();
+                              }
+                            })
+                          : null;
+                    } else {
+                      showCustomDialog(
+                        context: context,
+                        dialogSize: DialogSize.small,
+                        child: Padding(
+                          padding: EdgeInsets.all(padding * 2),
+                          child: Text(
+                              'Reservasjon og tilbudstype "På nett" kan ikke kombineres.'),
+                        ),
+                      );
+                    }
+                  },
                   checkColor: Colors.white,
                   activeColor: ServiceProvider
                       .instance.instanceStyleService.appStyle.green,

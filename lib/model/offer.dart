@@ -5,6 +5,8 @@ import 'package:minhund/model/partner/partner.dart';
 
 part 'offer.g.dart';
 
+enum OfferType { item, service, online }
+
 @JsonSerializable(anyMap: true)
 class Offer {
   Offer(
@@ -19,6 +21,8 @@ class Offer {
       this.createdAt,
       this.lat,
       this.long,
+      this.discountCode,
+      this.url,
       this.type});
   String id;
   DateTime createdAt;
@@ -31,8 +35,10 @@ class Offer {
   String imgUrl;
   double distanceInKm;
   DateTime endOfOffer;
-  String type;
+  OfferType type;
   String partnerId;
+  String url;
+  String discountCode;
   @JsonKey(ignore: true)
   DocumentReference docRef;
   PartnerReservation partnerReservation;

@@ -40,6 +40,7 @@ class PartnerOffersPageController extends MasterPageController {
             partnerOffer.partnerReservation = PartnerReservation();
             partnerOffer.partner = partner;
             partnerOffer.partnerId = partner.id;
+            partnerOffer.type = OfferType.item;
 
             return PartnerCRUDOffer(
               controller: PartnerCRUDOfferController(

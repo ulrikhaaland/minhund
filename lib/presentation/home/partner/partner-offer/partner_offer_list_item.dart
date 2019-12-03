@@ -27,8 +27,6 @@ class PartnerOfferListItem extends BaseView {
 
     double padding = getDefaultPadding(context);
 
-    PartnerOffer offer = controller.offer;
-
     return LayoutBuilder(
       builder: (context, constriants) {
         return GestureDetector(
@@ -37,7 +35,7 @@ class PartnerOfferListItem extends BaseView {
             MaterialPageRoute(
               builder: (context) => PartnerCRUDOffer(
                 controller: PartnerCRUDOfferController(
-                  offer: offer,
+                  offer: controller.offer,
                   pageState: PageState.read,
                   onDelete: (offer) => controller.onDelete(offer),
                 ),
@@ -64,7 +62,7 @@ class PartnerOfferListItem extends BaseView {
                           children: <Widget>[
                             Text(
                               formatDate(
-                                    date: offer.createdAt,
+                                    date: controller.offer.createdAt,
                                   ) ??
                                   "Ingen dato satt",
                               style: ServiceProvider.instance
@@ -77,7 +75,7 @@ class PartnerOfferListItem extends BaseView {
                             ),
                             Text(
                               formatDate(
-                                    date: offer.endOfOffer,
+                                    date: controller.offer.endOfOffer,
                                   ) ??
                                   "Ingen dato satt",
                               style: ServiceProvider.instance
@@ -91,9 +89,9 @@ class PartnerOfferListItem extends BaseView {
                                 style: ServiceProvider.instance
                                     .instanceStyleService.appStyle.label),
                             Text(
-                              offer.inMarket == false
+                              controller.offer.inMarket == false
                                   ? "Avvist"
-                                  : offer.active ?? false
+                                  : controller.offer.active ?? false
                                       ? "I markedet"
                                       : "Inaktivt",
                               style: ServiceProvider
@@ -115,7 +113,7 @@ class PartnerOfferListItem extends BaseView {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                offer.title,
+                                controller.offer.title,
                                 style: ServiceProvider.instance
                                     .instanceStyleService.appStyle.descTitle,
                                 overflow: TextOverflow.clip,
@@ -123,7 +121,7 @@ class PartnerOfferListItem extends BaseView {
                               Container(
                                 height: padding * 2,
                               ),
-                              if (offer.price != null)
+                              if (controller.offer.price != null)
                                 Row(
                                   children: <Widget>[
                                     Text(
@@ -132,7 +130,7 @@ class PartnerOfferListItem extends BaseView {
                                           .instanceStyleService.appStyle.label,
                                     ),
                                     Text(
-                                      offer.price.toString(),
+                                      controller.offer.price.toString(),
                                       style: ServiceProvider.instance
                                           .instanceStyleService.appStyle.body1,
                                     ),
@@ -141,22 +139,24 @@ class PartnerOfferListItem extends BaseView {
                               Container(
                                 height: padding * 2,
                               ),
-                              if (offer.desc != null)
+                              if (controller.offer.desc != null)
                                 Text(
-                                  offer.desc,
+                                  controller.offer.desc,
                                   style: ServiceProvider.instance
                                       .instanceStyleService.appStyle.body1,
                                 ),
                             ],
                           ),
                         ),
-                        if (offer.imgUrl != null || offer.imageFile != null)
+                        if (controller.offer.imgUrl != null ||
+                            controller.offer.imageFile != null)
                           Container(
-                            height: ServiceProvider.instance.screenService.getHeightByPercentage(context, 20),
+                            height: ServiceProvider.instance.screenService
+                                .getHeightByPercentage(context, 20),
                             child: CustomImage(
                               controller: CustomImageController(
-                                  imgUrl: offer.imgUrl,
-                                  imageFile: offer.imageFile,
+                                  imgUrl: controller.offer.imgUrl,
+                                  imageFile: controller.offer.imageFile,
                                   customImageType: CustomImageType.squared),
                             ),
                           ),

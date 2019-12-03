@@ -71,6 +71,8 @@ abstract class MasterPage extends BaseView {
 
     return TapToUnfocus(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomPadding: false,
           backgroundColor: ServiceProvider
               .instance.instanceStyleService.appStyle.backgroundColor,
           appBar: appBar,

@@ -12,12 +12,23 @@ import 'package:minhund/service/service_provider.dart';
 class PartnerOpeningHoursController extends DialogTemplateController {
   OpeningHours openingHours;
 
+  OpeningHours placeholderOpeningHours;
+
   PageState pageState;
+
+  final void Function(OpeningHours openingHours) onSaved;
 
   final _formKey = GlobalKey<FormState>();
 
   PartnerOpeningHoursController(
-      {this.openingHours, this.pageState = PageState.read});
+      {this.openingHours, this.pageState = PageState.read, this.onSaved});
+
+  @override
+  void initState() {
+    placeholderOpeningHours = OpeningHours.fromJson(openingHours.toJson());
+    super.initState();
+  }
+
   @override
   Widget get actionOne => PopButton();
 
@@ -26,6 +37,7 @@ class PartnerOpeningHoursController extends DialogTemplateController {
       ? SaveButton(
           controller: SaveButtonController(onPressed: () {
             _formKey.currentState.save();
+            onSaved(placeholderOpeningHours);
             Navigator.pop(context);
           }),
         )
@@ -89,7 +101,7 @@ class PartnerOpeningHours extends DialogTemplate {
                         .instance.instanceStyleService.appStyle.descTitle,
                   ),
                   Text(
-                    "${controller.formatTime(timeToFormat: controller.openingHours.dayFrom.hour)}:${controller.formatTime(timeToFormat: controller.openingHours.dayFrom.minute)} - ${controller.formatTime(timeToFormat: controller.openingHours.dayTo.hour)}:${controller.formatTime(timeToFormat: controller.openingHours.dayTo.minute)}",
+                    "${controller.formatTime(timeToFormat: controller.placeholderOpeningHours.dayFrom.hour)}:${controller.formatTime(timeToFormat: controller.placeholderOpeningHours.dayFrom.minute)} - ${controller.formatTime(timeToFormat: controller.placeholderOpeningHours.dayTo.hour)}:${controller.formatTime(timeToFormat: controller.placeholderOpeningHours.dayTo.minute)}",
                     style: ServiceProvider
                         .instance.instanceStyleService.appStyle.body1,
                   ),
@@ -106,7 +118,7 @@ class PartnerOpeningHours extends DialogTemplate {
                         .instance.instanceStyleService.appStyle.descTitle,
                   ),
                   Text(
-                    "${controller.formatTime(timeToFormat: controller.openingHours.weekendFrom.hour)}:${controller.formatTime(timeToFormat: controller.openingHours.weekendFrom.minute)} - ${controller.formatTime(timeToFormat: controller.openingHours.weekendTo.hour)}:${controller.formatTime(timeToFormat: controller.openingHours.weekendTo.minute)}",
+                    "${controller.formatTime(timeToFormat: controller.placeholderOpeningHours.weekendFrom.hour)}:${controller.formatTime(timeToFormat: controller.placeholderOpeningHours.weekendFrom.minute)} - ${controller.formatTime(timeToFormat: controller.placeholderOpeningHours.weekendTo.hour)}:${controller.formatTime(timeToFormat: controller.placeholderOpeningHours.weekendTo.minute)}",
                     style: ServiceProvider
                         .instance.instanceStyleService.appStyle.body1,
                   ),
@@ -115,7 +127,7 @@ class PartnerOpeningHours extends DialogTemplate {
               Container(
                 height: padding * 2,
               ),
-              if (controller.openingHours.comment != null)
+              if (controller.placeholderOpeningHours.comment != null)
                 Row(
                   children: <Widget>[
                     Text(
@@ -124,7 +136,7 @@ class PartnerOpeningHours extends DialogTemplate {
                           .instance.instanceStyleService.appStyle.descTitle,
                     ),
                     Text(
-                      controller.openingHours.comment,
+                      controller.placeholderOpeningHours.comment,
                       style: ServiceProvider
                           .instance.instanceStyleService.appStyle.body1,
                     ),
@@ -145,109 +157,110 @@ class PartnerOpeningHours extends DialogTemplate {
         builder: (context, constraints) {
           return Padding(
             padding: EdgeInsets.all(padding * 2),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "Ukedager:",
-                  style: ServiceProvider
-                      .instance.instanceStyleService.appStyle.descTitle,
-                ),
-                Container(
-                  height: padding * 2,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Flexible(
-                      child: Container(
-                        width: constraints.maxWidth / 2.25,
-                        child: DateTimePicker(
-                            controller: DateTimePickerController(
-                              asListTile: true,
-
-                                onConfirmed: (time) =>
-                                    controller.openingHours.dayFrom = time,
-                                label: "Fra",
-                                initialDate: controller.openingHours.dayFrom,
-                                time: true)),
-                      ),
-                    ),
-                    Flexible(
-                      child: Container(
-                        width: constraints.maxWidth / 2.25,
-                        child: DateTimePicker(
-                          controller: DateTimePickerController(
-                              asListTile: true,
-
-                              onConfirmed: (time) =>
-                                  controller.openingHours.dayTo = time,
-                              label: "Til",
-                              initialDate: controller.openingHours.dayTo,
-                              time: true),
+            child: Form(
+              key: controller._formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    "Ukedager:",
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.descTitle,
+                  ),
+                  Container(
+                    height: padding * 2,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Flexible(
+                        child: Container(
+                          width: constraints.maxWidth / 2.25,
+                          child: DateTimePicker(
+                              controller: DateTimePickerController(
+                                  asListTile: true,
+                                  onConfirmed: (time) => controller
+                                      .placeholderOpeningHours.dayFrom = time,
+                                  label: "Fra",
+                                  initialDate: controller
+                                      .placeholderOpeningHours.dayFrom,
+                                  time: true)),
                         ),
                       ),
-                    )
-                  ],
-                ),
-                Divider(),
-                Text(
-                  "Helg:",
-                  style: ServiceProvider
-                      .instance.instanceStyleService.appStyle.descTitle,
-                ),
-                Container(
-                  height: padding * 2,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Flexible(
-                      child: Container(
-                        width: constraints.maxWidth / 2.25,
-                        child: DateTimePicker(
-                          controller: DateTimePickerController(
-                              asListTile: true,
-
-                              onConfirmed: (time) =>
-                                  controller.openingHours.weekendFrom = time,
-                              label: "Fra",
-                              initialDate: controller.openingHours.weekendFrom,
-                              time: true),
-                        ),
-                      ),
-                    ),
-                    Flexible(
-                      child: Container(
-                        width: constraints.maxWidth / 2.25,
-                        child: DateTimePicker(
+                      Flexible(
+                        child: Container(
+                          width: constraints.maxWidth / 2.25,
+                          child: DateTimePicker(
                             controller: DateTimePickerController(
-                              asListTile: true,
-                                onConfirmed: (time) =>
-                                    controller.openingHours.weekendTo = time,
+                                asListTile: true,
+                                onConfirmed: (time) => controller
+                                    .placeholderOpeningHours.dayTo = time,
                                 label: "Til",
-                                initialDate: controller.openingHours.weekendTo,
-                                time: true)),
+                                initialDate:
+                                    controller.placeholderOpeningHours.dayTo,
+                                time: true),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  Divider(),
+                  Text(
+                    "Helg:",
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.descTitle,
+                  ),
+                  Container(
+                    height: padding * 2,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Flexible(
+                        child: Container(
+                          width: constraints.maxWidth / 2.25,
+                          child: DateTimePicker(
+                            controller: DateTimePickerController(
+                                asListTile: true,
+                                onConfirmed: (time) => controller
+                                    .placeholderOpeningHours.weekendFrom = time,
+                                label: "Fra",
+                                initialDate: controller
+                                    .placeholderOpeningHours.weekendFrom,
+                                time: true),
+                          ),
+                        ),
                       ),
-                    )
-                  ],
-                ),
-                Divider(),
-                Form(
-                  key: controller._formKey,
-                  child: PrimaryTextField(
+                      Flexible(
+                        child: Container(
+                          width: constraints.maxWidth / 2.25,
+                          child: DateTimePicker(
+                              controller: DateTimePickerController(
+                                  asListTile: true,
+                                  onConfirmed: (time) => controller
+                                      .placeholderOpeningHours.weekendTo = time,
+                                  label: "Til",
+                                  initialDate: controller
+                                      .placeholderOpeningHours.weekendTo,
+                                  time: true)),
+                        ),
+                      )
+                    ],
+                  ),
+                  Divider(),
+                  PrimaryTextField(
                     asListTile: true,
-                    initValue: controller.openingHours.comment,
+                    initValue: controller.placeholderOpeningHours.comment,
                     hintText: "Kommentar",
                     onSaved: (val) => val == ""
-                        ? controller.openingHours.comment = null
-                        : controller.openingHours.comment = val,
+                        ? controller.placeholderOpeningHours.comment = null
+                        : controller.placeholderOpeningHours.comment = val,
                     maxLines: 5,
-                    textInputAction: TextInputAction.done,
+                    textInputAction: TextInputAction.newline,
                     validate: false,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

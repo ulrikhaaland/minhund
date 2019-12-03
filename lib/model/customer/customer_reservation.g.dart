@@ -25,8 +25,8 @@ Map<String, dynamic> _$CustomerReservationToJson(
     <String, dynamic>{
       'customerId': instance.customerId,
       'id': instance.id,
-      'reservationName': instance.reservationName,
       'message': instance.message,
+      'reservationName': instance.reservationName,
       'phoneNumber': instance.phoneNumber,
       'amount': instance.amount,
       'reservedAt': instance.reservedAt?.toIso8601String(),

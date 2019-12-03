@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/offer.dart';
@@ -17,7 +16,9 @@ import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 
 class PartnerCRUDOfferController extends MasterPageController {
-  final PartnerOffer offer;
+  PartnerOffer offer;
+
+  PartnerOffer placeholderOffer;
 
   PageState pageState;
 
@@ -25,11 +26,11 @@ class PartnerCRUDOfferController extends MasterPageController {
 
   final _formKey = GlobalKey<FormState>();
 
-  bool service = false;
-
   final void Function(PartnerOffer offer) onCreate;
 
   final void Function(PartnerOffer offer) onDelete;
+
+  final void Function(PartnerOffer offer) onUpdate;
 
   SaveButtonController saveButtonController;
 
@@ -54,7 +55,8 @@ class PartnerCRUDOfferController extends MasterPageController {
       this.pageState,
       this.partnerId,
       this.onCreate,
-      this.onDelete});
+      this.onDelete,
+      this.onUpdate});
 
   @override
   Widget get actionOne => null;
@@ -132,12 +134,15 @@ class PartnerCRUDOfferController extends MasterPageController {
 
   @override
   String get title => pageState != PageState.create
-      ? pageState == PageState.read ? offer.title : "Rediger"
+      ? pageState == PageState.read ? placeholderOffer.title : "Rediger"
       : "Nytt tilbud";
 
   @override
   void initState() {
-    if (offer.title != "" && offer.title != null) {
+    placeholderOffer = PartnerOffer.fromJson(offer.toJson());
+    if (offer.docRef != null) placeholderOffer.docRef = offer.docRef;
+
+    if (placeholderOffer.title != "" && placeholderOffer.title != null) {
       canSave = true;
     } else {
       canSave = false;
@@ -145,7 +150,9 @@ class PartnerCRUDOfferController extends MasterPageController {
 
     enabled = pageState != PageState.read;
 
-    service = offer.type == "service";
+    placeholderOffer.type == null
+        ? placeholderOffer.type = OfferType.item
+        : null;
 
     dateTimePickerController = DateTimePickerController(
       enabled: enabled,
@@ -154,24 +161,24 @@ class PartnerCRUDOfferController extends MasterPageController {
       asListTile: true,
       label: "Sluttdato for tilbudet",
       onConfirmed: (date) {
-        offer.endOfOffer = date;
+        placeholderOffer.endOfOffer = date;
         priceFocusNode.requestFocus();
       },
-      initialDate: offer.endOfOffer,
+      initialDate: placeholderOffer.endOfOffer,
     );
 
     customImageController = CustomImageController(
       edit: pageState != PageState.read,
       customImageType: CustomImageType.squared,
       imageSizePercentage: 80,
-      imgUrl: offer.imgUrl,
+      imgUrl: placeholderOffer.imgUrl,
       withLabel: true,
       onDelete: () {
         if (pageState == PageState.edit) {
           deleteImage();
         }
       },
-      provideImageFile: (imgFile) => offer.imageFile = imgFile,
+      provideImageFile: (imgFile) => placeholderOffer.imageFile = imgFile,
     );
 
     saveButtonController = SaveButtonController(
@@ -181,27 +188,30 @@ class PartnerCRUDOfferController extends MasterPageController {
         });
 
     offerReserveController = PartnerOfferReserveController(
-      offerId: offer.id,
+      offerId: placeholderOffer.id,
+      offer: placeholderOffer,
       enabled: enabled,
       pageState: pageState,
-      reservation: offer.partnerReservation,
+      checkIfOnline: () => placeholderOffer.type == OfferType.online,
+      reservation: placeholderOffer.partnerReservation,
     );
     super.initState();
   }
 
   void deleteImage() {
-    offer.imageFile = null;
+    placeholderOffer.imageFile = null;
 
-    FileProvider().deleteFile(path: "partnerOffers/${offer.id}/image");
+    FileProvider()
+        .deleteFile(path: "partnerOffers/${placeholderOffer.id}/image");
 
-    offer.imgUrl = null;
+    placeholderOffer.imgUrl = null;
 
-    PartnerOfferProvider().update(model: offer);
+    PartnerOfferProvider().update(model: placeholderOffer);
   }
 
   @override
   void dispose() {
-    if (hasSaved != true) offer.imageFile = null;
+    if (hasSaved != true) placeholderOffer.imageFile = null;
     _scopeNode.dispose();
     priceFocusNode.dispose();
     super.dispose();
@@ -209,11 +219,7 @@ class PartnerCRUDOfferController extends MasterPageController {
 
   Future<void> createOrUpdateOffer() async {
     if (canSave) {
-      if (service) {
-        offer.type = "service";
-      } else if (!service) {
-        offer.type = "product";
-      }
+      offer = placeholderOffer;
 
       dateTimePickerController.enabled = false;
 
@@ -251,13 +257,14 @@ class PartnerCRUDOfferController extends MasterPageController {
   }
 
   void deleteOffer() {
-    if (offer.imgUrl != null)
-      FileProvider().deleteFile(path: "partnerOffers/${offer.id}/image");
+    if (placeholderOffer.imgUrl != null)
+      FileProvider()
+          .deleteFile(path: "partnerOffers/${placeholderOffer.id}/image");
 
     CloudFunctionsProvider()
-        .recursiveUniversalDelete(path: "partnerOffers/${offer.id}");
+        .recursiveUniversalDelete(path: "partnerOffers/${placeholderOffer.id}");
 
-    onDelete(offer);
+    onDelete(placeholderOffer);
 
     Navigator.of(context)..pop()..pop();
   }
@@ -317,30 +324,148 @@ class PartnerCRUDOffer extends MasterPage {
                               style: ServiceProvider.instance
                                   .instanceStyleService.appStyle.smallTitle,
                             ),
-                            value: !controller.service,
-                            onChanged: (val) => controller.enabled &&
-                                    val != !controller.service
-                                ? controller.setState(() =>
-                                    controller.service = !controller.service)
+                            value: controller.placeholderOffer.type ==
+                                OfferType.item,
+                            onChanged: (val) => controller.enabled
+                                ? controller.setState(() => val
+                                    ? controller.placeholderOffer.type =
+                                        OfferType.item
+                                    : null)
                                 : null,
                             checkColor: Colors.white,
                             activeColor: ServiceProvider
                                 .instance.instanceStyleService.appStyle.green,
                           ),
-                          CheckboxListTile( 
+                          CheckboxListTile(
                             title: Text(
                               "Tjeneste",
                               style: ServiceProvider.instance
                                   .instanceStyleService.appStyle.smallTitle,
                             ),
-                            value: controller.service,
+                            value: controller.placeholderOffer.type ==
+                                OfferType.service,
                             onChanged: (val) => controller.enabled
-                                ? controller.setState(() =>
-                                    controller.service = !controller.service)
+                                ? controller.setState(() => val
+                                    ? controller.placeholderOffer.type =
+                                        OfferType.service
+                                    : null)
                                 : null,
                             checkColor: Colors.white,
                             activeColor: ServiceProvider
                                 .instance.instanceStyleService.appStyle.green,
+                          ),
+                          AnimatedContainer(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(ServiceProvider
+                                      .instance
+                                      .instanceStyleService
+                                      .appStyle
+                                      .borderRadius),
+                                  bottomRight: Radius.circular(ServiceProvider
+                                      .instance
+                                      .instanceStyleService
+                                      .appStyle
+                                      .borderRadius)),
+                              //  BorderRadius.circular(
+                              //     ServiceProvider.instance.instanceStyleService
+                              //         .appStyle.borderRadius),
+                              color: controller.placeholderOffer.type ==
+                                      OfferType.online
+                                  ? ServiceProvider.instance
+                                      .instanceStyleService.appStyle.lightBlue
+                                  : Colors.white,
+                            ),
+                            duration: Duration(milliseconds: 500),
+                            width: ServiceProvider.instance.screenService
+                                .getWidthByPercentage(context, 80),
+                            child: Column(
+                              children: <Widget>[
+                                CheckboxListTile(
+                                  title: Text(
+                                    "På nett",
+                                    style: ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .smallTitle,
+                                  ),
+                                  value: controller.placeholderOffer.type ==
+                                      OfferType.online,
+                                  onChanged: (val) {
+                                    if (controller.placeholderOffer
+                                            .partnerReservation.canReserve !=
+                                        true) {
+                                      controller.enabled
+                                          ? controller.setState(() => val
+                                              ? controller.placeholderOffer
+                                                  .type = OfferType.online
+                                              : null)
+                                          : null;
+                                    } else {
+                                      showCustomDialog(
+                                        context: context,
+                                        dialogSize: DialogSize.small,
+                                        child: Padding(
+                                          padding: EdgeInsets.all(padding * 2),
+                                          child: Text(
+                                              'Tilbudstype "På nett" og reservasjon kan ikke kombineres. '),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  checkColor: Colors.white,
+                                  activeColor: ServiceProvider.instance
+                                      .instanceStyleService.appStyle.green,
+                                ),
+                                if (controller.placeholderOffer.type ==
+                                    OfferType.online) ...[
+                                  PrimaryTextField(
+                                    width: ServiceProvider
+                                        .instance.screenService
+                                        .getWidthByPercentage(context, 74),
+                                    hintText: "Rabattkode",
+                                    enabled: controller.enabled,
+                                    asListTile: true,
+                                    validate: false,
+                                    onSaved: (val) => controller
+                                        .placeholderOffer.discountCode = val,
+                                    textInputType: TextInputType.text,
+                                    textCapitalization:
+                                        TextCapitalization.characters,
+                                    onFieldSubmitted: () =>
+                                        controller._scopeNode.nextFocus(),
+                                    initValue: controller.placeholderOffer
+                                                .discountCode !=
+                                            null
+                                        ? controller
+                                            .placeholderOffer.discountCode
+                                            .toString()
+                                        : null,
+                                  ),
+                                  PrimaryTextField(
+                                    width: ServiceProvider
+                                        .instance.screenService
+                                        .getWidthByPercentage(context, 74),
+                                    hintText: "Weblink til tilbudet",
+                                    enabled: controller.enabled,
+                                    asListTile: true,
+                                    validate: false,
+                                    onSaved: (val) =>
+                                        controller.placeholderOffer.url = val,
+                                    textInputType: TextInputType.text,
+                                    textCapitalization: TextCapitalization.none,
+                                    onFieldSubmitted: () =>
+                                        controller._scopeNode.nextFocus(),
+                                    initValue:
+                                        controller.placeholderOffer.url != null
+                                            ? controller.placeholderOffer.url
+                                                .toString()
+                                            : null,
+                                  )
+                                ],
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -356,11 +481,11 @@ class PartnerCRUDOffer extends MasterPage {
                     textFieldType: TextFieldType.ordinary,
                     hintText: "Tittel",
                     textCapitalization: TextCapitalization.sentences,
-                    initValue: controller.offer.title,
+                    initValue: controller.placeholderOffer.title,
                     onFieldSubmitted: () => controller._scopeNode.nextFocus(),
                     onChanged: (val) {
                       if (val.isNotEmpty) {
-                        controller.offer.title = val;
+                        controller.placeholderOffer.title = val;
                         controller.canSave = true;
                       } else {
                         controller.canSave = false;
@@ -382,12 +507,12 @@ class PartnerCRUDOffer extends MasterPage {
                     asListTile: true,
                     validate: false,
                     prefixText: "NOK ",
-                    onSaved: (val) => controller.offer.price =
+                    onSaved: (val) => controller.placeholderOffer.price =
                         val.isEmpty ? null : double.parse(val),
                     textInputType: TextInputType.number,
                     onFieldSubmitted: () => controller._scopeNode.nextFocus(),
-                    initValue: controller.offer.price != null
-                        ? controller.offer.price.toString()
+                    initValue: controller.placeholderOffer.price != null
+                        ? controller.placeholderOffer.price.toString()
                         : null,
                   ),
                   PrimaryTextField(
@@ -395,15 +520,15 @@ class PartnerCRUDOffer extends MasterPage {
                     enabled: controller.enabled,
                     asListTile: true,
                     validate: false,
-                    onSaved: (val) => controller.offer.desc = val,
+                    onSaved: (val) => controller.placeholderOffer.desc = val,
                     textInputType: TextInputType.text,
-                    initValue: controller.offer.desc,
+                    initValue: controller.placeholderOffer.desc,
                     textInputAction: TextInputAction.newline,
                     textCapitalization: TextCapitalization.sentences,
                     maxLines: 5,
                   ),
-                  if ((controller.offer.imgUrl != null ||
-                              controller.offer.imageFile != null) &&
+                  if ((controller.placeholderOffer.imgUrl != null ||
+                              controller.placeholderOffer.imageFile != null) &&
                           controller.pageState == PageState.read ||
                       controller.pageState != PageState.read)
                     Container(
@@ -443,10 +568,10 @@ class PartnerCRUDOffer extends MasterPage {
                           elevation: controller.enabled ? 1 : 0,
                           child: CheckboxListTile(
                             dense: true,
-                            value: controller.offer.active ?? false,
+                            value: controller.placeholderOffer.active ?? false,
                             onChanged: (val) => controller.enabled
-                                ? controller.setState(
-                                    () => controller.offer.active = val)
+                                ? controller.setState(() =>
+                                    controller.placeholderOffer.active = val)
                                 : null,
                             checkColor: Colors.white,
                             activeColor: ServiceProvider

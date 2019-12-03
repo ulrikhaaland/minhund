@@ -232,17 +232,18 @@ class RootPage extends BaseView {
       ServiceProvider.instance.screenService.getBambooFactor(context),
     );
 
-    // controller.auth.signOut();
+    controller.auth.signOut();
 
-    if (!controller.introDone) {
-      return Intro(
-        introDone: () {
-          controller.setState(() {
-            controller.introDone = true;
-          });
-        },
-      );
-    } else if (controller.firebaseUser == null) {
+    // if (!controller.introDone) {
+    //   return Intro(
+    //     introDone: () {
+    //       controller.setState(() {
+    //         controller.introDone = true;
+    //       });
+    //     },
+    //   );
+    // } else
+     if (controller.firebaseUser == null) {
       return LoginPage(
         controller: LoginPageController(
           rootPageController: controller,

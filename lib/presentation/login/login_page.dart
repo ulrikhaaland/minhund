@@ -28,6 +28,7 @@ class LoginPage extends BaseView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
         appBar: AppBar(
           backgroundColor: ServiceProvider
               .instance.instanceStyleService.appStyle.backgroundColor,

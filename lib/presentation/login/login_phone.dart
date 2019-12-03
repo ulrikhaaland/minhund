@@ -4,6 +4,7 @@ import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/root_page.dart';
 import 'package:flutter/material.dart';
+import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 
 enum SignInStatus { enterNumber, enterCode }
@@ -140,25 +141,24 @@ class PhoneLogin extends MasterPage {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    return SingleChildScrollView(
-      child: Form(
-        key: controller.formKey,
-        child: Column(
-          children: <Widget>[
-            Container(
-              height: getDefaultPadding(context) * 2,
-            ),
-            if (controller.signInStatus == SignInStatus.enterNumber) ...[
-              controller.textFields[0]
-            ] else ...[
-              controller.textFields[1]
-            ],
-            PrimaryButton(
-              controller: controller._saveButtonController,
-            ),
-            termsAndConditions(context),
+    return Form(
+      key: controller.formKey,
+      child: Column(
+        children: <Widget>[
+          Container(
+            height: ServiceProvider.instance.screenService
+                .getHeightByPercentage(context, 15),
+          ),
+          if (controller.signInStatus == SignInStatus.enterNumber) ...[
+            controller.textFields[0]
+          ] else ...[
+            controller.textFields[1]
           ],
-        ),
+          PrimaryButton(
+            controller: controller._saveButtonController,
+          ),
+          termsAndConditions(context),
+        ],
       ),
     );
   }

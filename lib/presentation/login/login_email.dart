@@ -192,6 +192,7 @@ class EmailLogin extends MasterPage {
                 .getWidthByPercentage(context, 90),
             child: Column(
               children: <Widget>[
+               
                 Text(
                   controller.authHint,
                   style: ServiceProvider

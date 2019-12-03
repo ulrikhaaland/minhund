@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/helper.dart';
@@ -62,7 +63,7 @@ class PartnerPageController extends MasterPageController {
                 controller: SaveButtonController(
                   onPressed: () {
                     _formKey.currentState.save();
-                    
+
                     if (partner.imgUrl == null)
                       FileProvider()
                           .uploadFile(
@@ -74,8 +75,6 @@ class PartnerPageController extends MasterPageController {
                       });
                     else
                       PartnerProvider().update(model: partner);
-
-                    
 
                     PartnerProvider().updateOffers(model: partner);
 
@@ -124,8 +123,14 @@ class PartnerPageController extends MasterPageController {
       onPressed: () => showCustomDialog(
         context: context,
         child: PartnerOpeningHours(
-          controller:
-              PartnerOpeningHoursController(openingHours: partner.openingHours),
+          controller: PartnerOpeningHoursController(
+              openingHours: partner.openingHours,
+              onSaved: (oH) {
+                partner.openingHours = oH;
+                partner.docRef.updateData({
+                  'openingHours': partner.openingHours.toJson(),
+                });
+              }),
         ),
       ),
     );
@@ -303,6 +308,7 @@ class PartnerPage extends MasterPage {
         initValue: controller.partner.address?.city,
         onFieldSubmitted: () => textFieldNext(height: 0),
         onSaved: (val) => controller.partner.address.city = val,
+        asListTile: true,
       ),
       PrimaryTextField(
         hintText: "Email",
@@ -323,7 +329,7 @@ class PartnerPage extends MasterPage {
           hintText: "Nettsted, (mittnettsted.no)",
           initValue: controller.partner.websiteUrl,
           textInputAction: TextInputAction.done,
-        textCapitalization: TextCapitalization.none,
+          textCapitalization: TextCapitalization.none,
           prefixText: "www.",
           asListTile: true,
           onSaved: (val) => controller.partner.websiteUrl = val),

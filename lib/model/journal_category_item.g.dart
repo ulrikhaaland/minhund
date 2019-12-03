@@ -17,8 +17,8 @@ JournalCategoryItem _$JournalCategoryItemFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$JournalCategoryItemToJson(
         JournalCategoryItem instance) =>
     <String, dynamic>{
+      'colorIndex': instance.colorIndex,
       'id': instance.id,
       'title': instance.title,
       'sortIndex': instance.sortIndex,
-      'colorIndex': instance.colorIndex,
     };
