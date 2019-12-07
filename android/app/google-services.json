@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "685102100437",
+    "firebase_url": "https://minhund-e8648.firebaseio.com",
+    "project_id": "minhund-e8648",
+    "storage_bucket": "minhund-e8648.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:685102100437:android:d5a29a82e42857ab5b175c",
+        "android_client_info": {
+          "package_name": "com.example.minhund"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "685102100437-u75rcd0gnjo9c0g3337uoeevjpfh34is.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.minhund",
+            "certificate_hash": "59a3cb8333aabc4835300a239e9ee42bdbdcd9f0"
+          }
+        },
+        {
+          "client_id": "685102100437-ejkv66eccdkqs2b0vrtdmla21njr1k6c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4Jwt8EcZJiWAR-QW-5rWg88F63xpHmec"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "685102100437-ejkv66eccdkqs2b0vrtdmla21njr1k6c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
