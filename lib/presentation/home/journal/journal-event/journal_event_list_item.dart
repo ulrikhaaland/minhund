@@ -8,6 +8,7 @@ import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
+import 'package:minhund/presentation/home/journal/journal-event/journal_event_page.dart';
 import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'journal_event_dialog.dart';
@@ -15,9 +16,7 @@ import 'journal_event_dialog.dart';
 class JournalEventListItemController extends BaseController {
   final JournalEventItem eventItem;
 
-  final void Function(JournalEventItem eventItem) onChanged;
-
-  final void Function(String eventItemId) onDeleteEvent;
+  final JournalEventPageController actionController;
 
   final Dog dog;
 
@@ -27,8 +26,7 @@ class JournalEventListItemController extends BaseController {
 
   JournalEventListItemController(
       {this.eventItem,
-      this.onChanged,
-      this.onDeleteEvent,
+      this.actionController,
       this.dog,
       this.categoryItem,
       this.user});
@@ -47,11 +45,9 @@ class JournalEventListItem extends BaseView {
         context: context,
         child: JournalEventDialog(
           controller: JournalEventDialogController(
+            actionController: controller.actionController,
             user: controller.user,
-            onDelete: (id) => controller.onDeleteEvent(id),
-            onSave: (item) => controller.onChanged(item),
             eventItem: controller.eventItem,
-            categoryItem: controller.categoryItem,
             parentDocRef: controller.dog.docRef,
             pageState: PageState.read,
           ),
@@ -98,16 +94,14 @@ class JournalEventListItem extends BaseView {
 
                           controller.eventItem.sortIndex = null;
 
-                          JournalEventProvider()
-                              .update(model: controller.eventItem);
-
                           controller.setState(() {});
 
-                          await Future.delayed(Duration(milliseconds: 250));
-
-                          controller.onChanged(controller.eventItem);
                          
-                            controller.onDeleteEvent(controller.eventItem.id);
+
+                          await Future.delayed(Duration(milliseconds: 300));
+
+                           controller.actionController
+                              .onEventUpdate(event: controller.eventItem);
                         },
                       ),
                     ),

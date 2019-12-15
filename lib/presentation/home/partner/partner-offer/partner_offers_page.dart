@@ -169,6 +169,10 @@ class PartnerOffersPageController extends MasterPageController
     refresh();
     return PartnerOfferProvider().update(model: offer);
   }
+
+  @override
+  // TODO: implement enabledTopSafeArea
+  bool get enabledTopSafeArea => null;
 }
 
 class PartnerOffersPage extends MasterPage {
@@ -204,7 +208,9 @@ class PartnerOffersPage extends MasterPage {
       padding: EdgeInsets.only(left: padding * 2, right: padding * 2),
       child: DefaultTabController(
         length: 2,
-        initialIndex: 0,
+        initialIndex: controller.activeOffers.isNotEmpty
+            ? 0
+            : controller.inActiveOffers.isEmpty ? 0 : 1,
         child: Column(
           children: <Widget>[
             Container(
@@ -233,6 +239,7 @@ class PartnerOffersPage extends MasterPage {
                       height: ServiceProvider.instance.instanceStyleService
                               .appStyle.iconSizeStandard *
                           2,
+                      padding: EdgeInsets.only(top: padding),
                       child: Tab(
                         child: Column(
                           children: <Widget>[
@@ -257,6 +264,7 @@ class PartnerOffersPage extends MasterPage {
                       height: ServiceProvider.instance.instanceStyleService
                               .appStyle.iconSizeStandard *
                           2,
+                      padding: EdgeInsets.only(top: padding),
                       child: Tab(
                         child: Column(
                           children: <Widget>[

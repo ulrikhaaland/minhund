@@ -7,11 +7,9 @@ import 'package:minhund/presentation/home/partner/partner-offer/partner_offers_p
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
 import 'package:minhund/presentation/widgets/buttons/save_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
-import 'package:minhund/presentation/widgets/circular_progress_indicator.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/tap_to_unfocus.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
-import 'package:minhund/provider/cloud_functions_provider.dart';
 import 'package:minhund/provider/file_provider.dart';
 import 'package:minhund/provider/partner/partner_offer_provider.dart';
 import 'package:minhund/service/service_provider.dart';
@@ -41,7 +39,6 @@ class PartnerCRUDOfferController extends MasterPageController
 
   bool enabled;
 
-  bool isLoading = false;
 
   DateTimePickerController dateTimePickerController;
 
@@ -219,7 +216,6 @@ class PartnerCRUDOfferController extends MasterPageController
 
   Future<void> createOrUpdateOffer() async {
     if (canSave) {
-      setState(() => isLoading = true);
       saveButtonController.load();
 
       offer = placeholderOffer;
@@ -263,7 +259,6 @@ class PartnerCRUDOfferController extends MasterPageController
 
   @override
   Future<void> onOfferDelete({PartnerOffer offer}) {
-    setState(() => isLoading = true);
 
     return actionController.onOfferDelete(offer: offer).then((_) {
       if (placeholderOffer.imgUrl != null)
@@ -284,6 +279,10 @@ class PartnerCRUDOfferController extends MasterPageController
       if (pageState == PageState.create) Navigator.pop(context);
     });
   }
+
+  @override
+  // TODO: implement enabledTopSafeArea
+  bool get enabledTopSafeArea => null;
 }
 
 class PartnerCRUDOffer extends MasterPage {
@@ -633,7 +632,6 @@ class PartnerCRUDOffer extends MasterPage {
               ),
             ),
           ),
-          if (controller.isLoading) CPI(true),
         ],
       ),
     );

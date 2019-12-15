@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:minhund/helper/helper.dart';
@@ -9,6 +10,7 @@ import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
 import 'package:minhund/presentation/home/journal/journal-event/journal_event_list_item.dart';
+import 'package:minhund/presentation/home/journal/journal_page.dart';
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
 import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/service/service_provider.dart';
@@ -16,26 +18,31 @@ import 'package:minhund/utilities/master_page.dart';
 
 import 'journal_event_dialog.dart';
 
-class JournalEventPageController extends MasterPageController {
+abstract class EventActionController {
+  Future<void> onEventDelete({JournalEventItem event});
+  Future<void> onEventUpdate({JournalEventItem event});
+  Future<DocumentReference> onEventCreate({JournalEventItem event});
+}
+
+class JournalEventPageController extends MasterPageController
+    implements EventActionController {
   final JournalCategoryItem categoryItem;
 
   List<JournalEventItem> upcomingEvents = [];
   List<JournalEventItem> completedEvents = [];
 
-  final void Function(bool refreshParent) onUpdate;
+  final JournalPageController actionController;
 
-  final void Function(String deletedEventId) onEventAction;
+  Dog dog;
 
-  final Dog dog;
+  User user;
 
-  final User user;
+  Color upComingColor = Colors.transparent;
 
-  JournalEventPageController(
-      {this.dog,
-      this.user,
-      this.categoryItem,
-      this.onUpdate,
-      this.onEventAction});
+  JournalEventPageController({
+    this.actionController,
+    this.categoryItem,
+  });
 
   @override
   Widget get actionOne => null;
@@ -48,19 +55,9 @@ class JournalEventPageController extends MasterPageController {
               context: context,
               child: JournalAddCategory(
                 controller: JournalAddCategoryController(
+                  actionController: actionController,
                   singleCategoryItem: categoryItem,
-                  childOnSaved: () {
-                    onEventAction(null);
-                    refresh();
-                  },
-                  childOnDelete: () {
-                    dog.journalItems
-                        .removeWhere((item) => item.id == categoryItem.id);
-                    onUpdate(true);
-                    Navigator.of(context)..pop()..pop();
-                  },
                   pageState: PageState.edit,
-                  dogDocRefPath: dog.docRef.path,
                 ),
               )),
           icon: Icon(Icons.edit),
@@ -85,13 +82,10 @@ class JournalEventPageController extends MasterPageController {
             child: JournalEventDialog(
               controller: JournalEventDialogController(
                 user: user,
-                categoryItem: categoryItem,
+                actionController: this,
                 parentDocRef: dog.docRef,
-                onDelete: (id) => setState(() => onEventAction(id)),
+                // onDelete: (id) => setState(() => onEventAction(id)),
                 pageState: PageState.create,
-                onSave: (item) {
-                  onSaveItem(item);
-                },
               ),
             )),
       );
@@ -102,6 +96,9 @@ class JournalEventPageController extends MasterPageController {
   @override
   void initState() {
     super.initState();
+
+    dog = actionController.dog;
+    user = actionController.user;
   }
 
   void sortItems() {
@@ -121,7 +118,7 @@ class JournalEventPageController extends MasterPageController {
     sortListByDate(eventItemList: upcomingEvents);
   }
 
-  onSaveItem(JournalEventItem item) {
+  onSaveItem(JournalEventItem item) async {
     sortItems();
     // If item is null a delete item event has occured
     if (item != null) {
@@ -138,10 +135,14 @@ class JournalEventPageController extends MasterPageController {
       }
       //  Handles sorting on new/updated [JournalEventItem]
       List<JournalEventItem> compare;
-      if (item.completed)
+      if (item.completed) {
         compare = completedEvents;
-      else
+      } else {
+        setState(() => upComingColor = Colors.blue);
+        await Future.delayed(Duration(milliseconds: 500));
+        setState(() => upComingColor = Colors.transparent);
         compare = upcomingEvents;
+      }
       if (compare.isNotEmpty) if (compare[0] != item &&
           (compare[0].timeStamp != null && item.timeStamp != null)) if (item
               .timeStamp
@@ -152,7 +153,7 @@ class JournalEventPageController extends MasterPageController {
         reOrder(compare.indexOf(item), item.sortIndex, compare);
       }
     }
-    onEventAction(null);
+    // onEventAction(null);
     refresh();
   }
 
@@ -170,17 +171,6 @@ class JournalEventPageController extends MasterPageController {
 
         return assortIndex.compareTo(bssortIndex);
       });
-
-      // eventItemList.forEach((item) {
-      //   if (item.sortIndex != null) {
-      //     int insertIndex = item.sortIndex;
-
-      //     JournalEventItem reItem = item;
-      //     eventItemList.eventItemList.remove(item);
-      //     if (insertIndex <= eventItemList.length)
-      //       eventItemList.insert(item.sortIndex, reItem);
-      //   }
-      // });
     }
   }
 
@@ -192,15 +182,58 @@ class JournalEventPageController extends MasterPageController {
 
     cItem.sortIndex = newIndex;
 
-    JournalEventProvider().update(model: cItem);
+    onEventUpdate(event: cItem);
 
     list.insert(newIndex, cItem);
 
     if (oldItem != null) {
       oldItem.sortIndex = list.indexOf(oldItem);
 
-      JournalEventProvider().update(model: oldItem);
+      onEventUpdate(event: oldItem);
     }
+  }
+
+  @override
+  bool get enabledTopSafeArea => null;
+
+  @override
+  Future<DocumentReference> onEventCreate({JournalEventItem event}) {
+    setState(() => categoryItem.journalEventItems.add(event));
+    onSaveItem(event);
+    event.colorIndex = categoryItem.colorIndex;
+    event.categoryId = categoryItem.id;
+    actionController.eventItems.add(event);
+    actionController.setLatestAndUpcomingEvent();
+    return JournalEventProvider()
+        .create(model: event, id: categoryItem.docRef.path + "/eventItems");
+  }
+
+  @override
+  Future<void> onEventDelete({JournalEventItem event}) {
+    actionController.eventItems.remove(event);
+    actionController.setLatestAndUpcomingEvent();
+    if (event.reminder != null)
+      Firestore.instance.document("reminders/${event.id}").delete();
+
+    categoryItem.journalEventItems.removeWhere((item) => item.id == event.id);
+
+    Navigator.pop(context);
+
+    setState(() {});
+
+    return JournalEventProvider().delete(model: event);
+  }
+
+  @override
+  Future<void> onEventUpdate({JournalEventItem event}) {
+    actionController.eventItems.removeWhere((i) => i.id == event.id);
+    actionController.eventItems.add(event);
+
+    onSaveItem(event);
+
+    actionController.setLatestAndUpcomingEvent();
+
+    return JournalEventProvider().update(model: event);
   }
 }
 
@@ -240,13 +273,16 @@ class JournalEventPage extends MasterPage {
                       .instance.instanceStyleService.appStyle.skyBlue,
                   indicatorWeight: 3,
                   indicatorPadding: EdgeInsets.only(
-                    left: padding * 2,
-                    right: padding * 2,
-                    bottom: padding ,
+                    left: padding * 4,
+                    right: padding * 4,
+                    bottom: padding,
                   ),
                   tabs: <Widget>[
                     Container(
-                      height: ServiceProvider.instance.instanceStyleService.appStyle.iconSizeStandard  * 2,
+                      height: ServiceProvider.instance.instanceStyleService
+                              .appStyle.iconSizeStandard *
+                          2,
+                      padding: EdgeInsets.only(top: padding),
                       child: Tab(
                         // icon: Icon(
                         //   Icons.check,
@@ -261,21 +297,28 @@ class JournalEventPage extends MasterPage {
                               Icons.check,
                               color: ServiceProvider
                                   .instance.instanceStyleService.appStyle.green,
-                              size: ServiceProvider.instance.instanceStyleService
-                                  .appStyle.iconSizeStandard,
+                              size: ServiceProvider
+                                  .instance
+                                  .instanceStyleService
+                                  .appStyle
+                                  .iconSizeStandard,
                             ),
                             Text(
                               "Fullførte",
-                              style: ServiceProvider.instance.instanceStyleService
-                                  .appStyle.descTitle,
+                              style: ServiceProvider.instance
+                                  .instanceStyleService.appStyle.descTitle,
                             ),
                           ],
                         ),
                       ),
                     ),
-                    Container(
-                      height: ServiceProvider.instance.instanceStyleService.appStyle.iconSizeStandard  * 2,
-
+                    AnimatedContainer(
+                      color: controller.upComingColor,
+                      duration: Duration(milliseconds: 1000),
+                      height: ServiceProvider.instance.instanceStyleService
+                              .appStyle.iconSizeStandard *
+                          2,
+                      padding: EdgeInsets.only(top: padding),
                       child: Tab(
                         // icon: Icon(
                         //   Icons.timer,
@@ -288,15 +331,18 @@ class JournalEventPage extends MasterPage {
                           children: <Widget>[
                             Icon(
                               Icons.timer,
-                              color: ServiceProvider.instance.instanceStyleService
-                                  .appStyle.imperial,
-                              size: ServiceProvider.instance.instanceStyleService
-                                  .appStyle.iconSizeStandard,
+                              color: ServiceProvider.instance
+                                  .instanceStyleService.appStyle.imperial,
+                              size: ServiceProvider
+                                  .instance
+                                  .instanceStyleService
+                                  .appStyle
+                                  .iconSizeStandard,
                             ),
                             Text(
                               "Kommende",
-                              style: ServiceProvider.instance.instanceStyleService
-                                  .appStyle.descTitle,
+                              style: ServiceProvider.instance
+                                  .instanceStyleService.appStyle.descTitle,
                             ),
                           ],
                         ),
@@ -321,13 +367,9 @@ class JournalEventPage extends MasterPage {
                             controller: JournalEventListItemController(
                               user: controller.user,
                               categoryItem: controller.categoryItem,
+                              actionController: controller,
                               dog: controller.dog,
-                              onChanged: (item) {
-                                controller.onSaveItem(item);
-                              },
                               eventItem: item,
-                              onDeleteEvent: (id) => controller
-                                  .setState(() => controller.onEventAction(id)),
                             ),
                           ),
                         )
@@ -345,11 +387,7 @@ class JournalEventPage extends MasterPage {
                               user: controller.user,
                               categoryItem: controller.categoryItem,
                               dog: controller.dog,
-                              onDeleteEvent: (id) => controller
-                                  .setState(() => controller.onEventAction(id)),
-                              onChanged: (item) {
-                                controller.onSaveItem(item);
-                              },
+                              actionController: controller,
                               eventItem: item,
                             ),
                           ),

@@ -18,7 +18,7 @@ class SaveButtonController extends BaseController {
   });
 
   void load() {
-    setState(() => isLoading != isLoading);
+    setState(() => isLoading = !isLoading);
   }
 }
 

@@ -172,6 +172,10 @@ class EmailLoginController extends MasterPageController {
 
   @override
   String get title => isLogin ? "Logg inn" : "Registrer";
+
+  @override
+  // TODO: implement enabledTopSafeArea
+  bool get enabledTopSafeArea => null;
 }
 
 class EmailLogin extends MasterPage {
@@ -192,7 +196,10 @@ class EmailLogin extends MasterPage {
                 .getWidthByPercentage(context, 90),
             child: Column(
               children: <Widget>[
-               
+                Container(
+                  height: ServiceProvider.instance.screenService
+                      .getHeightByPercentage(context, 15),
+                ),
                 Text(
                   controller.authHint,
                   style: ServiceProvider
@@ -212,8 +219,7 @@ class EmailLogin extends MasterPage {
                   controller: controller.primaryButtonController,
                 ),
                 SecondaryButton(
-                  bottomPadding:
-                      getDefaultPadding(context) ,
+                  bottomPadding: 0,
                   width: ServiceProvider.instance.screenService
                       .getWidthByPercentage(context, 70),
                   onPressed: () {

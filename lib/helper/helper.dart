@@ -169,20 +169,20 @@ String formatDifference({DateTime date1, DateTime date2, bool futureString}) {
     if (((diff % 365) / 30.42).truncate() > 0)
       months =
           "${((diff % 365) / 30.42).truncate()} ${((diff % 365) / 30.42).truncate() != 1 ? "måneder" : "måned"}";
-    returnString = "${(diff / 365).round()} år og $months";
+    returnString = "${(diff / 365).truncate()} år og $months";
   } else if (diff > 0) {
     returnString =
-        "${(diff).round()} ${diff != 1 ? "dager" : "dag"} og ${(diff % 24)} ${(diff % 24) != 1 ? "timer" : "time"}";
+        "${(diff).truncate()} ${diff != 1 ? "dager" : "dag"} og ${(diff % 24)} ${(diff % 24) != 1 ? "timer" : "time"}";
   } else {
     diff = date1.difference(date2).inMinutes.abs();
     if (diff > 60) {
       returnString =
-          "${(diff / 60).round()} ${(diff / 60).round() != 1 ? "timer" : "time"} og ${(diff % 60)} ${(diff % 60) != 1 ? "minutter" : "minutt"}";
+          "${(diff / 60).truncate()} ${(diff / 60).truncate() != 1 ? "timer" : "time"} og ${(diff % 60)} ${(diff % 60) != 1 ? "minutter" : "minutt"}";
     } else if (diff > 0) {
       returnString = "$diff ${diff != 1 ? "minutter" : "minutt"}";
     }
   }
-  if (futureString == true) return "Om " + returnString;
+  if (futureString == true) return "om " + returnString;
   // I.E pastString
   if (futureString == false) return returnString + " siden";
   return returnString;
@@ -374,12 +374,10 @@ Future<void> showCustomDialog({
                   .instance.instanceStyleService.appStyle.borderRadius ??
               10),
         ),
-        child: SingleChildScrollView(
-          child: Container(
-            width: width,
-            height: height,
-            child: child,
-          ),
+        child: Container(
+          width: width,
+          height: height,
+          child: child,
         ),
       );
     },

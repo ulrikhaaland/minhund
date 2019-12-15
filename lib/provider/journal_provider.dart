@@ -7,7 +7,7 @@ class JournalProvider extends CrudProvider {
   String path = "/journalItems";
 
   @override
-  Future create({model, String id}) {
+  Future<DocumentReference> create({model, String id}) {
     return super.create(model: model, id: id + path);
   }
 

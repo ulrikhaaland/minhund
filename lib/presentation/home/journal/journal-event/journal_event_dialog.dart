@@ -11,6 +11,7 @@ import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
+import 'package:minhund/presentation/home/journal/journal-event/journal_event_page.dart';
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/buttons/save_button.dart';
@@ -24,20 +25,17 @@ import 'package:minhund/provider/fcm_provider.dart';
 import 'package:minhund/provider/journal_event_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 
-class JournalEventDialogController extends DialogTemplateController {
-  final void Function(JournalEventItem eventItem) onSave;
-
-  final void Function(String eventItemId) onDelete;
-
+class JournalEventDialogController extends DialogTemplateController
+    implements EventActionController {
   JournalEventItem eventItem;
 
   JournalEventItem placeHolderEventItem;
 
+  final JournalEventPageController actionController;
+
   final DocumentReference parentDocRef;
 
   String reminderDropDownValue;
-
-  final JournalCategoryItem categoryItem;
 
   double height;
 
@@ -76,15 +74,14 @@ class JournalEventDialogController extends DialogTemplateController {
     '1 uke før',
   ];
 
-  JournalEventDialogController(
-      {this.eventItem,
-      this.onDelete,
-      this.user,
-      this.canEdit,
-      this.parentDocRef,
-      this.onSave,
-      this.pageState,
-      this.categoryItem});
+  JournalEventDialogController({
+    this.eventItem,
+    this.actionController,
+    this.user,
+    this.canEdit,
+    this.parentDocRef,
+    this.pageState,
+  });
 
   @override
   Widget get actionOne => PopButton();
@@ -160,22 +157,6 @@ class JournalEventDialogController extends DialogTemplateController {
     super.dispose();
   }
 
-  void deleteEventItem() {
-    JournalEventProvider().delete(model: placeHolderEventItem);
-
-    if (placeHolderEventItem.reminder != null)
-      Firestore.instance
-          .document("reminders/${placeHolderEventItem.id}")
-          .delete();
-
-    categoryItem.journalEventItems
-        .removeWhere((item) => item.id == placeHolderEventItem.id);
-
-    onDelete(placeHolderEventItem.id);
-
-    Navigator.pop(context);
-  }
-
   void saveEventItem() {
     if (canSave) {
       Reminder reminder;
@@ -194,13 +175,7 @@ class JournalEventDialogController extends DialogTemplateController {
             reminder.timestamp.toIso8601String().split("T")[0];
       }
       if (eventItem == null) {
-        categoryItem.journalEventItems.add(placeHolderEventItem);
-
-        JournalEventProvider()
-            .create(
-                model: placeHolderEventItem,
-                id: categoryItem.docRef.path + "/eventItems")
-            .then((item) {
+        onEventCreate(event: placeHolderEventItem).then((item) {
           if (reminder != null) {
             reminder.eventId = item.documentID;
             FCMProvider()
@@ -208,7 +183,7 @@ class JournalEventDialogController extends DialogTemplateController {
           }
         });
       } else {
-        JournalEventProvider().update(model: placeHolderEventItem).then((_) {
+        onEventUpdate(event: placeHolderEventItem).then((_) {
           if (reminder != null) {
             reminder.eventId = placeHolderEventItem.id;
             Firestore.instance
@@ -217,7 +192,6 @@ class JournalEventDialogController extends DialogTemplateController {
           }
         });
       }
-      onSave(placeHolderEventItem);
       Navigator.pop(context);
     }
   }
@@ -244,6 +218,24 @@ class JournalEventDialogController extends DialogTemplateController {
       width: width != null ? (width * 0.935) / 2 : null,
       child: child,
     );
+  }
+
+  @override
+  bool get withBorder => false;
+
+  @override
+  Future<DocumentReference> onEventCreate({JournalEventItem event}) {
+    return actionController.onEventCreate(event: event);
+  }
+
+  @override
+  Future<void> onEventDelete({JournalEventItem event}) {
+    return actionController.onEventDelete(event: event);
+  }
+
+  @override
+  Future<void> onEventUpdate({JournalEventItem event}) {
+    return actionController.onEventUpdate(event: event);
   }
 }
 
@@ -284,82 +276,85 @@ class JournalEventDialog extends DialogTemplate {
     controller.hasFocus = controller.scopeNode.hasFocus;
 
     return TapToUnfocus(
-      child: Container(
-        color: Colors.transparent,
-        padding: EdgeInsets.all(padding * 2),
-        child: FocusScope(
-          node: controller.scopeNode,
-          child: Form(
-            key: controller._formKey,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                controller.datePickerController = DateTimePickerController(
-                    asListTile: true,
-                    validate: false,
-                    width: constraints.maxWidth / 2.1,
-                    overrideInitialDate:
-                        controller.placeHolderEventItem.timeStamp == null
-                            ? true
-                            : false,
-                    onConfirmed: (date) {
-                      controller.placeHolderEventItem.timeStamp = DateTime(
-                          date.year,
-                          date.month,
-                          date.day,
-                          controller.placeHolderEventItem.timeStamp?.hour ?? 11,
-                          controller.placeHolderEventItem.timeStamp?.minute ??
-                              11,
-                          11);
+      child: Scrollbar(
+        child: Container(
+          color: Colors.transparent,
+          padding: EdgeInsets.all(padding * 2),
+          child: FocusScope(
+            node: controller.scopeNode,
+            child: Form(
+              key: controller._formKey,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  controller.datePickerController = DateTimePickerController(
+                      asListTile: true,
+                      validate: false,
+                      width: constraints.maxWidth / 2.1,
+                      overrideInitialDate:
+                          controller.placeHolderEventItem.timeStamp == null
+                              ? true
+                              : false,
+                      onConfirmed: (date) {
+                        controller.placeHolderEventItem.timeStamp = DateTime(
+                            date.year,
+                            date.month,
+                            date.day,
+                            controller.placeHolderEventItem.timeStamp?.hour ??
+                                11,
+                            controller.placeHolderEventItem.timeStamp?.minute ??
+                                11,
+                            11);
 
-                      // if (controller.placeHolderEventItem.timeStamp.second ==
-                      //     11)
-                      //   Timer(
-                      //       Duration(milliseconds: 50),
-                      //       () => controller.timePickerController
-                      //           .openDatePicker(context));
-                    },
-                    initialDate: controller.placeHolderEventItem.timeStamp ??
-                        DateTime.now(),
-                    title: "Dato",
-                    label: "Dato");
+                        // if (controller.placeHolderEventItem.timeStamp.second ==
+                        //     11)
+                        //   Timer(
+                        //       Duration(milliseconds: 50),
+                        //       () => controller.timePickerController
+                        //           .openDatePicker(context));
+                      },
+                      initialDate: controller.placeHolderEventItem.timeStamp ??
+                          DateTime.now(),
+                      title: "Dato",
+                      label: "Dato");
 
-                controller.timePickerController = DateTimePickerController(
-                    asListTile: true,
-                    validate: false,
-                    time: true,
-                    dateFormat: "HH-mm",
-                    width: constraints.maxWidth / 2.1,
-                    overrideInitialDate:
-                        controller.placeHolderEventItem.timeStamp == null
-                            ? true
-                            : false,
-                    onConfirmed: (date) {
-                      controller.placeHolderEventItem.timeStamp = DateTime(
-                          controller.placeHolderEventItem.timeStamp?.year ??
-                              DateTime.now().year,
-                          controller.placeHolderEventItem.timeStamp?.month ??
-                              DateTime.now().month,
-                          controller.placeHolderEventItem.timeStamp?.day ??
-                              DateTime.now().day,
-                          date.hour,
-                          date.minute,
-                          0);
-                      print(
-                          controller.placeHolderEventItem.timeStamp.toString());
-                    },
-                    initialDate: controller.placeHolderEventItem.timeStamp ??
-                        DateTime.now(),
-                    title: "Tidspunkt",
-                    label: "Tidspunkt");
+                  controller.timePickerController = DateTimePickerController(
+                      asListTile: true,
+                      validate: false,
+                      time: true,
+                      dateFormat: "HH-mm",
+                      width: constraints.maxWidth / 2.1,
+                      overrideInitialDate:
+                          controller.placeHolderEventItem.timeStamp == null
+                              ? true
+                              : false,
+                      onConfirmed: (date) {
+                        controller.placeHolderEventItem.timeStamp = DateTime(
+                            controller.placeHolderEventItem.timeStamp?.year ??
+                                DateTime.now().year,
+                            controller.placeHolderEventItem.timeStamp?.month ??
+                                DateTime.now().month,
+                            controller.placeHolderEventItem.timeStamp?.day ??
+                                DateTime.now().day,
+                            date.hour,
+                            date.minute,
+                            0);
+                        print(controller.placeHolderEventItem.timeStamp
+                            .toString());
+                      },
+                      initialDate: controller.placeHolderEventItem.timeStamp ??
+                          DateTime.now(),
+                      title: "Tidspunkt",
+                      label: "Tidspunkt");
 
-                controller.height = constraints.maxHeight;
-                return Column(
-                  children: <Widget>[
-                    Container(
-                      height: constraints.maxHeight * 0.8,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  controller.height = constraints.maxHeight;
+                  return Column(
+                    children: <Widget>[
+                      Container(
+                        height: controller.pageState == PageState.edit
+                            ? constraints.maxHeight * 0.8
+                            : constraints.maxHeight,
+                        child: ListView(
+                          // crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             PrimaryTextField(
                               asListTile: true,
@@ -400,6 +395,76 @@ class JournalEventDialog extends DialogTemplate {
                                 DateTimePicker(
                                     controller:
                                         controller.timePickerController),
+                              ],
+                            ),
+                            Divider(),
+                            Column(
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    controller.basicContainer(
+                                      width: constraints.maxWidth,
+                                      child: Padding(
+                                        // ? Checkout this padding
+                                        padding: EdgeInsets.only(
+                                            left: padding * 1.6),
+                                        child: Text(
+                                          "Fullført",
+                                          style: ServiceProvider
+                                              .instance
+                                              .instanceStyleService
+                                              .appStyle
+                                              .descTitle,
+                                        ),
+                                      ),
+                                    ),
+                                    controller.basicContainer(
+                                      child: Container(
+                                        width: constraints.maxWidth / 2.1,
+                                        height: ServiceProvider
+                                            .instance.screenService
+                                            .getHeightByPercentage(
+                                                context, 10.5),
+                                        child: Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Checkbox(
+                                            value: controller
+                                                .placeHolderEventItem.completed,
+                                            onChanged: (val) => controller
+                                                .setState(() => controller
+                                                    .placeHolderEventItem
+                                                    .completed = val),
+                                            activeColor: ServiceProvider
+                                                .instance
+                                                .instanceStyleService
+                                                .appStyle
+                                                .green,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (controller.reminderError)
+                                  Container(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                          left: padding * 2, top: padding * 2),
+                                      child: Text(
+                                        controller.reminderErrorText,
+                                        style: ServiceProvider
+                                            .instance
+                                            .instanceStyleService
+                                            .appStyle
+                                            .disabledColoredText,
+                                        textAlign: TextAlign.start,
+                                        overflow: TextOverflow.clip,
+                                      ),
+                                    ),
+                                  ),
                               ],
                             ),
                             Divider(),
@@ -628,19 +693,20 @@ class JournalEventDialog extends DialogTemplate {
                           ],
                         ),
                       ),
-                    ),
-                    if (controller.pageState == PageState.edit)
-                      SecondaryButton(
-                        topPadding: 0,
-                        bottomPadding: 0,
-                        text: "Slett",
-                        color: ServiceProvider
-                            .instance.instanceStyleService.appStyle.pink,
-                        onPressed: () => controller.deleteEventItem(),
-                      ),
-                  ],
-                );
-              },
+                      if (controller.pageState == PageState.edit)
+                        SecondaryButton(
+                          topPadding: getDefaultPadding(context) * 6,
+                          bottomPadding: 0,
+                          text: "Slett",
+                          color: ServiceProvider
+                              .instance.instanceStyleService.appStyle.pink,
+                          onPressed: () => controller.onEventDelete(
+                              event: controller.placeHolderEventItem),
+                        ),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),

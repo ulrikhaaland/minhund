@@ -10,7 +10,8 @@ abstract class CrudProvider {
   }
 
   // Super returns a DocumentReference and populates the model with id and docref
-  Future create({@required model, @required String id}) async {
+  Future<DocumentReference> create(
+      {@required model, @required String id}) async {
     DocumentReference ref =
         await firestoreInstance.collection(id).add(model.toJson());
     try {
@@ -42,7 +43,7 @@ abstract class CrudProvider {
   // Super returns Document Reference
   Future<DocumentReference> set({@required String id, @required model}) async {
     DocumentReference ref = firestoreInstance.document(id);
-     await ref.setData(model.toJson());
-     return ref;
+    await ref.setData(model.toJson());
+    return ref;
   }
 }

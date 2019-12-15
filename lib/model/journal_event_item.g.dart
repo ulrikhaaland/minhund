@@ -8,19 +8,20 @@ part of 'journal_event_item.dart';
 
 JournalEventItem _$JournalEventItemFromJson(Map<String, dynamic> json) {
   return JournalEventItem(
-    title: json['title'] as String,
-    timeStamp: json['timeStamp'] == null
-        ? null
-        : DateTime.parse(json['timeStamp'] as String),
-    note: json['note'] as String,
-    id: json['id'] as String,
-    reminder: json['reminder'] == null
-        ? null
-        : DateTime.parse(json['reminder'] as String),
-    reminderString: json['reminderString'] as String,
-    sortIndex: json['sortIndex'] as int,
-    completed: json['completed'] as bool,
-  )..category = json['category'] as String;
+      title: json['title'] as String,
+      timeStamp: json['timeStamp'] == null
+          ? null
+          : DateTime.parse(json['timeStamp'] as String),
+      note: json['note'] as String,
+      id: json['id'] as String,
+      categoryId: json['id'] as String,
+      reminder: json['reminder'] == null
+          ? null
+          : DateTime.parse(json['reminder'] as String),
+      reminderString: json['reminderString'] as String,
+      colorIndex: json['colorIndex'] as int,
+      sortIndex: json['sortIndex'] as int,
+      completed: json['completed'] as bool);
 }
 
 Map<String, dynamic> _$JournalEventItemToJson(JournalEventItem instance) =>
@@ -31,7 +32,8 @@ Map<String, dynamic> _$JournalEventItemToJson(JournalEventItem instance) =>
       'reminder': instance.reminder?.toIso8601String(),
       'reminderString': instance.reminderString,
       'note': instance.note,
-      'category': instance.category,
+      'categoryId': instance.categoryId,
       'completed': instance.completed,
+      'colorIndex': instance.colorIndex,
       'sortIndex': instance.sortIndex,
     };

@@ -65,6 +65,10 @@ class PartnerOpeningHoursController extends DialogTemplateController {
 
     return time;
   }
+
+  @override
+  // TODO: implement withBorder
+  bool get withBorder => null;
 }
 
 class PartnerOpeningHours extends DialogTemplate {

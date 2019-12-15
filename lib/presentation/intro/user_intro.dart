@@ -80,6 +80,10 @@ class UserIntroController extends MasterPageController {
       DogProvider().update(model: dog);
     }
   }
+
+  @override
+  // TODO: implement enabledTopSafeArea
+  bool get enabledTopSafeArea => null;
 }
 
 class UserIntro extends MasterPage {

@@ -130,6 +130,10 @@ class PhoneLoginController extends MasterPageController {
 
   @override
   String get title => "Logg inn";
+
+  @override
+  // TODO: implement enabledTopSafeArea
+  bool get enabledTopSafeArea => null;
 }
 
 class PhoneLogin extends MasterPage {

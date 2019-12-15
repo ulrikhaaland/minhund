@@ -25,6 +25,10 @@ class ReservationDialogController extends DialogTemplateController {
     });
     reservation.docRef.delete();
   }
+
+  @override
+  // TODO: implement withBorder
+  bool get withBorder => null;
 }
 
 class ReservationDialog extends DialogTemplate {

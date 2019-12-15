@@ -40,6 +40,10 @@ class CustomerOfferPageController extends MasterPageController {
   void initState() {
     super.initState();
   }
+
+  @override
+  // TODO: implement enabledTopSafeArea
+  bool get enabledTopSafeArea => null;
 }
 
 class CustomerOfferPage extends MasterPage {

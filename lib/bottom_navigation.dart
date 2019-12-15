@@ -47,7 +47,9 @@ class BottomNavigationController extends MasterPageController {
 
   List<Widget> pages;
 
-  bool _isLoading = true;
+  bool _isLoading = false;
+
+  bool enabled = true;
 
   @override
   void initState() {
@@ -55,10 +57,11 @@ class BottomNavigationController extends MasterPageController {
   }
 
   init() async {
-    bottomNavigationBar = BottomNav(
+    bottomNavigationBar = BottomNav(  
       isPartner: user is Partner,
       onTabChanged: (index) {
         setState(() {
+          index == 1 ? enabled = false : enabled = true;
           bottomNavIndex = index;
         });
       },
@@ -154,6 +157,9 @@ class BottomNavigationController extends MasterPageController {
       _isLoading = false;
     });
   }
+
+  @override
+  bool get enabledTopSafeArea => enabled ?? true;
 }
 
 class BottomNavigation extends MasterPage {
@@ -184,6 +190,8 @@ class BottomNavigation extends MasterPage {
         // controller.user.dog.profileImage.controller.edit = false;
       }
     }
+
+    if(controller.pages == null) return Container();
 
     return IndexedStack(
       index: controller.bottomNavIndex,

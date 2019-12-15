@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:latlong/latlong.dart';
@@ -26,9 +28,11 @@ class OfferPageController extends MasterPageController {
 
   bool isLoading = true;
 
+  Timer timer;
+
   @override
   void dispose() {
-    // TODO: implement dispose
+    timer.cancel();
     super.dispose();
   }
 
@@ -47,6 +51,7 @@ class OfferPageController extends MasterPageController {
   @override
   void initState() {
     getOffers();
+    timer = Timer.periodic(Duration(hours: 1), (_) => getOffers());
     super.initState();
   }
 
@@ -73,6 +78,10 @@ class OfferPageController extends MasterPageController {
   @override
   // TODO: implement actionTwoList
   List<Widget> get actionTwoList => null;
+
+  @override
+  // TODO: implement enabledTopSafeArea
+  bool get enabledTopSafeArea => null;
 }
 
 class OfferPage extends MasterPage {

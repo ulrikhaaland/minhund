@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/journal_category_item.dart';
+import 'package:minhund/presentation/home/journal/journal_page.dart';
 import 'package:minhund/presentation/widgets/buttons/save_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_pop_button.dart';
@@ -12,18 +13,19 @@ import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/color_picker.dart';
 
-class JournalAddCategoryController extends DialogTemplateController {
+abstract class CategoryActionController {
+  Future<void> onCategoryDelete({JournalCategoryItem category});
+  Future<void> onCategoryUpdate({JournalCategoryItem category});
+  Future<void> onCategoryCreate({JournalCategoryItem category});
+}
+
+class JournalAddCategoryController extends DialogTemplateController
+    implements CategoryActionController {
   double height;
 
-  final List<JournalCategoryItem> journalCategoryItems;
-
-  final String dogDocRefPath;
+  final JournalPageController actionController;
 
   JournalCategoryItem singleCategoryItem;
-
-  final VoidCallback childOnSaved;
-
-  final VoidCallback childOnDelete;
 
   PageState pageState;
 
@@ -36,12 +38,7 @@ class JournalAddCategoryController extends DialogTemplateController {
   SaveButtonController saveBtnCtrlr;
 
   JournalAddCategoryController(
-      {this.journalCategoryItems,
-      this.childOnSaved,
-      this.childOnDelete,
-      this.dogDocRefPath,
-      this.pageState,
-      this.singleCategoryItem});
+      {this.actionController, this.pageState, this.singleCategoryItem});
 
   @override
   Widget get actionOne => PopButton();
@@ -60,7 +57,7 @@ class JournalAddCategoryController extends DialogTemplateController {
       singleCategoryItem = JournalCategoryItem(
           title: "",
           journalEventItems: [],
-          sortIndex: journalCategoryItems.length,
+          sortIndex: actionController.dog.journalItems.length,
           colorIndex: 1);
     else {
       categoryTitle = singleCategoryItem.title;
@@ -80,26 +77,13 @@ class JournalAddCategoryController extends DialogTemplateController {
       singleCategoryItem.title = categoryTitle;
       singleCategoryItem.colorIndex = categoryColorIndex;
       if (pageState == PageState.create) {
-        journalCategoryItems.add(singleCategoryItem);
-        await JournalProvider()
-            .create(model: singleCategoryItem, id: dogDocRefPath);
+        onCategoryCreate(category: singleCategoryItem);
       } else {
-        JournalProvider().update(model: singleCategoryItem);
+        onCategoryUpdate(category: singleCategoryItem);
       }
 
-      childOnSaved();
-      Navigator.pop(context);
+      // Navigator.pop(context);
     }
-  }
-
-  void onDelete() {
-    //  Parent deletes from list
-    String pathFromDog = singleCategoryItem.docRef.path.split("dogs")[1];
-
-    CloudFunctionsProvider().recursiveUserSpecificDelete(
-        pathAfterTypeId: "dogs$pathFromDog", userType: UserType.user);
-
-    childOnDelete();
   }
 
   Widget basicContainer({Widget child, double width}) {
@@ -110,6 +94,26 @@ class JournalAddCategoryController extends DialogTemplateController {
       child: child,
     );
   }
+
+  @override
+  Future<void> onCategoryCreate({JournalCategoryItem category}) {
+    return actionController.onCategoryCreate(category: category);
+  }
+
+  @override
+  Future<void> onCategoryDelete({JournalCategoryItem category}) {
+    Navigator.of(context)..pop()..pop();
+    return actionController.onCategoryDelete(category: category);
+  }
+
+  @override
+  Future<void> onCategoryUpdate({JournalCategoryItem category}) {
+    return actionController.onCategoryUpdate(category: category);
+  }
+
+  @override
+  // TODO: implement withBorºder
+  bool get withBorder => true;
 }
 
 class JournalAddCategory extends DialogTemplate {
@@ -177,7 +181,8 @@ class JournalAddCategory extends DialogTemplate {
                       text: "Slett kategori",
                       color: ServiceProvider
                           .instance.instanceStyleService.appStyle.pink,
-                      onPressed: () => controller.onDelete(),
+                      onPressed: () => controller.onCategoryDelete(
+                          category: controller.singleCategoryItem),
                     ),
                   ),
                 ],

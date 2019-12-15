@@ -40,6 +40,10 @@ class ProfilePageController extends MasterPageController {
 
   @override
   List<Widget> get actionTwoList => null;
+
+  @override
+  // TODO: implement enabledTopSafeArea
+  bool get enabledTopSafeArea => null;
 }
 
 class ProfilePage extends MasterPage {

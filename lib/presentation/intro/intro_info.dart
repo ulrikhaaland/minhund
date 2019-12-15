@@ -42,6 +42,10 @@ class IntroInfoOwnerController extends MasterPageController {
 
   @override
   List<Widget> get actionTwoList => null;
+
+  @override
+  // TODO: implement enabledTopSafeArea
+  bool get enabledTopSafeArea => null;
 }
 
 class IntroInfoOwner extends MasterPage {

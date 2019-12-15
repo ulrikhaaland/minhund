@@ -22,7 +22,7 @@ class JournalItemsPage extends BaseView {
       return Column(
           children: controller.journalItems.map((item) {
         return JournalCategoryListItem(
-          controller: JournalCategoryListItemController(item: item),
+          controller: JournalCategoryListItemController(categoryItem: item),
         );
       }).toList());
 

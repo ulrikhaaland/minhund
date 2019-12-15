@@ -1,14 +1,14 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/dog.dart';
 import 'package:minhund/model/journal_category_item.dart';
 import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
+import 'package:minhund/presentation/home/journal/journal-event/journal_event_page.dart';
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
+import 'package:minhund/provider/cloud_functions_provider.dart';
 import 'package:minhund/provider/journal_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
@@ -16,7 +16,8 @@ import 'package:provider/provider.dart';
 import 'journal-category/journal_category_list_item.dart';
 import 'journal-event/journal_event_dialog.dart';
 
-class JournalPageController extends MasterPageController {
+class JournalPageController extends MasterPageController
+    implements CategoryActionController {
   static final JournalPageController _instance =
       JournalPageController._internal();
 
@@ -28,8 +29,10 @@ class JournalPageController extends MasterPageController {
     print("Journal Page built");
   }
 
-  List<JournalEventItem> nextEvents = [];
-  List<JournalEventItem> completedEvents = [];
+  List<JournalEventItem> eventItems = [];
+
+  JournalEventItem nextEvent;
+  JournalEventItem latestEvent;
 
   User user;
 
@@ -40,19 +43,18 @@ class JournalPageController extends MasterPageController {
   int nextEventColorIndex = 0;
   int completedEventColorIndex = 0;
 
-  List<JournalCategoryListItemController> categoryControllers = [];
+  Timer timer;
 
   @override
   void initState() {
-    Timer.periodic(Duration(minutes: 10), (_) {
-      categoryControllers.forEach((c) => c.findLatestEvent(null));
-    });
+    timer = Timer.periodic(
+        Duration(minutes: 10), (_) => setLatestAndUpcomingEvent());
     super.initState();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
+    timer.cancel();
     super.dispose();
   }
 
@@ -67,9 +69,7 @@ class JournalPageController extends MasterPageController {
           context: context,
           child: JournalAddCategory(
             controller: JournalAddCategoryController(
-              journalCategoryItems: dog.journalItems,
-              childOnSaved: () => null,
-              dogDocRefPath: dog.docRef.path,
+              actionController: this,
               pageState: PageState.create,
             ),
           ),
@@ -97,65 +97,89 @@ class JournalPageController extends MasterPageController {
     isLoading = false;
   }
 
-  getLatestEvent(
-      {JournalEventItem nextItem,
-      JournalEventItem completedItem,
-      int colorIndex,
-      String deletedEventId}) {
-    if (nextItem == null && completedItem == null) if (deletedEventId != null) {
-      if (nextEvents.firstWhere((j) => j.id == deletedEventId,
-              orElse: () => null) !=
-          null) {
-        nextEvents.removeWhere((j) => j.id == deletedEventId);
-      }
-      if (completedEvents.firstWhere((j) => j.id == deletedEventId,
-              orElse: () => null) !=
-          null) {
-        completedEvents.removeWhere((j) => j.id == deletedEventId);
-      }
-    }
+  setLatestAndUpcomingEvent() {
+    nextEvent = null;
+    latestEvent = null;
 
-    if (nextItem != null) {
-      JournalEventItem oldItem =
-          nextEvents.firstWhere((i) => i.id == nextItem.id, orElse: () => null);
-      if (oldItem != null) {
-        nextEvents.remove(oldItem);
-      }
+    List<JournalEventItem> upcomingList = [];
+    List<JournalEventItem> latestList = [];
 
-      nextEvents.add(nextItem);
-      nextEvents.removeWhere((j) => j.timeStamp?.isBefore(DateTime.now()));
-    }
-    if (nextEvents.isNotEmpty) {
-      nextEvents.sort((a, b) {
-        DateTime dateTimeA = a.timeStamp ?? DateTime(2050);
-        DateTime dateTimeB = b.timeStamp ?? DateTime(2050);
+    upcomingList = eventItems.where((i) {
+      if (i.timeStamp == null) return false;
+      return i.timeStamp?.isAfter(DateTime.now());
+    }).toList();
+    latestList = eventItems.where((i) {
+      if (i.timeStamp == null) return false;
+      return i.timeStamp?.isBefore(DateTime.now());
+    }).toList();
 
-        return dateTimeA.compareTo(dateTimeB);
-      });
-      if (nextItem == nextEvents[0]) nextEventColorIndex = colorIndex;
-    }
-    if (completedItem != null) {
-      JournalEventItem oldItem = completedEvents
-          .firstWhere((i) => i.id == completedItem.id, orElse: () => null);
-      if (oldItem != null) {
-        completedEvents.remove(oldItem);
-      }
+    upcomingList.sort((a, b) {
+      a.timeStamp = a.timeStamp ?? DateTime(2069);
+      b.timeStamp = b.timeStamp ?? DateTime(2420);
 
-      completedEvents.add(completedItem);
-      completedEvents.removeWhere((j) => j.timeStamp?.isAfter(DateTime.now()));
-    }
-    if (completedEvents.isNotEmpty) {
-      completedEvents.sort((a, b) {
-        DateTime dateTimeA = a.timeStamp ?? DateTime(2050);
-        DateTime dateTimeB = b.timeStamp ?? DateTime(2050);
+      return a.timeStamp.compareTo(b.timeStamp);
+    });
 
-        return dateTimeB.compareTo(dateTimeA);
-      });
-      if (completedItem == completedEvents[0])
-        completedEventColorIndex = colorIndex;
-    }
+    latestList.sort((a, b) {
+      a.timeStamp = a.timeStamp ?? DateTime(2069);
+      b.timeStamp = b.timeStamp ?? DateTime(2420);
+
+      return a.timeStamp.compareTo(b.timeStamp);
+    });
+
+    if (upcomingList.isNotEmpty) nextEvent = upcomingList[0];
+    if (latestList.isNotEmpty) latestEvent = latestList[0];
 
     setState(() {});
+  }
+
+  @override
+  bool get enabledTopSafeArea => null;
+
+  @override
+  Future<void> onCategoryCreate({JournalCategoryItem category}) {
+    dog.journalItems.add(category);
+
+    Navigator.pop(context);
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => JournalEventPage(
+                  controller: JournalEventPageController(
+                    actionController: this,
+                    categoryItem: category,
+                  ),
+                )));
+
+    return JournalProvider().create(model: category, id: dog.docRef.path);
+  }
+
+  @override
+  Future<void> onCategoryDelete({JournalCategoryItem category}) {
+    dog.journalItems.removeWhere((item) => item.id == category.id);
+
+    eventItems.removeWhere((i) => i.categoryId == category.id);
+
+    setLatestAndUpcomingEvent();
+
+    String pathFromDog = category.docRef.path.split("dogs")[1];
+
+    return CloudFunctionsProvider().recursiveUserSpecificDelete(
+        pathAfterTypeId: "dogs$pathFromDog", userType: UserType.user);
+  }
+
+  @override
+  Future<void> onCategoryUpdate({JournalCategoryItem category}) {
+    eventItems
+        .where((i) => i.categoryId == category.id)
+        .forEach((eventItem) => eventItem.colorIndex == category.colorIndex);
+
+    setLatestAndUpcomingEvent();
+
+    Navigator.pop(context);
+
+    return JournalProvider().update(model: category);
   }
 }
 
@@ -184,219 +208,206 @@ class JournalPage extends MasterPage {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Flexible(
-            flex: 1,
-            child: Card(
-              color: Colors.white,
-              elevation: ServiceProvider
-                  .instance.instanceStyleService.appStyle.elevation,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(ServiceProvider
-                    .instance.instanceStyleService.appStyle.borderRadius),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(getDefaultPadding(context)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Flexible(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Flexible(
-                            child: Text(
-                              controller.dog.name,
-                              style: ServiceProvider
-                                  .instance.instanceStyleService.appStyle.title,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Text(
-                            "${controller.dog.race}, ${formatDifference(date2: controller.dog.birthDate, date1: DateTime.now())}, ${controller.dog.weigth} kilo",
-                            style: ServiceProvider
-                                .instance.instanceStyleService.appStyle.body1,
-                            overflow: TextOverflow.clip,
-                          ),
-                        ],
-                      ),
-                    ),
-                    controller.user.dog.profileImage
-                  ],
-                ),
-              ),
-            ),
-          ),
-          if (controller.nextEvents.isNotEmpty)
-            InkWell(
-              onTap: () => showCustomDialog(
-                context: context,
-                child: JournalEventDialog(
-                  controller: JournalEventDialogController(
-                    user: controller.user,
-                    canEdit: false,
-                    eventItem: controller.nextEvents[0],
-                    pageState: PageState.read,
-                  ),
-                ),
-              ),
-              child: Card(
-                color: Colors.white,
-                elevation: ServiceProvider
-                    .instance.instanceStyleService.appStyle.elevation,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(ServiceProvider
-                      .instance.instanceStyleService.appStyle.borderRadius),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(getDefaultPadding(context)),
-                  child: RichText(
-                    key: Key(controller.nextEvents[0].timeStamp.toString()),
-                    overflow: TextOverflow.clip,
-                    text: TextSpan(children: <TextSpan>[
-                      TextSpan(
-                          text: "Neste: ",
-                          style: ServiceProvider
-                              .instance.instanceStyleService.appStyle.italic),
-                      TextSpan(
-                          text: controller.nextEvents[0].title,
-                          style: ServiceProvider
-                              .instance.instanceStyleService.appStyle.body1
-                              .copyWith(
-                                  color: ServiceProvider
-                                          .instance
-                                          .instanceStyleService
-                                          .appStyle
-                                          .palette[
-                                      controller.nextEventColorIndex])),
-                      if (controller.nextEvents[0].timeStamp != null)
-                        TextSpan(
-                            text: " " +
-                                formatDifference(
-                                    date2: DateTime.now(),
-                                    date1: controller.nextEvents[0].timeStamp,
-                                    futureString: true),
-                            style: ServiceProvider
-                                .instance.instanceStyleService.appStyle.italic),
-                    ]),
-                  ),
-                ),
-              ),
-            ),
-          if (controller.completedEvents.isNotEmpty)
-            InkWell(
-              onTap: () => showCustomDialog(
-                context: context,
-                child: JournalEventDialog(
-                  controller: JournalEventDialogController(
-                    user: controller.user,
-                    canEdit: false,
-                    eventItem: controller.completedEvents[0],
-                    pageState: PageState.read,
-                  ),
-                ),
-              ),
-              child: Card(
-                color: Colors.white,
-                elevation: ServiceProvider
-                    .instance.instanceStyleService.appStyle.elevation,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(ServiceProvider
-                      .instance.instanceStyleService.appStyle.borderRadius),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(getDefaultPadding(context)),
-                  child: RichText(
-                    key:
-                        Key(controller.completedEvents[0].timeStamp.toString()),
-                    overflow: TextOverflow.clip,
-                    text: TextSpan(children: <TextSpan>[
-                      TextSpan(
-                          text: "Siste: ",
-                          style: ServiceProvider
-                              .instance.instanceStyleService.appStyle.italic),
-                      TextSpan(
-                          text: controller.completedEvents[0].title,
-                          style: ServiceProvider
-                              .instance.instanceStyleService.appStyle.body1
-                              .copyWith(
-                                  color: ServiceProvider
-                                          .instance
-                                          .instanceStyleService
-                                          .appStyle
-                                          .palette[
-                                      controller.completedEventColorIndex])),
-                      if (controller.completedEvents[0].timeStamp != null)
-                        TextSpan(
-                            text: " " +
-                                formatDifference(
-                                    date2: DateTime.now(),
-                                    date1:
-                                        controller.completedEvents[0].timeStamp,
-                                    futureString: false),
-                            style: ServiceProvider
-                                .instance.instanceStyleService.appStyle.italic),
-                    ]),
-                  ),
-                ),
-              ),
-            ),
+          _header(),
+          if (controller.nextEvent != null) _nextEvent(),
+          if (controller.latestEvent != null) _previousCompletedEvent(),
           Container(
             height: getDefaultPadding(context) * 4,
           ),
-          if (controller.dog.journalItems != null)
-            Flexible(
-              flex: 4,
-              child: ReorderableList(
-                  onReorder: (oldIndex, newIndex) {
-                    JournalCategoryItem cItem =
-                        controller.dog.journalItems.removeAt(oldIndex);
-
-                    JournalCategoryItem oldItem = controller.dog.journalItems
-                        .firstWhere((i) => i.sortIndex == newIndex,
-                            orElse: () => null);
-
-                    cItem.sortIndex = newIndex;
-
-                    JournalProvider().update(model: cItem);
-
-                    controller.dog.journalItems.insert(newIndex, cItem);
-
-                    if (oldItem != null) {
-                      oldItem.sortIndex =
-                          controller.dog.journalItems.indexOf(oldItem);
-
-                      JournalProvider().update(model: oldItem);
-                    }
-                  },
-                  widgetList: controller.dog.journalItems.map((item) {
-                    JournalCategoryListItemController ctrlr =
-                        JournalCategoryListItemController(
-                            returnLatest:
-                                (nextItem, completedItem, colorIndex) =>
-                                    controller.getLatestEvent(
-                                        nextItem: nextItem,
-                                        completedItem: completedItem,
-                                        colorIndex: colorIndex),
-                            returnDeletedId: (id) =>
-                                controller.getLatestEvent(deletedEventId: id),
-                            user: controller.user,
-                            onUpdate: () => controller.setState(() {}),
-                            dog: controller.dog,
-                            item: item);
-
-                    if (controller.categoryControllers.isNotEmpty)
-                      controller.categoryControllers
-                          .removeWhere((c) => c.item.id == ctrlr.item.id);
-
-                    controller.categoryControllers.add(ctrlr);
-                    return JournalCategoryListItem(
-                        key: Key(item.id), controller: ctrlr);
-                  }).toList()),
-            ),
+          if (controller.dog.journalItems != null) _categoryItems()
         ],
       ),
+    );
+  }
+
+  Widget _nextEvent() {
+    return InkWell(
+      onTap: () => showCustomDialog(
+        context: context,
+        child: JournalEventDialog(
+          controller: JournalEventDialogController(
+            user: controller.user,
+            canEdit: false,
+            eventItem: controller.nextEvent,
+            pageState: PageState.read,
+          ),
+        ),
+      ),
+      child: Card(
+        color: Colors.white,
+        elevation:
+            ServiceProvider.instance.instanceStyleService.appStyle.elevation,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ServiceProvider
+              .instance.instanceStyleService.appStyle.borderRadius),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(getDefaultPadding(context)),
+          child: RichText(
+            key: Key(controller.nextEvent.timeStamp.toString()),
+            overflow: TextOverflow.clip,
+            text: TextSpan(children: <TextSpan>[
+              TextSpan(
+                  text: "Neste: ",
+                  style: ServiceProvider
+                      .instance.instanceStyleService.appStyle.italic),
+              TextSpan(
+                  text: controller.nextEvent.title,
+                  style: ServiceProvider
+                      .instance.instanceStyleService.appStyle.body1
+                      .copyWith(
+                          color: ServiceProvider
+                              .instance
+                              .instanceStyleService
+                              .appStyle
+                              .palette[controller.nextEventColorIndex ?? 0])),
+              if (controller.nextEvent.timeStamp != null)
+                TextSpan(
+                    text: " " +
+                        formatDifference(
+                            date2: DateTime.now(),
+                            date1: controller.nextEvent.timeStamp,
+                            futureString: true),
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.italic),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _header() {
+    return Flexible(
+      flex: 1,
+      child: Card(
+        color: Colors.white,
+        elevation:
+            ServiceProvider.instance.instanceStyleService.appStyle.elevation,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ServiceProvider
+              .instance.instanceStyleService.appStyle.borderRadius),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(getDefaultPadding(context)),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Flexible(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Flexible(
+                      child: Text(
+                        controller.dog.name,
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.title,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Text(
+                      "${controller.dog.race}, ${formatDifference(date2: controller.dog.birthDate, date1: DateTime.now())}, ${controller.dog.weigth} kilo",
+                      style: ServiceProvider
+                          .instance.instanceStyleService.appStyle.body1,
+                      overflow: TextOverflow.clip,
+                    ),
+                  ],
+                ),
+              ),
+              controller.user.dog.profileImage
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _previousCompletedEvent() {
+    return InkWell(
+      onTap: () => showCustomDialog(
+        context: context,
+        child: JournalEventDialog(
+          controller: JournalEventDialogController(
+            user: controller.user,
+            canEdit: false,
+            eventItem: controller.latestEvent,
+            pageState: PageState.read,
+          ),
+        ),
+      ),
+      child: Card(
+        color: Colors.white,
+        elevation:
+            ServiceProvider.instance.instanceStyleService.appStyle.elevation,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ServiceProvider
+              .instance.instanceStyleService.appStyle.borderRadius),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(getDefaultPadding(context)),
+          child: RichText(
+            key: Key(controller.latestEvent.timeStamp.toString()),
+            overflow: TextOverflow.clip,
+            text: TextSpan(children: <TextSpan>[
+              TextSpan(
+                  text: "Siste: ",
+                  style: ServiceProvider
+                      .instance.instanceStyleService.appStyle.italic),
+              TextSpan(
+                  text: controller.latestEvent.title,
+                  style: ServiceProvider
+                      .instance.instanceStyleService.appStyle.body1
+                      .copyWith(
+                          color: ServiceProvider.instance.instanceStyleService
+                                  .appStyle.palette[
+                              controller.latestEvent.colorIndex ?? 0])),
+              if (controller.latestEvent.timeStamp != null)
+                TextSpan(
+                    text: " " +
+                        formatDifference(
+                            date2: DateTime.now(),
+                            date1: controller.latestEvent.timeStamp,
+                            futureString: false),
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.italic),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _categoryItems() {
+    return Flexible(
+      flex: 4,
+      child: ReorderableList(
+          onReorder: (oldIndex, newIndex) {
+            JournalCategoryItem cItem =
+                controller.dog.journalItems.removeAt(oldIndex);
+
+            JournalCategoryItem oldItem = controller.dog.journalItems
+                .firstWhere((i) => i.sortIndex == newIndex, orElse: () => null);
+
+            cItem.sortIndex = newIndex;
+
+            JournalProvider().update(model: cItem);
+
+            controller.dog.journalItems.insert(newIndex, cItem);
+
+            if (oldItem != null) {
+              oldItem.sortIndex = controller.dog.journalItems.indexOf(oldItem);
+
+              JournalProvider().update(model: oldItem);
+            }
+          },
+          widgetList: controller.dog.journalItems.map((item) {
+            return JournalCategoryListItem(
+                key: Key(item.id),
+                controller: JournalCategoryListItemController(
+                    actionController: controller, categoryItem: item));
+          }).toList()),
     );
   }
 }

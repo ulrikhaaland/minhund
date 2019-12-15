@@ -92,6 +92,10 @@ class CustomerReserveDialogController extends DialogTemplateController {
       }
     });
   }
+
+  @override
+  // TODO: implement withBorder
+  bool get withBorder => null;
 }
 
 class CustomerReserveDialog extends DialogTemplate {

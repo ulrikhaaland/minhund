@@ -25,6 +25,6 @@ class CloudFunctionsProvider {
     final HttpsCallable callable = CloudFunctions.instance.getHttpsCallable(
       functionName: 'recursiveUniversalDelete',
     );
-    return callable.call(<String, dynamic>{"path": path});
+    return callable.call(<String, dynamic>{"path": path}).catchError((e) => print(e.message));
   }
 }

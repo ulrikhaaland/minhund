@@ -8,7 +8,6 @@ import 'package:minhund/helper/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/model/partner/partner.dart';
-import 'package:minhund/presentation/animation/intro.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/intro/user_intro.dart';
 import 'package:minhund/presentation/login/login_page.dart';
@@ -154,6 +153,8 @@ class RootPageController extends BaseController {
 
     UserProvider().updateFcmToken(_user, firebaseMessaging);
 
+    setState(() {});
+
     return;
   }
 
@@ -243,7 +244,7 @@ class RootPage extends BaseView {
     //     },
     //   );
     // } else
-     if (controller.firebaseUser == null) {
+    if (controller.firebaseUser == null) {
       return LoginPage(
         controller: LoginPageController(
           rootPageController: controller,

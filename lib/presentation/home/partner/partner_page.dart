@@ -41,6 +41,8 @@ class PartnerPageController extends MasterPageController {
 
   FocusScopeNode focusScopeNode = FocusScopeNode();
 
+  SaveButtonController saveButtonController;
+
   PartnerPageController({this.pageState = PageState.read, this.partner});
 
   @override
@@ -59,31 +61,7 @@ class PartnerPageController extends MasterPageController {
                 iconSize: ServiceProvider
                     .instance.instanceStyleService.appStyle.iconSizeStandard,
               )
-            : SaveButton(
-                controller: SaveButtonController(
-                  onPressed: () {
-                    _formKey.currentState.save();
-
-                    if (partner.imgUrl == null)
-                      FileProvider()
-                          .uploadFile(
-                              file: imageFile,
-                              path: "partners/${partner.id}/logo")
-                          .then((url) {
-                        partner.imgUrl = url;
-                        PartnerProvider().update(model: partner);
-                      });
-                    else
-                      PartnerProvider().update(model: partner);
-
-                    PartnerProvider().updateOffers(model: partner);
-
-                    setState(() {
-                      pageState = PageState.read;
-                    });
-                  },
-                ),
-              ),
+            : SaveButton(controller: saveButtonController),
       ];
   @override
   void initState() {
@@ -133,6 +111,30 @@ class PartnerPageController extends MasterPageController {
               }),
         ),
       ),
+    );
+
+    saveButtonController = SaveButtonController(
+      onPressed: () {
+        saveButtonController.load();
+        _formKey.currentState.save();
+
+        if (partner.imgUrl == null)
+          FileProvider()
+              .uploadFile(file: imageFile, path: "partners/${partner.id}/logo")
+              .then((url) {
+            partner.imgUrl = url;
+            PartnerProvider().update(model: partner);
+          });
+        else
+          PartnerProvider().update(model: partner);
+
+        PartnerProvider().updateOffers(model: partner);
+        saveButtonController.load();
+
+        setState(() {
+          pageState = PageState.read;
+        });
+      },
     );
 
     super.initState();
@@ -191,6 +193,10 @@ class PartnerPageController extends MasterPageController {
   @override
   // TODO: implement fab
   Widget get fab => null;
+
+  @override
+  // TODO: implement enabledTopSafeArea
+  bool get enabledTopSafeArea => null;
 }
 
 class PartnerPage extends MasterPage {

@@ -13,6 +13,8 @@ abstract class MasterPageController extends BaseController {
 
   Widget get bottomNav;
 
+  bool get enabledTopSafeArea;
+
   Widget get actionOne;
   List<Widget> get actionTwoList;
 }
@@ -70,36 +72,27 @@ abstract class MasterPage extends BaseView {
       );
 
     return TapToUnfocus(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        resizeToAvoidBottomPadding: false,
-          backgroundColor: ServiceProvider
-              .instance.instanceStyleService.appStyle.backgroundColor,
-          appBar: appBar,
-          bottomNavigationBar: controller.bottomNav,
-          floatingActionButton: controller.fab,
-          body: SafeArea(
-            child: LayoutBuilder(
-              builder: (context, con) {
-                return Container(
-                  height: con.maxHeight,
-                  child: Container(
-                      height: con.maxHeight,
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            height: con.maxHeight * 0.02,
-                          ),
-                          Container(
-                              height: con.maxHeight * 0.98,
-                              child: buildContent(context)),
-                        ],
-                      )),
-                );
-              },
-            ),
-          )),
-    );
+        child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            resizeToAvoidBottomPadding: false,
+            backgroundColor: ServiceProvider
+                .instance.instanceStyleService.appStyle.backgroundColor,
+            appBar: appBar,
+            bottomNavigationBar: controller.bottomNav,
+            floatingActionButton: controller.fab,
+            body: SafeArea(
+                top: controller.enabledTopSafeArea ?? true,
+                child: Container(
+                  alignment: Alignment.topCenter,
+                    padding: EdgeInsets.only(
+                        top: controller.enabledTopSafeArea == true
+                            ? MediaQuery.of(context).padding.top
+                            : 0),
+                    height: MediaQuery.of(context).size.height -
+                        (controller.enabledTopSafeArea == true
+                            ? MediaQuery.of(context).padding.top
+                            : 0),
+                    child: buildContent(context)))));
   }
 
   Widget buildContent(BuildContext context);

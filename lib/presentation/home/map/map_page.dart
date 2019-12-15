@@ -8,6 +8,8 @@ import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/map_options.dart';
 import 'package:minhund/model/partner/partner.dart';
 import 'package:minhund/model/place.dart';
+import 'package:minhund/presentation/base_controller.dart';
+import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_pop_button.dart';
@@ -21,7 +23,7 @@ import 'map-options/map_options_content.dart';
 
 enum MapPageState { noCurrentLocation, map, options }
 
-class MapPageController extends MasterPageController {
+class MapPageController extends BaseController {
   static final MapPageController _instance = MapPageController._internal();
 
   factory MapPageController() {
@@ -324,13 +326,13 @@ class MapPageController extends MasterPageController {
   List<Widget> get actionTwoList => null;
 }
 
-class MapPage extends MasterPage {
+class MapPage extends BaseView {
   final MapPageController controller;
 
   MapPage({this.controller});
 
   @override
-  Widget buildContent(BuildContext context) {
+  Widget build(BuildContext context) {
     if (!mounted) return Container();
 
     controller.currentLocation = Provider.of<LocationData>(context);
@@ -374,7 +376,8 @@ class MapPage extends MasterPage {
             myLocationButtonEnabled: true,
             myLocationEnabled: true,
             onMapCreated: (GoogleMapController localController) {
-              controller.mapController.complete(localController);
+              if (!controller.mapController.isCompleted)
+                controller.mapController.complete(localController);
             },
           ),
           Padding(

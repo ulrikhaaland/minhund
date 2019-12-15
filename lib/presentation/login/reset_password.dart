@@ -58,6 +58,10 @@ class ResetPasswordController extends MasterPageController {
   Future<void> sendResetLink() {
     return auth.resetPassword(email);
   }
+
+  @override
+  // TODO: implement enabledTopSafeArea
+  bool get enabledTopSafeArea => null;
 }
 
 class ResetPassword extends MasterPage {

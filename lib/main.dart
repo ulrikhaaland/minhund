@@ -39,6 +39,7 @@ class _AppState extends State<App> {
       return Container();
     }
 
+
     print('App: build');
     return BotToastInit(
       child: MaterialApp(
@@ -56,7 +57,7 @@ class _AppState extends State<App> {
           iconTheme: IconThemeData(
               color: ServiceProvider
                   .instance.instanceStyleService.appStyle.textGrey),
-          // brightness: Brightness.light,
+          brightness: Brightness.light,
           backgroundColor: ServiceProvider
               .instance.instanceStyleService.appStyle.backgroundColor,
           primarySwatch: Colors.grey,
