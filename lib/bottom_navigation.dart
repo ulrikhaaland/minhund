@@ -61,7 +61,7 @@ class BottomNavigationController extends MasterPageController {
       isPartner: user is Partner,
       onTabChanged: (index) {
         setState(() {
-          index == 1 ? enabled = false : enabled = true;
+          index == 1 || index == 3 ? enabled = false : enabled = true;
           bottomNavIndex = index;
         });
       },

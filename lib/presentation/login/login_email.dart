@@ -198,7 +198,7 @@ class EmailLogin extends MasterPage {
               children: <Widget>[
                 Container(
                   height: ServiceProvider.instance.screenService
-                      .getHeightByPercentage(context, 15),
+                      .getHeightByPercentage(context, 5),
                 ),
                 Text(
                   controller.authHint,

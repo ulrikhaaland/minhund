@@ -284,32 +284,32 @@ class JournalEventPage extends MasterPage {
                           2,
                       padding: EdgeInsets.only(top: padding),
                       child: Tab(
-                        // icon: Icon(
-                        //   Icons.check,
-                        //   color: ServiceProvider
-                        //       .instance.instanceStyleService.appStyle.green,
-                        //   size: ServiceProvider.instance.instanceStyleService
-                        //       .appStyle.iconSizeStandard,
-                        // ),
-                        child: Column(
-                          children: <Widget>[
-                            Icon(
-                              Icons.check,
-                              color: ServiceProvider
-                                  .instance.instanceStyleService.appStyle.green,
-                              size: ServiceProvider
-                                  .instance
-                                  .instanceStyleService
-                                  .appStyle
-                                  .iconSizeStandard,
-                            ),
-                            Text(
-                              "Fullførte",
-                              style: ServiceProvider.instance
-                                  .instanceStyleService.appStyle.descTitle,
-                            ),
-                          ],
+                        icon: Icon(
+                          Icons.check,
+                          color: ServiceProvider
+                              .instance.instanceStyleService.appStyle.green,
+                          size: ServiceProvider.instance.instanceStyleService
+                              .appStyle.iconSizeBig,
                         ),
+                        // child: Column(
+                        //   children: <Widget>[
+                        //     Icon(
+                        //       Icons.check,
+                        //       color: ServiceProvider
+                        //           .instance.instanceStyleService.appStyle.green,
+                        //       size: ServiceProvider
+                        //           .instance
+                        //           .instanceStyleService
+                        //           .appStyle
+                        //           .iconSizeStandard,
+                        //     ),
+                        //     // Text(
+                        //     //   "Fullførte",
+                        //     //   style: ServiceProvider.instance
+                        //     //       .instanceStyleService.appStyle.descTitle,
+                        //     // ),
+                        //   ],
+                        // ),
                       ),
                     ),
                     AnimatedContainer(
@@ -320,32 +320,32 @@ class JournalEventPage extends MasterPage {
                           2,
                       padding: EdgeInsets.only(top: padding),
                       child: Tab(
-                        // icon: Icon(
-                        //   Icons.timer,
-                        //   color: ServiceProvider
-                        //       .instance.instanceStyleService.appStyle.imperial,
-                        //   size: ServiceProvider.instance.instanceStyleService
-                        //       .appStyle.iconSizeStandard,
-                        // ),
-                        child: Column(
-                          children: <Widget>[
-                            Icon(
-                              Icons.timer,
-                              color: ServiceProvider.instance
-                                  .instanceStyleService.appStyle.imperial,
-                              size: ServiceProvider
-                                  .instance
-                                  .instanceStyleService
-                                  .appStyle
-                                  .iconSizeStandard,
-                            ),
-                            Text(
-                              "Kommende",
-                              style: ServiceProvider.instance
-                                  .instanceStyleService.appStyle.descTitle,
-                            ),
-                          ],
+                        icon: Icon(
+                          Icons.timer,
+                          color: ServiceProvider
+                              .instance.instanceStyleService.appStyle.imperial,
+                          size: ServiceProvider.instance.instanceStyleService
+                              .appStyle.iconSizeStandard,
                         ),
+                        // child: Column(
+                        //   children: <Widget>[
+                        //     Icon(
+                        //       Icons.timer,
+                        //       color: ServiceProvider.instance
+                        //           .instanceStyleService.appStyle.imperial,
+                        //       size: ServiceProvider
+                        //           .instance
+                        //           .instanceStyleService
+                        //           .appStyle
+                        //           .iconSizeStandard,
+                        //     ),
+                        //     Text(
+                        //       "Kommende",
+                        //       style: ServiceProvider.instance
+                        //           .instanceStyleService.appStyle.descTitle,
+                        //     ),
+                        //   ],
+                        // ),
                       ),
                     ),
                   ],

@@ -29,8 +29,7 @@ abstract class MasterPage extends BaseView {
     if (!mounted) return Container();
 
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: ServiceProvider.instance.instanceStyleService.appStyle
-          .backgroundColor, //top bar color
+      statusBarColor: Colors.transparent, //top bar color
       statusBarIconBrightness: Brightness.dark, //top bar icons
       systemNavigationBarColor: Colors.white, //bottom bar color
       systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
@@ -83,7 +82,7 @@ abstract class MasterPage extends BaseView {
             body: SafeArea(
                 top: controller.enabledTopSafeArea ?? true,
                 child: Container(
-                  alignment: Alignment.topCenter,
+                    alignment: Alignment.topCenter,
                     padding: EdgeInsets.only(
                         top: controller.enabledTopSafeArea == true
                             ? MediaQuery.of(context).padding.top

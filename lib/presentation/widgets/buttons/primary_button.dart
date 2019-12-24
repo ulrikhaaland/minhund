@@ -18,6 +18,7 @@ class PrimaryButtonController extends BaseController {
   final double topPadding;
   final TextStyle textStyle;
   final double radius;
+  final double elevation;
 
   bool isLoading = false;
   PrimaryButtonController({
@@ -30,6 +31,7 @@ class PrimaryButtonController extends BaseController {
     this.topPadding,
     this.width,
     this.radius,
+    this.elevation,
     this.heigth,
   });
 }
@@ -73,7 +75,7 @@ class PrimaryButton extends BaseView {
             color: controller.color ??
                 ServiceProvider.instance.instanceStyleService.appStyle.skyBlue,
             textColor: Colors.black,
-            elevation: 3,
+            elevation: controller.elevation ?? 3,
             onPressed: controller.onPressed),
       ),
     );

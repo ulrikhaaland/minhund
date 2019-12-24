@@ -28,6 +28,7 @@ class User {
   int currentDogIndex;
   String fcm;
   double appVersion;
+  bool isSubscribed;
   bool allowsNotifications;
   int notifications;
   @JsonKey(ignore: true)

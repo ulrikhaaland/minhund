@@ -281,7 +281,7 @@ class InstanceStyleService {
 
     _appStyle.inactiveIconColor = Colors.grey[400];
 
-    _appStyle.borderRadius = 15;
+    _appStyle.borderRadius = 24;
 
     _appStyle.elevation = 6;
 
