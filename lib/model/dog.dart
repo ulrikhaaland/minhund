@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:minhund/model/address.dart';
@@ -32,7 +34,7 @@ class Dog {
   @JsonKey(ignore: true)
   DocumentReference docRef;
   @JsonKey(ignore: true)
-  CustomImage profileImage;
+  File imageFile;
 
   factory Dog.fromJson(Map<String, dynamic> json) => _$DogFromJson(json);
 

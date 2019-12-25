@@ -8,6 +8,7 @@ import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/home/profile/dog_profile.dart';
 import 'package:minhund/presentation/home/profile/profile_subscription_segment.dart';
 import 'package:minhund/presentation/home/profile/user_profile.dart';
+import 'package:minhund/presentation/info/dog_info.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/expandable_card.dart';
@@ -55,19 +56,23 @@ class ProfilePage extends BaseView {
       child: Column(
         children: <Widget>[
           Container(
-            height: MediaQuery.of(context).padding.top * 2,
-            color: Colors.white,
+            height: MediaQuery.of(context).padding.top * 3.5,
+            color: ServiceProvider
+                .instance.instanceStyleService.appStyle.backgroundColor,
           ),
           Expanded(
-            flex: 2,
+            flex: 7,
             child: CustomPaint(
               painter: Chevron(),
               child: Column(
                 children: <Widget>[
                   CustomImage(
+                    key: Key(controller.user.dog.imgUrl ??
+                        controller.user.dog.imageFile?.path ?? "asd"),
                     controller: CustomImageController(
                       imageSizePercentage: 20,
                       imgUrl: controller.user.dog.imgUrl,
+                      imageFile: controller.user.dog.imageFile,
                       // edit: true,
                       withLabel: false,
                     ),
@@ -114,7 +119,15 @@ class ProfilePage extends BaseView {
                           heroTag: null,
                           backgroundColor: ServiceProvider
                               .instance.instanceStyleService.appStyle.leBleu,
-                          onPressed: () => null,
+                          onPressed: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => DogInfo(
+                                        controller: DogInfoController(
+                                            user: controller.user,
+                                            dog: controller.user.dog,
+                                            createOrUpdateDog:
+                                                CreateOrUpdateDog.update),
+                                      ))),
                           child: Icon(Icons.edit,
                               size: iconSizeStandard, color: Colors.white),
                         ),
@@ -126,7 +139,7 @@ class ProfilePage extends BaseView {
             ),
           ),
           Flexible(
-            flex: 1,
+            flex: 4,
             child: ProfileSubscriptionSegment(
               user: controller.user,
             ),
@@ -141,8 +154,8 @@ class Chevron extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Paint paint = new Paint();
-    paint.color = Colors.white;
-    ServiceProvider.instance.instanceStyleService.appStyle.backgroundColor;
+    paint.color =
+        ServiceProvider.instance.instanceStyleService.appStyle.backgroundColor;
 
     Path path = Path();
     path.lineTo(0, size.height - 100);

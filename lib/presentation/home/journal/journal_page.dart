@@ -7,6 +7,7 @@ import 'package:minhund/model/journal_event_item.dart';
 import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/home/journal/journal-category/journal_add_category.dart';
 import 'package:minhund/presentation/home/journal/journal-event/journal_event_page.dart';
+import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/reorderable_list.dart';
 import 'package:minhund/provider/cloud_functions_provider.dart';
 import 'package:minhund/provider/journal_provider.dart';
@@ -195,8 +196,7 @@ class JournalPage extends MasterPage {
     if (controller.user == null) controller.user = Provider.of<User>(context);
 
     controller.dog = controller.user.dog;
-    controller.dog.profileImage.controller.imageSizePercentage = 10;
-    controller.dog.profileImage.controller.edit = false;
+
     if (controller.isLoading) controller.getJournalItems();
 
     getTimeDifference(time: controller.dog.birthDate, daysMonthsYears: true);
@@ -316,7 +316,16 @@ class JournalPage extends MasterPage {
                   ],
                 ),
               ),
-              controller.user.dog.profileImage
+              CustomImage(
+                key: Key(controller.user.dog.imgUrl ??
+                    controller.user.dog.imageFile?.path ??
+                    "asd"),
+                controller: CustomImageController(
+                    imageSizePercentage: 10,
+                    imgUrl: controller.dog.imgUrl,
+                    imageFile: controller.dog.imageFile,
+                    edit: false),
+              )
             ],
           ),
         ),

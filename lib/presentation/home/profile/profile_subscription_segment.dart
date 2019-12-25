@@ -25,6 +25,8 @@ class _ProfileSubscriptionSegmentState
       children: <Widget>[
         Flexible(
           child: Swiper(
+            autoplay: true,
+            autoplayDisableOnInteraction: true,
             itemCount: swiperData.length,
             itemBuilder: (context, index) {
               SwiperItem item = swiperData[index];
@@ -66,19 +68,21 @@ class _ProfileSubscriptionSegmentState
             },
           ),
         ),
-        PrimaryButton(
-          controller: PrimaryButtonController(
-            elevation: 2,
-            color: Colors.white,
-            width: ServiceProvider.instance.screenService
-                .getWidthByPercentage(context, 60),
-            text: widget.user.isSubscribed ? "Mitt abonnement" : "Abonner",
-            textStyle: ServiceProvider
-                .instance.instanceStyleService.appStyle.buttonText
-                .copyWith(
-                    color: ServiceProvider
-                        .instance.instanceStyleService.appStyle.textGrey),
-            onPressed: () => null,
+        Flexible(
+          child: PrimaryButton(
+            controller: PrimaryButtonController(
+              elevation: 2,
+              color: Colors.white,
+              width: ServiceProvider.instance.screenService
+                  .getWidthByPercentage(context, 60),
+              text: widget.user.isSubscribed ? "Mitt abonnement" : "Abonner",
+              textStyle: ServiceProvider
+                  .instance.instanceStyleService.appStyle.buttonText
+                  .copyWith(
+                      color: ServiceProvider
+                          .instance.instanceStyleService.appStyle.textGrey),
+              onPressed: () => null,
+            ),
           ),
         )
       ],
@@ -101,5 +105,11 @@ List<SwiperItem> swiperData = [
       description: "Spesielt tilpasset hunder. Se, reserver og hent",
       iconData: Icons.store,
       themeColor:
-          ServiceProvider.instance.instanceStyleService.appStyle.leBleu),
+          ServiceProvider.instance.instanceStyleService.appStyle.textGrey),
+  SwiperItem(
+      title: "Lås opp journalen",
+      description: "Få full oversikt over din hund's hverdag",
+      iconData: Icons.description,
+      themeColor:
+          ServiceProvider.instance.instanceStyleService.appStyle.textGrey),
 ];

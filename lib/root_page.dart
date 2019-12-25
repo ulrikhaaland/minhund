@@ -8,6 +8,7 @@ import 'package:minhund/helper/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/model/partner/partner.dart';
+import 'package:minhund/presentation/animation/intro.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/intro/user_intro.dart';
 import 'package:minhund/presentation/login/login_page.dart';
@@ -190,14 +191,14 @@ class RootPageController extends BaseController {
   }
 
   Future<void> getLocation() async {
-    try {
-      currentLocation = await location.getLocation();
-    } catch (e) {
-      if (e.code == 'PERMISSION_DENIED') {
-        print('Location permission denied');
-      }
-      currentLocation = null;
-    }
+    if (await location.hasPermission() == false)
+
+    await location.requestPermission();
+    if (await location.hasPermission())
+      currentLocation = await location.getLocation().catchError((e) {
+        currentLocation = null;
+        print(e.toString());
+      });
   }
 }
 
@@ -235,15 +236,15 @@ class RootPage extends BaseView {
 
     // controller.auth.signOut();
 
-    // if (!controller.introDone) {
-    //   return Intro(
-    //     introDone: () {
-    //       controller.setState(() {
-    //         controller.introDone = true;
-    //       });
-    //     },
-    //   );
-    // } else
+    if (!controller.introDone) {
+      return Intro(
+        introDone: () {
+          controller.setState(() {
+            controller.introDone = true;
+          });
+        },
+      );
+    } else
     if (controller.firebaseUser == null) {
       return LoginPage(
         controller: LoginPageController(

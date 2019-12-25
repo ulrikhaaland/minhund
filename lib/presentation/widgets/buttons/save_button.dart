@@ -35,35 +35,25 @@ class SaveButton extends BaseView {
 
     return Padding(
       padding: EdgeInsets.only(left: getDefaultPadding(context) * 2.1),
-      child: AnimatedContainer(
-        curve: Curves.decelerate,
-        duration: Duration(milliseconds: 500),
-        decoration: BoxDecoration(
-          color: controller.canSave
-              ? ServiceProvider.instance.instanceStyleService.appStyle.green
-              : ServiceProvider
-                  .instance.instanceStyleService.appStyle.backgroundColor,
-          shape: BoxShape.circle,
-        ),
-        height: iconSizeStandard * 1.2,
-        width: iconSizeStandard * 1.2,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(
-            iconSizeStandard * 0.7,
-          ),
-          onTap: () => controller.canSave ? controller.onPressed() : null,
-          child: Center(
-            child: controller.isLoading
-                ? CPI(false)
-                : Icon(
-                    Icons.check,
-                    size: iconSizeStandard,
-                    color: controller.canSave
-                        ? Colors.white
-                        : ServiceProvider.instance.instanceStyleService.appStyle
-                            .inactiveIconColor,
-                  ),
-          ),
+      child: FloatingActionButton(
+        heroTag: null,
+        mini: true,
+        backgroundColor: controller.canSave
+            ? ServiceProvider.instance.instanceStyleService.appStyle.green
+            : ServiceProvider
+                .instance.instanceStyleService.appStyle.backgroundColor,
+        onPressed: () => controller.canSave ? controller.onPressed() : null,
+        child: Center(
+          child: controller.isLoading
+              ? CPI(false)
+              : Icon(
+                  Icons.check,
+                  size: iconSizeStandard,
+                  color: controller.canSave
+                      ? Colors.white
+                      : ServiceProvider.instance.instanceStyleService.appStyle
+                          .inactiveIconColor,
+                ),
         ),
       ),
     );

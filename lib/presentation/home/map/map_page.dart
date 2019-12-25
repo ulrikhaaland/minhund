@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:app_settings/app_settings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -304,26 +305,24 @@ class MapPageController extends BaseController {
       if (e.code == 'PERMISSION_DENIED') {
         print('Location permission denied');
       }
-      currentLocation = null;
+      if (e.code == "PERMISSION_DENIED_NEVER_ASK") {
+        await AppSettings.openLocationSettings().then((_) => print("done"));
+        if (await location.hasPermission()) {
+          currentLocation = await location.getLocation();
+          setState(() {
+            mapPageState = MapPageState.map;
+          });
+        }
+      }
     }
   }
 
   @override
-  FloatingActionButton get fab => null;
-
-  @override
-  String get title => mapPageState == MapPageState.noCurrentLocation
-      ? "Posisjon ikke tilgjengelig"
-      : null;
-
-  @override
-  Widget get bottomNav => null;
-
-  @override
-  Widget get actionOne => null;
-
-  @override
-  List<Widget> get actionTwoList => null;
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed)
+      Timer(Duration(milliseconds: 500), () => getLocation());
+    super.didChangeAppLifecycleState(state);
+  }
 }
 
 class MapPage extends BaseView {
@@ -341,23 +340,52 @@ class MapPage extends BaseView {
       controller.mapPageState = MapPageState.map;
 
     if (controller.mapPageState == MapPageState.noCurrentLocation) {
-      return Container(
-        width: ServiceProvider.instance.screenService
-            .getWidthByPercentage(context, 80),
-        child: Column(children: <Widget>[
-          Text(
-              "Om du ønsker ta i bruk Min Hund's kartfunksjonalitet for å få en enklere hunde-hverdag vennligst del din posisjon med oss.",
-              style:
-                  ServiceProvider.instance.instanceStyleService.appStyle.body1),
-          PrimaryButton(
-            controller: PrimaryButtonController(
-              text: "Del min posisjon",
-              onPressed: () {
-                controller.getLocation();
-              },
-            ),
-          ),
-        ]),
+      return Center(
+        child: Container(
+          width: ServiceProvider.instance.screenService
+              .getWidthByPercentage(context, 80),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  height: ServiceProvider.instance.screenService
+                      .getHeightByPercentage(context, 20),
+                ),
+                Icon(
+                  Icons.location_disabled,
+                  size: ServiceProvider.instance.screenService
+                      .getHeightByPercentage(context, 20),
+                  color: ServiceProvider
+                      .instance.instanceStyleService.appStyle.pink,
+                ),
+                Container(
+                  height: getDefaultPadding(context) * 2,
+                ),
+                Text(
+                  "Posisjon ikke tilgjengelig",
+                  style: ServiceProvider
+                      .instance.instanceStyleService.appStyle.title,
+                ),
+                Container(
+                  height: getDefaultPadding(context) * 2,
+                ),
+                Text(
+                    "Om du ønsker ta i bruk Min Hund's kartfunksjonalitet vennligst del din posisjon med oss.",
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.body1),
+                Container(
+                  height: getDefaultPadding(context) * 2,
+                ),
+                PrimaryButton(
+                  controller: PrimaryButtonController(
+                    text: "Del min posisjon",
+                    onPressed: () {
+                      controller.getLocation();
+                    },
+                  ),
+                ),
+              ]),
+        ),
       );
     }
     if (controller.mapPageState == MapPageState.map)

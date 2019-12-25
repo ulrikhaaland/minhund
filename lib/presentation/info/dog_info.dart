@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
@@ -9,8 +10,12 @@ import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/date_time_picker.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
+import 'package:minhund/presentation/widgets/buttons/save_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
+import 'package:minhund/provider/dog_provider.dart';
+import 'package:minhund/provider/file_provider.dart';
+import 'package:minhund/service/service_provider.dart';
 
 enum CreateOrUpdateDog { create, update }
 
@@ -166,15 +171,7 @@ class DogInfoController extends BaseController {
             .setState(() => primaryButtonController.isLoading = false);
       },
     );
-    dog.profileImage = CustomImage(
-      controller: CustomImageController(
-        customImageType: CustomImageType.circle,
-        imageFile: null,
-        imgUrl: dog.imgUrl,
-        edit: true,
-        provideImageFile: (file) => imageFile = file,
-      ),
-    );
+
     super.initState();
   }
 
@@ -190,6 +187,30 @@ class DogInfoController extends BaseController {
     //         .getHeightByPercentage(context, heigth));
     _node.nextFocus();
   }
+
+  Future<void> save() async {
+    _formKey.currentState.save();
+    if (validateTextFields(textFields: textFields)) {
+      if (createOrUpdateDog == CreateOrUpdateDog.update) {
+        Navigator.pop(context);
+        DogProvider().update(model: dog);
+        if (imageFile != null) {
+          dog.imageFile = imageFile;
+          FileProvider()
+              .uploadFile(file: imageFile, path: "dogs/${dog.id}/${dog.id}")
+              .then((url) {
+            dog.imgUrl = url;
+            dog.docRef.updateData({
+              "imgUrl": dog.imgUrl,
+            });
+          });
+        }
+      } else {
+        getImageFile(imageFile);
+        await onDone(dog);
+      }
+    }
+  }
 }
 
 class DogInfo extends BaseView {
@@ -199,23 +220,76 @@ class DogInfo extends BaseView {
   @override
   Widget build(BuildContext context) {
     if (!mounted) return Container();
-    return Form(
+    Widget form = Form(
       key: controller._formKey,
       child: FocusScope(
         node: controller._node,
         child: Column(
           children: <Widget>[
-            controller.dog.profileImage,
+            CustomImage(
+              key: Key(controller.user.dog.imgUrl ??
+                  controller.user.dog.imageFile?.path ??
+                  "asd"),
+              controller: CustomImageController(
+                  edit: true,
+                  imgUrl: controller.dog.imgUrl,
+                  imageFile: controller.dog.imageFile,
+                  imageSizePercentage: 20,
+                  provideImageFile: (file) => controller.imageFile = file,
+                  onDelete: () {
+                    controller.dog.imageFile = null;
+                    if (controller.dog.imgUrl != null) {
+                      FileProvider().deleteFile(
+                          path:
+                              "dogs/${controller.dog.id}/${controller.dog.id}");
+                      controller.dog.imgUrl = null;
+                      controller.dog.docRef.updateData({
+                        "imgUrl": null,
+                      });
+                    }
+                  }),
+            ),
             Container(
               height: getDefaultPadding(context),
             ),
             Column(
               children: controller.textFields,
             ),
-            PrimaryButton(
-              controller: controller.primaryButtonController,
-            ),
+            Container(
+              height: getDefaultPadding(context) * 4,
+            )
           ],
+        ),
+      ),
+    );
+
+    if (controller.createOrUpdateDog == CreateOrUpdateDog.create) return form;
+
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: ServiceProvider
+            .instance.instanceStyleService.appStyle.backgroundColor,
+        elevation: 0,
+        actions: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: getDefaultPadding(context) * 2),
+            child: SaveButton(
+              controller: SaveButtonController(onPressed: controller.save),
+            ),
+          )
+        ],
+      ),
+      body: Scrollbar(
+              child: SingleChildScrollView(
+          child: Container(
+            color: ServiceProvider
+                .instance.instanceStyleService.appStyle.backgroundColor,
+            child: Column(
+              children: <Widget>[
+                form,
+              ],
+            ),
+          ),
         ),
       ),
     );

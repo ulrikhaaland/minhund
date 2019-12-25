@@ -54,9 +54,10 @@ class CustomImageController extends BaseController {
 }
 
 class CustomImage extends BaseView {
+  final Key key;
   final CustomImageController controller;
 
-  CustomImage({this.controller});
+  CustomImage({this.key, this.controller}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     if (!mounted) return Container();

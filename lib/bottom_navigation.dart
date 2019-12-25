@@ -177,19 +177,19 @@ class BottomNavigation extends MasterPage {
       controller.init();
     }
 
-    if (!controller._isLoading) {
-      if (controller.user.dog != null) if (controller.user.dog.profileImage ==
-          null) {
-        controller.user.dog.profileImage = CustomImage(
-          controller: CustomImageController(
-            customImageType: CustomImageType.circle,
-            imgUrl: controller.user.dog.imgUrl,
-          ),
-        );
-      } else {
-        // controller.user.dog.profileImage.controller.edit = false;
-      }
-    }
+    // if (!controller._isLoading) {
+    //   if (controller.user.dog != null) if (controller.user.dog.profileImage ==
+    //       null) {
+    //     controller.user.dog.profileImage = CustomImage(
+    //       controller: CustomImageController(
+    //         customImageType: CustomImageType.circle,
+    //         imgUrl: controller.user.dog.imgUrl,
+    //       ),
+    //     );
+    //   } else {
+    //     // controller.user.dog.profileImage.controller.edit = false;
+    //   }
+    // }
 
     if(controller.pages == null) return Container();
 
