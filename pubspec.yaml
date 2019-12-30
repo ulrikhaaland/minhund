@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.6.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -46,7 +46,7 @@ dependencies:
   # vibration: 1.2.1
   json_serializable:
   build_runner: ^1.6.9
-  reorderables: 0.2.10
+  reorderables: ^0.2.10
   intl: ^0.16.0
   flutter_swiper: ^1.1.6
   app_settings: ^3.0.0+1

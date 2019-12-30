@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:minhund/model/partner/partner.dart';
 import 'package:minhund/presentation/animation/intro.dart';
 import 'package:minhund/presentation/base_controller.dart';
+import 'package:minhund/presentation/home/profile/profile.dart';
 import 'package:minhund/presentation/intro/user_intro.dart';
 import 'package:minhund/presentation/login/login_page.dart';
 import 'package:minhund/provider/user_provider.dart';
@@ -190,10 +191,16 @@ class RootPageController extends BaseController {
     refresh();
   }
 
+  void signOut() {
+    auth.signOut();
+    firebaseUser = null;
+    _user = null;
+    refresh();
+  }
+
   Future<void> getLocation() async {
     if (await location.hasPermission() == false)
-
-    await location.requestPermission();
+      await location.requestPermission();
     if (await location.hasPermission())
       currentLocation = await location.getLocation().catchError((e) {
         currentLocation = null;
@@ -208,6 +215,7 @@ class RootPage extends BaseView {
   RootPage({this.controller, Key key})
       : super(
           controller: controller,
+          key: key,
         );
 
   @override
@@ -244,8 +252,7 @@ class RootPage extends BaseView {
           });
         },
       );
-    } else
-    if (controller.firebaseUser == null) {
+    } else if (controller.firebaseUser == null) {
       return LoginPage(
         controller: LoginPageController(
           rootPageController: controller,
@@ -263,7 +270,8 @@ class RootPage extends BaseView {
                 controller.setState(() => controller.newUser = false)),
       );
     } else if (controller._user != null && !controller.newUser) {
-      return MultiProvider(
+      var d = MultiProvider(
+        key: Key(controller.firebaseUser.uid),
         providers: [
           Provider<LocationData>.value(
             value: controller.currentLocation,
@@ -272,11 +280,16 @@ class RootPage extends BaseView {
           Provider<BaseAuth>.value(
             value: controller.auth,
           ),
+          Provider<RootPageController>.value(
+            value: controller,
+          ),
         ],
         child: BottomNavigation(
+          key: Key(controller.firebaseUser.uid),
           controller: BottomNavigationController(),
         ),
       );
+      return d;
     }
     return Container();
   }

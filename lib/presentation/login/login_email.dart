@@ -237,10 +237,9 @@ class EmailLogin extends MasterPage {
                         .getHeightByPercentage(context, 4.5),
                     width: ServiceProvider.instance.screenService
                         .getWidthByPercentage(context, 40),
-                    color: ServiceProvider
-                        .instance.instanceStyleService.appStyle.pink,
+                    color: Colors.white,
 
-                    // textColor: ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
+                    textColor: ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
                     text: "Glemt passord?",
                     onPressed: () => Navigator.push(
                         context,
@@ -252,7 +251,12 @@ class EmailLogin extends MasterPage {
                           ),
                         )),
                   ),
-                if (!controller.isLogin) termsAndConditions(context),
+                if (!controller.isLogin)
+                  Padding(
+                    padding:
+                        EdgeInsets.only(top: getDefaultPadding(context) * 2),
+                    child: termsAndConditions(context),
+                  ),
               ],
             ),
           ),

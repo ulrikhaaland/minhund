@@ -138,8 +138,8 @@ class JournalEventPageController extends MasterPageController
       if (item.completed) {
         compare = completedEvents;
       } else {
-        setState(() => upComingColor = Colors.blue);
-        await Future.delayed(Duration(milliseconds: 500));
+        setState(() => upComingColor = ServiceProvider.instance.instanceStyleService.appStyle.green);
+        await Future.delayed(Duration(milliseconds: 1000));
         setState(() => upComingColor = Colors.transparent);
         compare = upcomingEvents;
       }
@@ -268,93 +268,125 @@ class JournalEventPage extends MasterPage {
                   borderRadius: BorderRadius.circular(ServiceProvider
                       .instance.instanceStyleService.appStyle.borderRadius),
                 ),
-                child: TabBar(
-                  indicatorColor: ServiceProvider
-                      .instance.instanceStyleService.appStyle.skyBlue,
-                  indicatorWeight: 3,
-                  indicatorPadding: EdgeInsets.only(
-                    left: padding * 4,
-                    right: padding * 4,
-                    bottom: padding,
-                  ),
-                  tabs: <Widget>[
-                    Container(
-                      height: ServiceProvider.instance.instanceStyleService
-                              .appStyle.iconSizeStandard *
-                          2,
-                      padding: EdgeInsets.only(top: padding),
-                      child: Tab(
-                        icon: Icon(
-                          Icons.check,
-                          color: ServiceProvider
-                              .instance.instanceStyleService.appStyle.green,
-                          size: ServiceProvider.instance.instanceStyleService
-                              .appStyle.iconSizeBig,
+                child: LayoutBuilder(
+                  builder: (context, con) {
+                    return Stack(
+                      children: <Widget>[
+                        Positioned(
+                          right: 0,
+                          child: AnimatedContainer(
+                            decoration: BoxDecoration(
+                                color: controller.upComingColor,
+                                borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .borderRadius),
+                                    topRight: Radius.circular(ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .borderRadius))),
+                            duration: Duration(milliseconds: 1000),
+                            height: con.maxHeight,
+                            curve: Curves.ease,
+                            width: con.maxWidth / 2,
+                            padding: EdgeInsets.only(top: padding),
+                          ),
                         ),
-                        // child: Column(
-                        //   children: <Widget>[
-                        //     Icon(
-                        //       Icons.check,
-                        //       color: ServiceProvider
-                        //           .instance.instanceStyleService.appStyle.green,
-                        //       size: ServiceProvider
-                        //           .instance
-                        //           .instanceStyleService
-                        //           .appStyle
-                        //           .iconSizeStandard,
-                        //     ),
-                        //     // Text(
-                        //     //   "Fullførte",
-                        //     //   style: ServiceProvider.instance
-                        //     //       .instanceStyleService.appStyle.descTitle,
-                        //     // ),
-                        //   ],
-                        // ),
-                      ),
-                    ),
-                    AnimatedContainer(
-                      color: controller.upComingColor,
-                      duration: Duration(milliseconds: 1000),
-                      height: ServiceProvider.instance.instanceStyleService
-                              .appStyle.iconSizeStandard *
-                          2,
-                      padding: EdgeInsets.only(top: padding),
-                      child: Tab(
-                        icon: Icon(
-                          Icons.timer,
-                          color: ServiceProvider
-                              .instance.instanceStyleService.appStyle.imperial,
-                          size: ServiceProvider.instance.instanceStyleService
-                              .appStyle.iconSizeStandard,
+                        TabBar(
+                          indicatorColor: ServiceProvider
+                              .instance.instanceStyleService.appStyle.skyBlue,
+                          indicatorWeight: 3,
+                          indicatorPadding: EdgeInsets.only(
+                            left: padding * 4,
+                            right: padding * 4,
+                            bottom: padding,
+                          ),
+                          tabs: <Widget>[
+                            Container(
+                              height: ServiceProvider
+                                      .instance
+                                      .instanceStyleService
+                                      .appStyle
+                                      .iconSizeStandard *
+                                  2,
+                              padding: EdgeInsets.only(top: padding),
+                              child: Tab(
+                                icon: Icon(
+                                  Icons.check,
+                                  color: ServiceProvider.instance
+                                      .instanceStyleService.appStyle.green,
+                                  size: ServiceProvider
+                                      .instance
+                                      .instanceStyleService
+                                      .appStyle
+                                      .iconSizeBig,
+                                ),
+                                // child: Column(
+                                //   children: <Widget>[
+                                //     Icon(
+                                //       Icons.check,
+                                //       color: ServiceProvider
+                                //           .instance.instanceStyleService.appStyle.green,
+                                //       size: ServiceProvider
+                                //           .instance
+                                //           .instanceStyleService
+                                //           .appStyle
+                                //           .iconSizeStandard,
+                                //     ),
+                                //     // Text(
+                                //     //   "Fullførte",
+                                //     //   style: ServiceProvider.instance
+                                //     //       .instanceStyleService.appStyle.descTitle,
+                                //     // ),
+                                //   ],
+                                // ),
+                              ),
+                            ),
+                            Tab(
+                              icon: Icon(
+                                Icons.timer,
+                                color: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.imperial,
+                                size: ServiceProvider
+                                    .instance
+                                    .instanceStyleService
+                                    .appStyle
+                                    .iconSizeStandard,
+                              ),
+                              // child: Column(
+                              //   children: <Widget>[
+                              //     Icon(
+                              //       Icons.timer,
+                              //       color: ServiceProvider.instance
+                              //           .instanceStyleService.appStyle.imperial,
+                              //       size: ServiceProvider
+                              //           .instance
+                              //           .instanceStyleService
+                              //           .appStyle
+                              //           .iconSizeStandard,
+                              //     ),
+                              //     Text(
+                              //       "Kommende",
+                              //       style: ServiceProvider.instance
+                              //           .instanceStyleService.appStyle.descTitle,
+                              //     ),
+                              //   ],
+                              // ),
+                            ),
+                          ],
                         ),
-                        // child: Column(
-                        //   children: <Widget>[
-                        //     Icon(
-                        //       Icons.timer,
-                        //       color: ServiceProvider.instance
-                        //           .instanceStyleService.appStyle.imperial,
-                        //       size: ServiceProvider
-                        //           .instance
-                        //           .instanceStyleService
-                        //           .appStyle
-                        //           .iconSizeStandard,
-                        //     ),
-                        //     Text(
-                        //       "Kommende",
-                        //       style: ServiceProvider.instance
-                        //           .instanceStyleService.appStyle.descTitle,
-                        //     ),
-                        //   ],
-                        // ),
-                      ),
-                    ),
-                  ],
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
             Expanded(
               child: TabBarView(
-                key: Key(Random().nextInt(999999999).toString()),
+                key: UniqueKey(),
                 children: <Widget>[
                   ReorderableList(
                     onReorder: (oldIndex, newIndex) => controller.reOrder(
@@ -381,8 +413,7 @@ class JournalEventPage extends MasterPage {
                     widgetList: controller.upcomingEvents
                         .map(
                           (item) => JournalEventListItem(
-                            key: Key(item.id ??
-                                Random().nextInt(99999999).toString()),
+                            key: UniqueKey(),
                             controller: JournalEventListItemController(
                               user: controller.user,
                               categoryItem: controller.categoryItem,

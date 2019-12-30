@@ -86,6 +86,7 @@ class IntroInfoOwner extends MasterPage {
               controller: DogInfoController(
                   getImageFile: (file) => controller.imageFile = file,
                   user: controller.user,
+                  createOrUpdateDog: CreateOrUpdateDog.create,
                   dog: controller.user.dogs.isNotEmpty
                       ? controller
                           .user.dogs[controller.user.currentDogIndex ?? 0]

@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/service/theme_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 double getAppBarIconSize(BuildContext context) {
   /// Only initialize once since the screen dimensions
@@ -81,46 +83,99 @@ String formatDate({String format, bool time, DateTime date}) {
   }
 }
 
+Future<void> launchUrl({String url}) async {
+  if (url != null && url != "") {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+}
+
 Widget termsAndConditions(BuildContext context) {
   return Container(
     width: ServiceProvider.instance.screenService
         .getWidthByPercentage(context, 90),
-    child: Row(
-      children: <Widget>[
-        Spacer(),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              "Ved å registrere bruker hos Minhund samtykker",
-              style: ServiceProvider
-                  .instance.instanceStyleService.appStyle.timestamp,
-              textAlign: TextAlign.start,
+    child: RichText(
+      text: TextSpan(
+          style:
+              ServiceProvider.instance.instanceStyleService.appStyle.timestamp,
+          children: [
+            TextSpan(
+              text:
+                  "Ved å registrere bruker hos Minhund samtykker jeg til Minhund's ",
             ),
-            Row(
-              children: <Widget>[
-                Text(
-                  "jeg til Minhund's ",
-                  style: ServiceProvider
-                      .instance.instanceStyleService.appStyle.timestamp,
-                  textAlign: TextAlign.start,
-                ),
-                InkWell(
-                  onTap: () => print("GO TO TERMS AND CONDITIONS"),
-                  child: Text(
-                    "brukervilkår.",
-                    style: ServiceProvider
-                        .instance.instanceStyleService.appStyle.coloredText,
-                    textAlign: TextAlign.start,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        Spacer(),
-      ],
+            TextSpan(
+                style: ServiceProvider
+                    .instance.instanceStyleService.appStyle.timestamp
+                    .copyWith(
+                        color: ServiceProvider
+                            .instance.instanceStyleService.appStyle.leBleu),
+                text: "brukervilkår",
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => launchUrl(url: "https://mihu.no/terms")),
+            TextSpan(text: " og "),
+            TextSpan(
+                style: ServiceProvider
+                    .instance.instanceStyleService.appStyle.timestamp
+                    .copyWith(
+                        color: ServiceProvider
+                            .instance.instanceStyleService.appStyle.leBleu),
+                text: "personvernpolicy.",
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => launchUrl(url: "https://mihu.no/privacy")),
+          ]),
     ),
+    // Row(
+    //   children: <Widget>[
+    //     Spacer(),
+    //     RichText(
+    //       text: TextSpan(
+    //         style: ServiceProvider
+    //               .instance.instanceStyleService.appStyle.timestamp,
+    //         children: [
+    //         TextSpan(
+    //           text: "Ved å registrere bruker hos Minhund samtykker jeg til Minhund's ",
+    //             recognizer: TapGestureRecognizer()
+    //               ..onTap = () {
+    //                 print("object");
+    //               })
+    //       ]),
+    //     ),
+    //     // Column(
+    //     //   crossAxisAlignment: CrossAxisAlignment.start,
+    //     //   children: <Widget>[
+    //     //     Text(
+    //     //       "Ved å registrere bruker hos Minhund samtykker",
+    //     //       style: ServiceProvider
+    //     //           .instance.instanceStyleService.appStyle.timestamp,
+    //     //       textAlign: TextAlign.start,
+    //     //     ),
+    //     //     Row(
+    //     //       children: <Widget>[
+    //     //         Text(
+    //     //           "jeg til Minhund's ",
+    //     //           style: ServiceProvider
+    //     //               .instance.instanceStyleService.appStyle.timestamp,
+    //     //           textAlign: TextAlign.start,
+    //     //         ),
+    //     //         InkWell(
+    //     //           onTap: () => print("GO TO TERMS AND CONDITIONS"),
+    //     //           child: Text(
+    //     //             "brukervilkår.",
+    //     //             style: ServiceProvider
+    //     //                 .instance.instanceStyleService.appStyle.coloredText,
+    //     //             textAlign: TextAlign.start,
+    //     //           ),
+    //     //         ),
+    //     //       ],
+    //     //     ),
+    //     //   ],
+    //     // ),
+    //     Spacer(),
+    //   ],
+    // ),
   );
 }
 

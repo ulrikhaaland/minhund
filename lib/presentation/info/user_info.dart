@@ -4,20 +4,24 @@ import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
+import 'package:minhund/presentation/widgets/buttons/save_button.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/provider/user_provider.dart';
+import 'package:minhund/service/service_provider.dart';
 
 class UserInfoController extends BaseController {
   final User user;
 
   final VoidCallback onDone;
 
+  final PageState pageState;
+
   final _formKey = GlobalKey<FormState>();
 
   final FocusScopeNode _node = FocusScopeNode();
 
-  UserInfoController({this.user, this.onDone});
+  UserInfoController({this.user, this.onDone, this.pageState = PageState.create});
 
   List<PrimaryTextField> textFields;
 
@@ -37,7 +41,6 @@ class UserInfoController extends BaseController {
       PrimaryTextField(
         asListTile: true,
         validate: true,
-
         regExType: RegExType.email,
         textCapitalization: TextCapitalization.none,
         initValue: user.email,
@@ -70,6 +73,20 @@ class UserInfoController extends BaseController {
     _node.dispose();
     super.dispose();
   }
+
+  void onSave() {
+    _formKey.currentState.save();
+    if (validateTextFields(textFields: textFields)) {
+      if (user.docRef == null)
+        user.docRef = Firestore.instance.document("users/${user.id}");
+      UserProvider().update(model: user);
+      if (pageState == PageState.create) {
+        onDone();
+      } else {
+        Navigator.pop(context);
+      }
+    }
+  }
 }
 
 class UserInfo extends BaseView {
@@ -79,7 +96,9 @@ class UserInfo extends BaseView {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
+    if (!mounted) return Container();
+
+    Widget info = Form(
       key: controller._formKey,
       child: FocusScope(
         node: controller._node,
@@ -88,22 +107,36 @@ class UserInfo extends BaseView {
             Column(
               children: controller.textFields,
             ),
-            PrimaryButton(
-              controller: PrimaryButtonController(
-                text: "Gå videre",
-                onPressed: () {
-                  controller._formKey.currentState.save();
-                  if (validateTextFields(textFields: controller.textFields)) {
-                    if(controller.user.docRef == null) controller.user.docRef = Firestore.instance.document("users/${controller.user.id}");
-                    UserProvider().update(model: controller.user);
-                    controller.onDone();
-                  }
-                },
+            if (controller.pageState == PageState.create)
+              PrimaryButton(
+                controller: PrimaryButtonController(
+                    text: "Gå videre", onPressed: controller.onSave),
               ),
-            ),
           ],
         ),
       ),
+    );
+    if (controller.pageState == PageState.create) return info;
+
+    return Scaffold(
+      backgroundColor: ServiceProvider
+          .instance.instanceStyleService.appStyle.backgroundColor,
+      appBar: AppBar(
+        backgroundColor: ServiceProvider
+            .instance.instanceStyleService.appStyle.backgroundColor,
+        elevation: 0,
+        actions: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: getDefaultPadding(context) * 2),
+            child: SaveButton(
+              controller: SaveButtonController(
+                onPressed: controller.onSave,
+              ),
+            ),
+          )
+        ],
+      ),
+      body: Center(child: info),
     );
   }
 }

@@ -21,8 +21,12 @@ abstract class MasterPageController extends BaseController {
 
 abstract class MasterPage extends BaseView {
   final MasterPageController controller;
+  final Key key;
 
-  MasterPage({this.controller}) : super(controller: controller);
+  MasterPage({
+    this.controller,
+    this.key,
+  }) : super(controller: controller, key: key);
 
   @override
   Widget build(BuildContext context) {

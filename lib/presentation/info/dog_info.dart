@@ -227,8 +227,8 @@ class DogInfo extends BaseView {
         child: Column(
           children: <Widget>[
             CustomImage(
-              key: Key(controller.user.dog.imgUrl ??
-                  controller.user.dog.imageFile?.path ??
+              key: Key(controller.user.dog?.imgUrl ??
+                  controller.user.dog?.imageFile?.path ??
                   "asd"),
               controller: CustomImageController(
                   edit: true,

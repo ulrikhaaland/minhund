@@ -297,30 +297,36 @@ class MapPageController extends BaseController {
 
   Future<void> getLocation() async {
     try {
+      location.requestPermission();
       currentLocation = await location.getLocation();
       setState(() {
         mapPageState = MapPageState.map;
       });
     } catch (e) {
       if (e.code == 'PERMISSION_DENIED') {
+        openLocationSettings();
         print('Location permission denied');
       }
       if (e.code == "PERMISSION_DENIED_NEVER_ASK") {
-        await AppSettings.openLocationSettings().then((_) => print("done"));
-        if (await location.hasPermission()) {
-          currentLocation = await location.getLocation();
-          setState(() {
-            mapPageState = MapPageState.map;
-          });
-        }
+        openLocationSettings();
       }
+    }
+  }
+
+  Future<void> openLocationSettings() async {
+    await AppSettings.openLocationSettings().then((_) => print("done"));
+    if (await location.hasPermission()) {
+      currentLocation = await location.getLocation();
+      setState(() {
+        mapPageState = MapPageState.map;
+      });
     }
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed)
-      Timer(Duration(milliseconds: 500), () => getLocation());
+    // if (state == AppLifecycleState.resumed)
+    //   Timer(Duration(milliseconds: 500), () => getLocation());
     super.didChangeAppLifecycleState(state);
   }
 }

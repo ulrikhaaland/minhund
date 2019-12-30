@@ -193,7 +193,11 @@ class JournalPage extends MasterPage {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    if (controller.user == null) controller.user = Provider.of<User>(context);
+    if (controller.user == null ||
+        controller.user != Provider.of<User>(context)) {
+      controller.isLoading = true;
+      controller.user = Provider.of<User>(context);
+    }
 
     controller.dog = controller.user.dog;
 
@@ -295,7 +299,9 @@ class JournalPage extends MasterPage {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Flexible(
+                flex: 5,
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[

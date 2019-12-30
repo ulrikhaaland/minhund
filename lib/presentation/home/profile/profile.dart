@@ -6,6 +6,7 @@ import 'package:minhund/model/user.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
 import 'package:minhund/presentation/home/profile/dog_profile.dart';
+import 'package:minhund/presentation/home/profile/profile_settings.dart';
 import 'package:minhund/presentation/home/profile/profile_subscription_segment.dart';
 import 'package:minhund/presentation/home/profile/user_profile.dart';
 import 'package:minhund/presentation/info/dog_info.dart';
@@ -13,6 +14,7 @@ import 'package:minhund/presentation/widgets/buttons/primary_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/expandable_card.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
+import 'package:minhund/root_page.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +22,10 @@ import '../../../bottom_navigation.dart';
 
 class ProfilePageController extends BaseController {
   User user;
+
+  BaseAuth auth;
+
+  RootPageController rootPageController;
 
   static final ProfilePageController _instance =
       ProfilePageController._internal();
@@ -42,7 +48,12 @@ class ProfilePage extends BaseView {
   Widget build(BuildContext context) {
     if (!mounted) return Container();
 
-    if (controller.user == null) controller.user = Provider.of<User>(context);
+    controller.user = Provider.of<User>(context);
+
+    controller.auth = Provider.of<BaseAuth>(context);
+
+    controller.rootPageController = Provider.of<RootPageController>(context);
+
 
     controller.user.isSubscribed = false;
 
@@ -68,7 +79,8 @@ class ProfilePage extends BaseView {
                 children: <Widget>[
                   CustomImage(
                     key: Key(controller.user.dog.imgUrl ??
-                        controller.user.dog.imageFile?.path ?? "asd"),
+                        controller.user.dog.imageFile?.path ??
+                        "asd"),
                     controller: CustomImageController(
                       imageSizePercentage: 20,
                       imgUrl: controller.user.dog.imgUrl,
@@ -104,7 +116,19 @@ class ProfilePage extends BaseView {
                               heroTag: null,
                               backgroundColor: ServiceProvider
                                   .instance.instanceStyleService.appStyle.pink,
-                              onPressed: () => null,
+                              onPressed: () =>
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (context) => ProfileSettings(
+                                            controller:
+                                                ProfileSettingsController(
+                                              onSignOut: () {
+                                                Navigator.pop(context);
+                                                
+                                                controller.rootPageController.signOut();
+                                              },
+                                              user: controller.user,
+                                            ),
+                                          ))),
                               child: Icon(Icons.settings,
                                   size: iconSizeStandard, color: Colors.white),
                             ),

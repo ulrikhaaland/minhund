@@ -57,7 +57,7 @@ class BottomNavigationController extends MasterPageController {
   }
 
   init() async {
-    bottomNavigationBar = BottomNav(  
+    bottomNavigationBar = BottomNav(
       isPartner: user is Partner,
       onTabChanged: (index) {
         setState(() {
@@ -150,7 +150,7 @@ class BottomNavigationController extends MasterPageController {
       );
 
       user.dogs = [
-        user.dog,
+        user.dog, 
       ];
     }
     setState(() {
@@ -165,15 +165,20 @@ class BottomNavigationController extends MasterPageController {
 class BottomNavigation extends MasterPage {
   final BottomNavigationController controller;
 
+  final Key key;
+
   BottomNavigation({
     this.controller,
-  });
+    this.key,
+  }) : super(key: key);
   @override
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    if (controller.user == null) {
+    if (controller.user == null || controller.user != Provider.of<User>(context)) {
       controller.user = Provider.of<User>(context);
+      controller.pages = null;
+controller.bottomNavIndex = 0;
       controller.init();
     }
 
@@ -191,7 +196,7 @@ class BottomNavigation extends MasterPage {
     //   }
     // }
 
-    if(controller.pages == null) return Container();
+    if (controller.pages == null) return Container();
 
     return IndexedStack(
       index: controller.bottomNavIndex,

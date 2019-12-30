@@ -55,12 +55,16 @@ class _ProfileSubscriptionSegmentState
                   Container(
                     height: padding * 2,
                   ),
-                  Padding(
-                    padding: EdgeInsets.all(padding),
-                    child: Text(
-                      item.description,
-                      style: ServiceProvider
-                          .instance.instanceStyleService.appStyle.body1,
+                  Container(
+                    width: ServiceProvider.instance.screenService.getWidthByPercentage(context, 80),
+                                      child: Padding(
+                      padding: EdgeInsets.all(padding),
+                      child: Text(
+                        item.description,
+                        textAlign: TextAlign.center,
+                        style: ServiceProvider
+                            .instance.instanceStyleService.appStyle.body1,
+                      ),
                     ),
                   )
                 ],
@@ -102,7 +106,7 @@ class SwiperItem {
 List<SwiperItem> swiperData = [
   SwiperItem(
       title: "Eksklusive tilbud",
-      description: "Spesielt tilpasset hunder. Se, reserver og hent",
+      description: "Få rabatter hos din lokale dyrebutikk. Se, reserver og hent",
       iconData: Icons.store,
       themeColor:
           ServiceProvider.instance.instanceStyleService.appStyle.textGrey),
@@ -112,4 +116,11 @@ List<SwiperItem> swiperData = [
       iconData: Icons.description,
       themeColor:
           ServiceProvider.instance.instanceStyleService.appStyle.textGrey),
+    SwiperItem(
+      title: "Spar penger",
+      description: "Bruk vårt fordelsprogram og spar penger på ditt hundehold",
+      iconData: Icons.store,
+      themeColor:
+          ServiceProvider.instance.instanceStyleService.appStyle.textGrey),
+
 ];
