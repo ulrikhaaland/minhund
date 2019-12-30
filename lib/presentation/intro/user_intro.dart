@@ -82,8 +82,10 @@ class UserIntroController extends MasterPageController {
   }
 
   @override
-  // TODO: implement enabledTopSafeArea
   bool get enabledTopSafeArea => null;
+
+  @override
+  bool get hasBottomNav => false;
 }
 
 class UserIntro extends MasterPage {

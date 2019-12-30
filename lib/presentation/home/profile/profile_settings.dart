@@ -30,6 +30,10 @@ class ProfileSettingsController extends MasterPageController {
 
   @override
   String get title => "Innstillinger";
+
+  @override
+  // TODO: implement hasBottomNav
+  bool get hasBottomNav => false;
 }
 
 class ProfileSettings extends MasterPage {
@@ -88,9 +92,7 @@ class ProfileSettings extends MasterPage {
         Column(
           children: <Widget>[
             ListTile(
-              onTap: () =>
-               launchUrl(url: "https://mihu.no/privacy"),
-              
+              onTap: () => launchUrl(url: "https://mihu.no/privacy"),
               title: Text(
                 "Personvernpolicy",
                 style: ServiceProvider

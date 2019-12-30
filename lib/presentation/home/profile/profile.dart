@@ -72,7 +72,7 @@ class ProfilePage extends BaseView {
                 .instance.instanceStyleService.appStyle.backgroundColor,
           ),
           Expanded(
-            flex: 7,
+            flex: 2,
             child: CustomPaint(
               painter: Chevron(),
               child: Column(
@@ -163,7 +163,7 @@ class ProfilePage extends BaseView {
             ),
           ),
           Flexible(
-            flex: 4,
+            flex: 1,
             child: ProfileSubscriptionSegment(
               user: controller.user,
             ),

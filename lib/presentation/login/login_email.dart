@@ -174,8 +174,10 @@ class EmailLoginController extends MasterPageController {
   String get title => isLogin ? "Logg inn" : "Registrer";
 
   @override
-  // TODO: implement enabledTopSafeArea
   bool get enabledTopSafeArea => null;
+
+  @override
+  bool get hasBottomNav => false;
 }
 
 class EmailLogin extends MasterPage {
@@ -238,8 +240,8 @@ class EmailLogin extends MasterPage {
                     width: ServiceProvider.instance.screenService
                         .getWidthByPercentage(context, 40),
                     color: Colors.white,
-
-                    textColor: ServiceProvider.instance.instanceStyleService.appStyle.textGrey,
+                    textColor: ServiceProvider
+                        .instance.instanceStyleService.appStyle.textGrey,
                     text: "Glemt passord?",
                     onPressed: () => Navigator.push(
                         context,

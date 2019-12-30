@@ -76,12 +76,13 @@ class OfferPageController extends MasterPageController {
   }
 
   @override
-  // TODO: implement actionTwoList
   List<Widget> get actionTwoList => null;
 
   @override
-  // TODO: implement enabledTopSafeArea
   bool get enabledTopSafeArea => null;
+
+  @override
+  bool get hasBottomNav => true;
 }
 
 class OfferPage extends MasterPage {

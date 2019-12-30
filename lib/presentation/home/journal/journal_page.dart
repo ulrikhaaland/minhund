@@ -90,11 +90,13 @@ class JournalPageController extends MasterPageController
   List<Widget> get actionTwoList => null;
 
   void getJournalItems() {
-    user.dogs.forEach((dog) async {
-      dog.journalItems =
-          await JournalProvider().getCollection(id: dog.docRef.path);
-      setState(() {});
-    });
+    if (dog.docRef != null) {
+      user.dogs.forEach((dog) async {
+        dog.journalItems =
+            await JournalProvider().getCollection(id: dog.docRef.path);
+        setState(() {});
+      });
+    }
     isLoading = false;
   }
 
@@ -182,6 +184,9 @@ class JournalPageController extends MasterPageController
 
     return JournalProvider().update(model: category);
   }
+
+  @override
+  bool get hasBottomNav => true;
 }
 
 class JournalPage extends MasterPage {
@@ -210,6 +215,7 @@ class JournalPage extends MasterPage {
           left: getDefaultPadding(context) * 2,
           right: getDefaultPadding(context) * 2),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           _header(),
@@ -282,58 +288,55 @@ class JournalPage extends MasterPage {
   }
 
   Widget _header() {
-    return Flexible(
-      flex: 1,
-      child: Card(
-        color: Colors.white,
-        elevation:
-            ServiceProvider.instance.instanceStyleService.appStyle.elevation,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ServiceProvider
-              .instance.instanceStyleService.appStyle.borderRadius),
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(getDefaultPadding(context)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Flexible(
-                flex: 5,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Flexible(
-                      child: Text(
-                        controller.dog.name,
-                        style: ServiceProvider
-                            .instance.instanceStyleService.appStyle.title,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Text(
-                      "${controller.dog.race}, ${formatDifference(date2: controller.dog.birthDate, date1: DateTime.now())}, ${controller.dog.weigth} kilo",
+    return Card(
+      color: Colors.white,
+      elevation:
+          ServiceProvider.instance.instanceStyleService.appStyle.elevation,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(ServiceProvider
+            .instance.instanceStyleService.appStyle.borderRadius),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(getDefaultPadding(context) * 2),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Flexible(
+              flex: 5,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Flexible(
+                    child: Text(
+                      controller.dog.name,
                       style: ServiceProvider
-                          .instance.instanceStyleService.appStyle.body1,
-                      overflow: TextOverflow.clip,
+                          .instance.instanceStyleService.appStyle.title,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                ),
+                  ),
+                  Text(
+                    "${controller.dog.race}, ${formatDifference(date2: controller.dog.birthDate, date1: DateTime.now())}, ${controller.dog.weigth} kilo",
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.body1,
+                    overflow: TextOverflow.clip,
+                  ),
+                ],
               ),
-              CustomImage(
-                key: Key(controller.user.dog.imgUrl ??
-                    controller.user.dog.imageFile?.path ??
-                    "asd"),
-                controller: CustomImageController(
-                    imageSizePercentage: 10,
-                    imgUrl: controller.dog.imgUrl,
-                    imageFile: controller.dog.imageFile,
-                    edit: false),
-              )
-            ],
-          ),
+            ),
+            CustomImage(
+              key: Key(controller.user.dog.imgUrl ??
+                  controller.user.dog.imageFile?.path ??
+                  "asd"),
+              controller: CustomImageController(
+                  imageSizePercentage: 10,
+                  imgUrl: controller.dog.imgUrl,
+                  imageFile: controller.dog.imageFile,
+                  edit: false),
+            )
+          ],
         ),
       ),
     );

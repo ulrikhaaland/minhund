@@ -21,7 +21,8 @@ class UserInfoController extends BaseController {
 
   final FocusScopeNode _node = FocusScopeNode();
 
-  UserInfoController({this.user, this.onDone, this.pageState = PageState.create});
+  UserInfoController(
+      {this.user, this.onDone, this.pageState = PageState.create});
 
   List<PrimaryTextField> textFields;
 
@@ -125,6 +126,11 @@ class UserInfo extends BaseView {
         backgroundColor: ServiceProvider
             .instance.instanceStyleService.appStyle.backgroundColor,
         elevation: 0,
+        title: Text(
+          "Personlig info",
+          style: ServiceProvider.instance.instanceStyleService.appStyle.title,
+        ),
+        centerTitle: true,
         actions: <Widget>[
           Padding(
             padding: EdgeInsets.only(right: getDefaultPadding(context) * 2),

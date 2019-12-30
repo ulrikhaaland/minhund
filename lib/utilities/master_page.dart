@@ -17,6 +17,24 @@ abstract class MasterPageController extends BaseController {
 
   Widget get actionOne;
   List<Widget> get actionTwoList;
+
+  bool get hasBottomNav;
+
+  void setSystemConfig() {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent, //top bar color
+      statusBarIconBrightness: Brightness.dark, //top bar icons
+      systemNavigationBarColor:
+          hasBottomNav ? Colors.white : Colors.white, //bottom bar color
+      systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
+    ));
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) setSystemConfig();
+    super.didChangeAppLifecycleState(state);
+  }
 }
 
 abstract class MasterPage extends BaseView {
@@ -32,14 +50,9 @@ abstract class MasterPage extends BaseView {
   Widget build(BuildContext context) {
     if (!mounted) return Container();
 
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent, //top bar color
-      statusBarIconBrightness: Brightness.dark, //top bar icons
-      systemNavigationBarColor: Colors.white, //bottom bar color
-      systemNavigationBarIconBrightness: Brightness.dark, //bottom bar icons
-    ));
-
     Widget appBar;
+
+    controller.setSystemConfig();
 
     if (controller.title != null ||
         controller.actionOne != null ||

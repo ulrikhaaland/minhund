@@ -1,7 +1,5 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:minhund/bottom_navigation.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/address.dart';
 import 'package:minhund/model/partner/opening_hours.dart';
@@ -12,9 +10,7 @@ import 'package:minhund/presentation/widgets/buttons/secondary_button.dart';
 import 'package:minhund/presentation/widgets/custom_image.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
 import 'package:minhund/provider/file_provider.dart';
-import 'package:minhund/provider/offer_provider.dart';
 import 'package:minhund/provider/partner/partner_provider.dart';
-import 'package:minhund/provider/user_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
 
@@ -187,16 +183,16 @@ class PartnerPageController extends MasterPageController {
   }
 
   @override
-  // TODO: implement actionOne
   Widget get actionOne => null;
 
   @override
-  // TODO: implement fab
   Widget get fab => null;
 
   @override
-  // TODO: implement enabledTopSafeArea
   bool get enabledTopSafeArea => null;
+
+  @override
+  bool get hasBottomNav => true;
 }
 
 class PartnerPage extends MasterPage {

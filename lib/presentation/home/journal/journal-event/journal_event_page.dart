@@ -39,6 +39,8 @@ class JournalEventPageController extends MasterPageController
 
   Color upComingColor = Colors.transparent;
 
+  Color completedColor = Colors.transparent;
+
   JournalEventPageController({
     this.actionController,
     this.categoryItem,
@@ -136,10 +138,15 @@ class JournalEventPageController extends MasterPageController
       //  Handles sorting on new/updated [JournalEventItem]
       List<JournalEventItem> compare;
       if (item.completed) {
+        setState(() => completedColor =
+            ServiceProvider.instance.instanceStyleService.appStyle.green);
+        await Future.delayed(Duration(milliseconds: 500));
+        setState(() => completedColor = Colors.transparent);
         compare = completedEvents;
       } else {
-        setState(() => upComingColor = ServiceProvider.instance.instanceStyleService.appStyle.green);
-        await Future.delayed(Duration(milliseconds: 1000));
+        setState(() => upComingColor =
+            ServiceProvider.instance.instanceStyleService.appStyle.green);
+        await Future.delayed(Duration(milliseconds: 500));
         setState(() => upComingColor = Colors.transparent);
         compare = upcomingEvents;
       }
@@ -235,6 +242,9 @@ class JournalEventPageController extends MasterPageController
 
     return JournalEventProvider().update(model: event);
   }
+
+  @override
+  bool get hasBottomNav => false;
 }
 
 class JournalEventPage extends MasterPage {
@@ -290,7 +300,30 @@ class JournalEventPage extends MasterPage {
                                         .borderRadius))),
                             duration: Duration(milliseconds: 1000),
                             height: con.maxHeight,
-                            curve: Curves.ease,
+                            curve: Curves.easeOut,
+                            width: con.maxWidth / 2,
+                            padding: EdgeInsets.only(top: padding),
+                          ),
+                        ),
+                        Positioned(
+                          left: 0,
+                          child: AnimatedContainer(
+                            decoration: BoxDecoration(
+                                color: controller.completedColor,
+                                borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .borderRadius),
+                                    topLeft: Radius.circular(ServiceProvider
+                                        .instance
+                                        .instanceStyleService
+                                        .appStyle
+                                        .borderRadius))),
+                            duration: Duration(milliseconds: 1000),
+                            height: con.maxHeight,
+                            curve: Curves.easeOut,
                             width: con.maxWidth / 2,
                             padding: EdgeInsets.only(top: padding),
                           ),

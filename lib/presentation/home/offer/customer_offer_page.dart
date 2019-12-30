@@ -44,6 +44,10 @@ class CustomerOfferPageController extends MasterPageController {
   @override
   // TODO: implement enabledTopSafeArea
   bool get enabledTopSafeArea => null;
+
+  @override
+  // TODO: implement hasBottomNav
+  bool get hasBottomNav => false;
 }
 
 class CustomerOfferPage extends MasterPage {

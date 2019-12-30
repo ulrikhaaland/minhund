@@ -39,7 +39,6 @@ class PartnerCRUDOfferController extends MasterPageController
 
   bool enabled;
 
-
   DateTimePickerController dateTimePickerController;
 
   bool hasSaved;
@@ -259,7 +258,6 @@ class PartnerCRUDOfferController extends MasterPageController
 
   @override
   Future<void> onOfferDelete({PartnerOffer offer}) {
-
     return actionController.onOfferDelete(offer: offer).then((_) {
       if (placeholderOffer.imgUrl != null)
         FileProvider()
@@ -281,8 +279,10 @@ class PartnerCRUDOfferController extends MasterPageController
   }
 
   @override
-  // TODO: implement enabledTopSafeArea
   bool get enabledTopSafeArea => null;
+
+  @override
+  bool get hasBottomNav => false;
 }
 
 class PartnerCRUDOffer extends MasterPage {

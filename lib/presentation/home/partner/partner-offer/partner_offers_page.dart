@@ -173,6 +173,9 @@ class PartnerOffersPageController extends MasterPageController
   @override
   // TODO: implement enabledTopSafeArea
   bool get enabledTopSafeArea => null;
+
+  @override
+  bool get hasBottomNav => true;
 }
 
 class PartnerOffersPage extends MasterPage {

@@ -60,8 +60,10 @@ class ResetPasswordController extends MasterPageController {
   }
 
   @override
-  // TODO: implement enabledTopSafeArea
   bool get enabledTopSafeArea => null;
+
+  @override
+  bool get hasBottomNav => false;
 }
 
 class ResetPassword extends MasterPage {

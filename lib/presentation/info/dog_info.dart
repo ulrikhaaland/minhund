@@ -270,6 +270,8 @@ class DogInfo extends BaseView {
         backgroundColor: ServiceProvider
             .instance.instanceStyleService.appStyle.backgroundColor,
         elevation: 0,
+        title: Text("Min Hund", style: ServiceProvider.instance.instanceStyleService.appStyle.title,),
+        centerTitle: true,
         actions: <Widget>[
           Padding(
             padding: EdgeInsets.only(right: getDefaultPadding(context) * 2),

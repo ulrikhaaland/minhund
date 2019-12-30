@@ -149,8 +149,12 @@ class BottomNavigationController extends MasterPageController {
         race: "Beagle",
       );
 
+      DogProvider().create(model: user.dog);
+
+      user.dog.journalItems = [];
+
       user.dogs = [
-        user.dog, 
+        user.dog,
       ];
     }
     setState(() {
@@ -160,6 +164,9 @@ class BottomNavigationController extends MasterPageController {
 
   @override
   bool get enabledTopSafeArea => enabled ?? true;
+
+  @override
+  bool get hasBottomNav => true;
 }
 
 class BottomNavigation extends MasterPage {
@@ -175,10 +182,11 @@ class BottomNavigation extends MasterPage {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    if (controller.user == null || controller.user != Provider.of<User>(context)) {
+    if (controller.user == null ||
+        controller.user != Provider.of<User>(context)) {
       controller.user = Provider.of<User>(context);
       controller.pages = null;
-controller.bottomNavIndex = 0;
+      controller.bottomNavIndex = 0;
       controller.init();
     }
 

@@ -19,7 +19,7 @@ class IntroInfoOwnerController extends MasterPageController {
 
   File imageFile;
 
-  String infoInfo = "Først trenger vi litt informasjon om deg";
+  String infoInfo = "Først trenger vi litt informasjon om deg...";
 
   IntroInfoOwnerController({this.user, this.onDone});
   @override
@@ -44,8 +44,10 @@ class IntroInfoOwnerController extends MasterPageController {
   List<Widget> get actionTwoList => null;
 
   @override
-  // TODO: implement enabledTopSafeArea
   bool get enabledTopSafeArea => null;
+
+  @override
+  bool get hasBottomNav => false;
 }
 
 class IntroInfoOwner extends MasterPage {
@@ -75,7 +77,7 @@ class IntroInfoOwner extends MasterPage {
                   onDone: () => controller.setState(() {
                         controller.editingOwner = false;
                         controller.infoInfo =
-                            "Fyll inn informasjon om din hund";
+                            "..og litt om din hund";
                         controller.pageTitle = "Hund";
                         if (controller.user.dogs == null)
                           controller.user.dogs = [];
