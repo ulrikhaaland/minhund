@@ -327,9 +327,7 @@ class JournalPage extends MasterPage {
               ),
             ),
             CustomImage(
-              key: Key(controller.user.dog.imgUrl ??
-                  controller.user.dog.imageFile?.path ??
-                  "asd"),
+              key: UniqueKey(),
               controller: CustomImageController(
                   imageSizePercentage: 10,
                   imgUrl: controller.dog.imgUrl,
@@ -399,7 +397,7 @@ class JournalPage extends MasterPage {
 
   Widget _categoryItems() {
     return Flexible(
-      flex: 4,
+      flex: 1,
       child: ReorderableList(
           onReorder: (oldIndex, newIndex) {
             JournalCategoryItem cItem =

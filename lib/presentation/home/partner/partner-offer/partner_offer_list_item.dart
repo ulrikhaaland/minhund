@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
+import 'package:minhund/model/partner/partner.dart';
 import 'package:minhund/model/partner/partner_offer.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
@@ -13,7 +14,9 @@ class PartnerOfferListItemController extends BaseController {
 
   final PartnerOffersPageController actionController;
 
-  PartnerOfferListItemController({
+  final Partner partner;
+
+  PartnerOfferListItemController({this.partner, 
     this.actionController,
     this.offer,
   });
@@ -39,6 +42,7 @@ class PartnerOfferListItem extends BaseView {
             MaterialPageRoute(
               builder: (context) => PartnerCRUDOffer(
                 controller: PartnerCRUDOfferController(
+                  partner: controller.partner,
                   offer: controller.offer,
                   pageState: PageState.read,
                   actionController: controller.actionController,

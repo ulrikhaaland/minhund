@@ -98,6 +98,7 @@ Widget termsAndConditions(BuildContext context) {
     width: ServiceProvider.instance.screenService
         .getWidthByPercentage(context, 90),
     child: RichText(
+      textAlign: TextAlign.center,
       text: TextSpan(
           style:
               ServiceProvider.instance.instanceStyleService.appStyle.timestamp,
@@ -127,55 +128,6 @@ Widget termsAndConditions(BuildContext context) {
                   ..onTap = () => launchUrl(url: "https://mihu.no/privacy")),
           ]),
     ),
-    // Row(
-    //   children: <Widget>[
-    //     Spacer(),
-    //     RichText(
-    //       text: TextSpan(
-    //         style: ServiceProvider
-    //               .instance.instanceStyleService.appStyle.timestamp,
-    //         children: [
-    //         TextSpan(
-    //           text: "Ved å registrere bruker hos Minhund samtykker jeg til Minhund's ",
-    //             recognizer: TapGestureRecognizer()
-    //               ..onTap = () {
-    //                 print("object");
-    //               })
-    //       ]),
-    //     ),
-    //     // Column(
-    //     //   crossAxisAlignment: CrossAxisAlignment.start,
-    //     //   children: <Widget>[
-    //     //     Text(
-    //     //       "Ved å registrere bruker hos Minhund samtykker",
-    //     //       style: ServiceProvider
-    //     //           .instance.instanceStyleService.appStyle.timestamp,
-    //     //       textAlign: TextAlign.start,
-    //     //     ),
-    //     //     Row(
-    //     //       children: <Widget>[
-    //     //         Text(
-    //     //           "jeg til Minhund's ",
-    //     //           style: ServiceProvider
-    //     //               .instance.instanceStyleService.appStyle.timestamp,
-    //     //           textAlign: TextAlign.start,
-    //     //         ),
-    //     //         InkWell(
-    //     //           onTap: () => print("GO TO TERMS AND CONDITIONS"),
-    //     //           child: Text(
-    //     //             "brukervilkår.",
-    //     //             style: ServiceProvider
-    //     //                 .instance.instanceStyleService.appStyle.coloredText,
-    //     //             textAlign: TextAlign.start,
-    //     //           ),
-    //     //         ),
-    //     //       ],
-    //     //     ),
-    //     //   ],
-    //     // ),
-    //     Spacer(),
-    //   ],
-    // ),
   );
 }
 
@@ -224,7 +176,8 @@ String formatDifference({DateTime date1, DateTime date2, bool futureString}) {
     if (((diff % 365) / 30.42).truncate() > 0)
       months =
           "${((diff % 365) / 30.42).truncate()} ${((diff % 365) / 30.42).truncate() != 1 ? "måneder" : "måned"}";
-    returnString = "${(diff / 365).truncate()} år og $months";
+    returnString =
+        "${(diff / 365).truncate()} år ${months != "" ? "og " + months : ''}";
   } else if (diff > 0) {
     returnString =
         "${(diff).truncate()} ${diff != 1 ? "dager" : "dag"} og ${(diff % 24)} ${(diff % 24) != 1 ? "timer" : "time"}";
@@ -235,6 +188,8 @@ String formatDifference({DateTime date1, DateTime date2, bool futureString}) {
           "${(diff / 60).truncate()} ${(diff / 60).truncate() != 1 ? "timer" : "time"} og ${(diff % 60)} ${(diff % 60) != 1 ? "minutter" : "minutt"}";
     } else if (diff > 0) {
       returnString = "$diff ${diff != 1 ? "minutter" : "minutt"}";
+    } else if (diff == 0) {
+      returnString = "mindre enn 1 min";
     }
   }
   if (futureString == true) return "om " + returnString;

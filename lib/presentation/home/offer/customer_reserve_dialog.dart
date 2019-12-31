@@ -94,8 +94,7 @@ class CustomerReserveDialogController extends DialogTemplateController {
   }
 
   @override
-  // TODO: implement withBorder
-  bool get withBorder => null;
+  bool get withBorder => false;
 }
 
 class CustomerReserveDialog extends DialogTemplate {
@@ -107,8 +106,7 @@ class CustomerReserveDialog extends DialogTemplate {
   Widget buildDialogContent(BuildContext context) {
     if (!mounted) return Container();
 
-    if (controller.reservationCompleted == null)
-      return Center(child: CPI(false));
+    if (controller.reservationCompleted == null) return Center(child: CPI());
 
     double padding = getDefaultPadding(context);
 
@@ -116,18 +114,23 @@ class CustomerReserveDialog extends DialogTemplate {
       return TapToUnfocus(
         child: Padding(
           padding: EdgeInsets.all(padding * 2),
-          child: Column(
+          child: ListView(
+            shrinkWrap: true,
             children: <Widget>[
               if (controller.offer.partnerReservation.canReserveMultiple &&
                   controller.offer.partnerReservation.amount > 1) ...[
-                Text(
-                  "For dette tilbudet kan du maksimum reservere ${controller.offer.partnerReservation.canReserveMultipleAmount} stk",
-                  style: ServiceProvider
-                      .instance.instanceStyleService.appStyle.italic,
-                ),
-                Container(
-                  height: padding * 4,
-                ),
+                if (controller
+                        .offer.partnerReservation.canReserveMultipleAmount !=
+                    null) ...[
+                  Text(
+                    "For dette tilbudet kan du maksimum reservere ${controller.offer.partnerReservation.canReserveMultipleAmount} stk",
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.italic,
+                  ),
+                  Container(
+                    height: padding * 4,
+                  ),
+                ],
                 PrimaryTextField(
                   hintText: "Antall",
                   asListTile: true,
@@ -173,7 +176,7 @@ class CustomerReserveDialog extends DialogTemplate {
                   controller.customerReservation.phoneNumber = val;
                 },
               ),
-               PrimaryTextField(
+              PrimaryTextField(
                 paddingBottom: padding * 2,
                 hintText: "Ditt navn",
                 asListTile: true,
@@ -212,7 +215,7 @@ class CustomerReserveDialog extends DialogTemplate {
                 .getHeightByPercentage(context, 20),
           ),
           Text(
-            "Din reservasjon for ${controller.customerReservation.amount} stk ${controller.offer.title} kan hentes i butikk${ controller.customerReservation.reservationName != null && controller.customerReservation.reservationName != "" ? " under navnet " + controller.customerReservation.reservationName : null}.",
+            "Din reservasjon for ${controller.customerReservation.amount} stk ${controller.offer.title} kan hentes i butikk${controller.customerReservation.reservationName != null && controller.customerReservation.reservationName != "" ? " under navnet " + controller.customerReservation.reservationName : null}.",
             style: ServiceProvider.instance.instanceStyleService.appStyle.body1,
             textAlign: TextAlign.start,
           ),

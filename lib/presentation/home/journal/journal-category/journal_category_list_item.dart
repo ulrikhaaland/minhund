@@ -68,36 +68,6 @@ class JournalCategoryListItemController extends BaseController {
       isLoading = false;
     });
   }
-
-  // findLatestEvent(String deletedItemId) {
-  //   if (deletedItemId != null) {
-  //     returnDeletedId(deletedItemId);
-  //   } else if (categoryItem.journalEventItems.isNotEmpty) {
-  //     List<JournalEventItem> upcoming = categoryItem.journalEventItems
-  //         .where((i) => i.completed != true && i.timeStamp != null
-  //             ? i.timeStamp?.isAfter(DateTime.now())
-  //             : false)
-  //         .toList();
-  //     upcoming.sort((a, b) {
-  //       DateTime dateTimeA = a.timeStamp ?? DateTime(2050);
-  //       DateTime dateTimeB = b.timeStamp ?? DateTime(2050);
-
-  //       return dateTimeA.compareTo(dateTimeB);
-  //     });
-  //     List<JournalEventItem> completed = categoryItem.journalEventItems
-  //         .where((i) => i.completed == true)
-  //         .toList();
-  //     completed.sort((a, b) {
-  //       DateTime dateTimeA = a.timeStamp ?? DateTime(2050);
-  //       DateTime dateTimeB = b.timeStamp ?? DateTime(2050);
-
-  //       return dateTimeA.compareTo(dateTimeB);
-  //     });
-
-  //     returnLatest(upcoming.isNotEmpty ? upcoming[0] : null,
-  //         completed.isNotEmpty ? completed[0] : null, categoryItem.colorIndex);
-  //   }
-  // }
 }
 
 class JournalCategoryListItem extends BaseView {

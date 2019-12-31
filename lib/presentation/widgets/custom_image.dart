@@ -119,7 +119,7 @@ class CustomImage extends BaseView {
                 backgroundColor: ServiceProvider
                     .instance.instanceStyleService.appStyle.skyBlue,
                 child: controller.isLoading
-                    ? CPI(false)
+                    ? CPI()
                     : controller.imageFile == null && controller.imgUrl == null
                         ? icon
                         : null,
@@ -162,7 +162,7 @@ class CustomImage extends BaseView {
                         .instance.instanceStyleService.appStyle.skyBlue,
                     borderRadius: BorderRadius.all(Radius.elliptical(20, 30))),
                 child: controller.isLoading
-                    ? CPI(false)
+                    ? CPI()
                     : controller.imageFile == null && controller.imgUrl == null
                         ? icon
                         : null,

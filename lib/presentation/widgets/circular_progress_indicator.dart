@@ -2,9 +2,9 @@ import 'package:minhund/service/service_provider.dart';
 import 'package:flutter/material.dart';
 
 class CPI extends StatelessWidget {
-  final bool positioned;
-  const CPI(
-    this.positioned, {
+  final bool positionInStack;
+  const CPI({
+    this.positionInStack = false,
     Key key,
   }) : super(key: key);
 
@@ -17,7 +17,7 @@ class CPI extends StatelessWidget {
       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
     );
     // Center CPI
-    return positioned
+    return positionInStack
         ? Positioned(
             left: ServiceProvider.instance.screenService
                 .getWidthByPercentage(context, 45),

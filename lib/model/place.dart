@@ -4,11 +4,12 @@ part 'place.g.dart';
 
 @JsonSerializable(anyMap: true)
 class Place {
-  Place({this.id, this.name, this.city, this.lat, this.long, this.type});
+  Place({this.id, this.name, this.city, this.lat, this.long, this.type, this.description});
   String id;
   String name;
   String type;
   String city;
+  String description;
   double lat;
   double long;
 

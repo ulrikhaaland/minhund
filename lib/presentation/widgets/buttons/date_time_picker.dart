@@ -120,7 +120,7 @@ class DateTimePickerController extends BaseController {
                       _setCtrlrText(selectedTime);
                       onConfirmed(selectedTime);
                     },
-                    locale: DateTimePickerLocale.hu,
+                    // locale: DateTimePickerLocale.hu,
                     pickerTheme: DateTimePickerTheme(
                       confirm: confirmIcon,
                       cancel: cancelIcon,

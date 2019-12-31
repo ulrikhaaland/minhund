@@ -57,7 +57,7 @@ class PrimaryButton extends BaseView {
         ),
         child: RaisedButton(
             child: controller.isLoading
-                ? CPI(false)
+                ? CPI()
                 : Text(
                     controller.text ?? "N/A",
                     style: controller.textStyle ??

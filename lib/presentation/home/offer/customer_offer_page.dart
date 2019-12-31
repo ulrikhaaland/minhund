@@ -80,7 +80,7 @@ class CustomerOfferPage extends MasterPage {
                 ),
               ),
             Container(
-              height: padding * 4,
+              height: padding * 2,
             ),
             if (offer.price != null)
               Text(
@@ -109,6 +109,8 @@ class CustomerOfferPage extends MasterPage {
                       .instance.instanceStyleService.appStyle.italic,
                 ),
               SecondaryButton(
+                width: ServiceProvider.instance.screenService
+                  .getHeightByPercentage(context, 20),
                 text: "Reserver",
                 color: ServiceProvider
                     .instance.instanceStyleService.appStyle.leBleu,

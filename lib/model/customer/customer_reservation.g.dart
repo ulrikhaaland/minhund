@@ -9,6 +9,7 @@ part of 'customer_reservation.dart';
 CustomerReservation _$CustomerReservationFromJson(Map<String, dynamic> json) {
   return CustomerReservation(
     customerId: json['customerId'] as String,
+    didComeThrough: json['didComeThrough'] as bool,
     id: json['id'] as String,
     reservationName: json['reservationName'] as String,
     message: json['message'] as String,
@@ -25,6 +26,7 @@ Map<String, dynamic> _$CustomerReservationToJson(
     <String, dynamic>{
       'customerId': instance.customerId,
       'id': instance.id,
+      'didComeThrough': instance.didComeThrough,
       'message': instance.message,
       'reservationName': instance.reservationName,
       'phoneNumber': instance.phoneNumber,

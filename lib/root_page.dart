@@ -155,6 +155,12 @@ class RootPageController extends BaseController {
 
     UserProvider().updateFcmToken(_user, firebaseMessaging);
 
+    if (_user.introDone == false) {
+      newUser = true;
+    }
+
+    _user.dogs = [];
+
     setState(() {});
 
     return;

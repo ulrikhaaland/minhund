@@ -4,6 +4,7 @@ import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/customer/customer_reservation.dart';
 import 'package:minhund/model/offer.dart';
 import 'package:minhund/model/partner/partner-reservation/partner_reservation.dart';
+import 'package:minhund/model/partner/partner.dart';
 import 'package:minhund/model/partner/partner_offer.dart';
 import 'package:minhund/presentation/base_controller.dart';
 import 'package:minhund/presentation/base_view.dart';
@@ -19,6 +20,8 @@ class PartnerOfferReserveController extends BaseController {
 
   final PageState pageState;
 
+  final Partner partner;
+
   final bool Function() checkIfOnline;
 
   final PartnerOffer offer;
@@ -28,7 +31,8 @@ class PartnerOfferReserveController extends BaseController {
   String offerId;
 
   PartnerOfferReserveController(
-      {this.enabled,
+      {this.partner,
+      this.enabled,
       this.reservation,
       this.offerId,
       this.pageState,
@@ -115,7 +119,7 @@ class PartnerOfferReserve extends BaseView {
                         context: context,
                         dialogSize: DialogSize.medium,
                         child: Padding(
-                          padding: EdgeInsets.all(padding),
+                          padding: EdgeInsets.all(padding * 2),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
@@ -128,7 +132,7 @@ class PartnerOfferReserve extends BaseView {
                                 height: padding * 2,
                               ),
                               Text(
-                                "Gir kunder muligeten til å reservere ditt tilbud i appen.\n\nFor hver reservasjon vil antallet synke automatisk og du vil få en notifikasjon samt informasjon om kunden som gjorde reservasjonen.\n\nNår du sletter en kundereservasjon (f.eks etter henting) gir det kunden muligheten til å gjøre en ny reservasjon på samme vare.",
+                                "Gir kunder muligeten til å reservere ditt tilbud i appen.\n\nFor hver reservasjon vil antallet synke automatisk og du vil få en notifikasjon samt informasjon om kunden som gjorde reservasjonen.\n\nNår du godkjenner/sletter en kundereservasjonsordre (f.eks etter henting) gir det kunden muligheten til å gjøre en ny reservasjon på samme vare.",
                                 style: ServiceProvider.instance
                                     .instanceStyleService.appStyle.body1,
                                 textAlign: TextAlign.start,
@@ -148,6 +152,8 @@ class PartnerOfferReserve extends BaseView {
                             context: context,
                             child: ReservationDialog(
                               controller: ReservationDialogController(
+                                offer: controller.offer,
+                                partner: controller.partner,
                                 customerReservations:
                                     controller.reservation.customerReservations,
                               ),

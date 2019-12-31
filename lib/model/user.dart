@@ -19,6 +19,7 @@ class User {
     this.phoneNumber,
     this.currentDogIndex,
     this.allowsNotifications,
+    this.introDone,
   });
 
   String id;
@@ -28,6 +29,7 @@ class User {
   int currentDogIndex;
   String fcm;
   double appVersion;
+  bool introDone;
   bool isSubscribed;
   bool allowsNotifications;
   int notifications;

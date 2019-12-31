@@ -70,7 +70,7 @@ abstract class DialogTemplate extends BaseView {
                             ))),
                   ],
                 ),
-                if (controller.withBorder == null) Divider(color: Colors.black),
+                if (controller.withBorder == true) Divider(color: Colors.black),
                 Expanded(child: buildDialogContent(context)),
               ],
             ),

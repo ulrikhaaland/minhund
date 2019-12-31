@@ -188,7 +188,7 @@ class DogInfoController extends BaseController {
     _node.nextFocus();
   }
 
-  Future<void> save() async {
+  Future<bool> save() async {
     _formKey.currentState.save();
     if (validateTextFields(textFields: textFields)) {
       if (createOrUpdateDog == CreateOrUpdateDog.update) {
@@ -208,7 +208,10 @@ class DogInfoController extends BaseController {
       } else {
         getImageFile(imageFile);
         await onDone(dog);
+        return true;
       }
+    } else {
+      return false;
     }
   }
 }
@@ -224,7 +227,9 @@ class DogInfo extends BaseView {
       key: controller._formKey,
       child: FocusScope(
         node: controller._node,
-        child: Column(
+        child: ListView(
+          controller: controller.scrollController,
+          shrinkWrap: true,
           children: <Widget>[
             CustomImage(
               key: Key(controller.user.dog?.imgUrl ??
@@ -270,7 +275,10 @@ class DogInfo extends BaseView {
         backgroundColor: ServiceProvider
             .instance.instanceStyleService.appStyle.backgroundColor,
         elevation: 0,
-        title: Text("Min Hund", style: ServiceProvider.instance.instanceStyleService.appStyle.title,),
+        title: Text(
+          "Min Hund",
+          style: ServiceProvider.instance.instanceStyleService.appStyle.title,
+        ),
         centerTitle: true,
         actions: <Widget>[
           Padding(
@@ -282,7 +290,7 @@ class DogInfo extends BaseView {
         ],
       ),
       body: Scrollbar(
-              child: SingleChildScrollView(
+        child: SingleChildScrollView(
           child: Container(
             color: ServiceProvider
                 .instance.instanceStyleService.appStyle.backgroundColor,

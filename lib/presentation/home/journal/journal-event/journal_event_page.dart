@@ -217,7 +217,7 @@ class JournalEventPageController extends MasterPageController
 
   @override
   Future<void> onEventDelete({JournalEventItem event}) {
-    actionController.eventItems.remove(event);
+    actionController.eventItems.removeWhere((e) => e.id == event.id);
     actionController.setLatestAndUpcomingEvent();
     if (event.reminder != null)
       Firestore.instance.document("reminders/${event.id}").delete();

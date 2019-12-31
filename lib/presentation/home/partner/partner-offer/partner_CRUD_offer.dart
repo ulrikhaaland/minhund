@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/offer.dart';
+import 'package:minhund/model/partner/partner.dart';
 import 'package:minhund/model/partner/partner_offer.dart';
 import 'package:minhund/presentation/home/partner/partner-offer/partner_offer_reserve.dart';
 import 'package:minhund/presentation/home/partner/partner-offer/partner_offers_page.dart';
@@ -23,7 +25,7 @@ class PartnerCRUDOfferController extends MasterPageController
 
   PageState pageState;
 
-  final String partnerId;
+  final Partner partner;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -51,7 +53,7 @@ class PartnerCRUDOfferController extends MasterPageController
     this.actionController,
     this.offer,
     this.pageState,
-    this.partnerId,
+    this.partner,
   });
 
   @override
@@ -184,6 +186,7 @@ class PartnerCRUDOfferController extends MasterPageController
         });
 
     offerReserveController = PartnerOfferReserveController(
+      partner: partner,
       offerId: placeholderOffer.id,
       offer: placeholderOffer,
       enabled: enabled,
@@ -253,6 +256,7 @@ class PartnerCRUDOfferController extends MasterPageController
       offer.createdAt = DateTime.now();
       offer.docRef = await PartnerOfferProvider()
           .create(model: offer, id: "partnerOffers");
+      partner.docRef.collection("offers").document(offer.id).setData(offer.toJson());
     });
   }
 
@@ -317,6 +321,7 @@ class PartnerCRUDOffer extends MasterPage {
                   child: Column(
                     children: <Widget>[
                       PartnerOfferReserve(
+                        
                         controller: controller.offerReserveController,
                       ),
                       Container(

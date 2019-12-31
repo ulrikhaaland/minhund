@@ -95,6 +95,7 @@ class PartnerPageController extends MasterPageController {
       //     .instance.instanceStyleService.appStyle.textGrey,
       text: "Åpningstider",
       onPressed: () => showCustomDialog(
+        dialogSize: DialogSize.large,
         context: context,
         child: PartnerOpeningHours(
           controller: PartnerOpeningHoursController(
@@ -212,9 +213,7 @@ class PartnerPage extends MasterPage {
   Widget buildContent(BuildContext context) {
     if (!mounted) return Container();
 
-    if (controller.pageState == PageState.read) return buildRead(context);
-
-    if (controller.pageState == PageState.edit) return buildEdit(context);
+    return buildEdit(context);
 
     return Container();
   }
@@ -290,6 +289,7 @@ class PartnerPage extends MasterPage {
         onSaved: (val) => controller.partner.name = val,
         onFieldSubmitted: () => textFieldNext(height: 10),
         asListTile: true,
+        enabled: controller.pageState == PageState.edit,
       ),
       PrimaryTextField(
         hintText: "Adresse",
@@ -297,6 +297,7 @@ class PartnerPage extends MasterPage {
         onSaved: (val) => controller.partner.address.address = val,
         onFieldSubmitted: () => textFieldNext(height: 0),
         asListTile: true,
+        enabled: controller.pageState == PageState.edit,
       ),
       PrimaryTextField(
         hintText: "Postkode",
@@ -304,6 +305,7 @@ class PartnerPage extends MasterPage {
         onSaved: (val) => controller.partner.address.zip = val,
         onFieldSubmitted: () => textFieldNext(height: 0),
         asListTile: true,
+        enabled: controller.pageState == PageState.edit,
       ),
       PrimaryTextField(
         hintText: "Poststed",
@@ -311,6 +313,7 @@ class PartnerPage extends MasterPage {
         onFieldSubmitted: () => textFieldNext(height: 0),
         onSaved: (val) => controller.partner.address.city = val,
         asListTile: true,
+        enabled: controller.pageState == PageState.edit,
       ),
       PrimaryTextField(
         hintText: "Email",
@@ -318,6 +321,7 @@ class PartnerPage extends MasterPage {
         initValue: controller.partner.email,
         onFieldSubmitted: () => textFieldNext(height: 0),
         asListTile: true,
+        enabled: controller.pageState == PageState.edit,
         onSaved: (val) => controller.partner.email = val,
       ),
       PrimaryTextField(
@@ -326,6 +330,7 @@ class PartnerPage extends MasterPage {
           textInputAction: TextInputAction.done,
           prefixText: "+47 ",
           asListTile: true,
+          enabled: controller.pageState == PageState.edit,
           onSaved: (val) => controller.partner.phoneNumber = val),
       PrimaryTextField(
           hintText: "Nettsted, (mittnettsted.no)",
@@ -334,6 +339,7 @@ class PartnerPage extends MasterPage {
           textCapitalization: TextCapitalization.none,
           prefixText: "www.",
           asListTile: true,
+          enabled: controller.pageState == PageState.edit,
           onSaved: (val) => controller.partner.websiteUrl = val),
     ];
 
@@ -347,9 +353,7 @@ class PartnerPage extends MasterPage {
             child: Column(
               children: <Widget>[
                 controller.customImage,
-                Container(
-                  height: padding * 4,
-                ),
+                
                 controller.openingHours,
                 Container(
                   height: padding * 4,

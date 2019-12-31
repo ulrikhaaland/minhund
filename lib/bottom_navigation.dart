@@ -209,7 +209,7 @@ class BottomNavigation extends MasterPage {
     return IndexedStack(
       index: controller.bottomNavIndex,
       children: controller._isLoading
-          ? [Center(child: CPI(false))]
+          ? [Center(child: CPI())]
           : controller.pages,
     );
   }

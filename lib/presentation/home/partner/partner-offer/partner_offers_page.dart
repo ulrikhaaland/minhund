@@ -55,7 +55,7 @@ class PartnerOffersPageController extends MasterPageController
                 actionController: this,
                 pageState: PageState.create,
                 offer: partnerOffer,
-                partnerId: partner.id,
+                partner: partner,
               ),
             );
           })));
@@ -167,11 +167,14 @@ class PartnerOffersPageController extends MasterPageController
     partner.offers.add(offer);
 
     refresh();
+    partner.docRef
+        .collection("offers")
+        .document(offer.id)
+        .updateData(offer.toJson());
     return PartnerOfferProvider().update(model: offer);
   }
 
   @override
-  // TODO: implement enabledTopSafeArea
   bool get enabledTopSafeArea => null;
 
   @override
@@ -202,7 +205,7 @@ class PartnerOffersPage extends MasterPage {
       controller.inActiveOffers = [];
     }
 
-    if (controller.loading) return Center(child: CPI(false));
+    if (controller.loading) return Center(child: CPI());
 
     controller.sortListByDate(offerItemList: controller.inActiveOffers);
     controller.sortListByDate(offerItemList: controller.activeOffers);
@@ -233,8 +236,8 @@ class PartnerOffersPage extends MasterPage {
                       .instance.instanceStyleService.appStyle.skyBlue,
                   indicatorWeight: 3,
                   indicatorPadding: EdgeInsets.only(
-                    left: padding * 2,
-                    right: padding * 2,
+                    left: padding * 4,
+                    right: padding * 4,
                     bottom: padding,
                   ),
                   tabs: <Widget>[
@@ -302,9 +305,9 @@ class PartnerOffersPage extends MasterPage {
                     widgetList: controller.activeOffers
                         .map(
                           (offer) => PartnerOfferListItem(
-                            key: Key(offer.hashCode.toString() ??
-                                Random().nextInt(99999999).toString()),
+                            key: UniqueKey(),
                             controller: PartnerOfferListItemController(
+                              partner: controller.partner,
                               actionController: controller,
                               offer: offer,
                             ),
@@ -318,9 +321,9 @@ class PartnerOffersPage extends MasterPage {
                     widgetList: controller.inActiveOffers
                         .map(
                           (offer) => PartnerOfferListItem(
-                            key: Key(offer.hashCode.toString() ??
-                                Random().nextInt(99999999).toString()),
+                            key: UniqueKey(),
                             controller: PartnerOfferListItemController(
+                              partner: controller.partner,
                               actionController: controller,
                               offer: offer,
                             ),

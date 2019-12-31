@@ -45,7 +45,7 @@ class SaveButton extends BaseView {
         onPressed: () => controller.canSave ? controller.onPressed() : null,
         child: Center(
           child: controller.isLoading
-              ? CPI(false)
+              ? CPI()
               : Icon(
                   Icons.check,
                   size: iconSizeStandard,

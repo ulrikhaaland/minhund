@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/customer/customer_reservation.dart';
+import 'package:minhund/model/offer.dart';
+import 'package:minhund/model/partner/partner.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_pop_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_template.dart';
 import 'package:minhund/service/service_provider.dart';
@@ -8,13 +11,91 @@ import 'package:minhund/service/service_provider.dart';
 class ReservationDialogController extends DialogTemplateController {
   final List<CustomerReservation> customerReservations;
 
-  ReservationDialogController({this.customerReservations});
+  final Partner partner;
+
+  final Offer offer;
+
+  ReservationDialogController(
+      {this.offer, this.partner, this.customerReservations});
 
   @override
   Widget get actionOne => PopButton();
 
   @override
-  Widget get actionTwo => null;
+  Widget get actionTwo => IconButton(
+        iconSize: ServiceProvider
+            .instance.instanceStyleService.appStyle.iconSizeSmall,
+        onPressed: () {
+          double padding = getDefaultPadding(context);
+          showCustomDialog(
+            context: context,
+            dialogSize: DialogSize.medium,
+            child: Padding(
+              padding: EdgeInsets.all(padding * 2),
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  Text(
+                    "Reservasjoner",
+                    textAlign: TextAlign.center,
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.descTitle,
+                  ),
+                  Container(
+                    height: padding * 2,
+                  ),
+                  Text(
+                    "Her havner alle reservasjoner for dette tilbudet.",
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.body1,
+                    textAlign: TextAlign.start,
+                  ),
+                  Container(
+                    height: padding * 2,
+                  ),
+                  Text(
+                    'Når varen blir plukket opp markeres dette ved å trykke på "check-ikonet"',
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.body1,
+                    textAlign: TextAlign.start,
+                  ),
+                  Icon(
+                    Icons.check,
+                    color: ServiceProvider
+                        .instance.instanceStyleService.appStyle.green,
+                    size: ServiceProvider
+                        .instance.instanceStyleService.appStyle.iconSizeBig,
+                  ),
+                  Container(
+                    height: padding * 2,
+                  ),
+                  Text(
+                    'Hvis kunden ikke skulle plukke opp varen eller noe annet har gått galt, fjernes reservasjonen ved å trykke på "kryss-ikonet"',
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.body1,
+                    textAlign: TextAlign.start,
+                  ),
+                  Icon(
+                    Icons.close,
+                    size: ServiceProvider
+                        .instance.instanceStyleService.appStyle.iconSizeBig,
+                  ),
+                  Container(
+                    height: padding * 2,
+                  ),
+                  Text(
+                    "Når salgsdataen har blitt samlet vil Min Hund kunne presentere det i form av statistikk og tips for å gi dere en lønnsommere bedrift.",
+                    style: ServiceProvider
+                        .instance.instanceStyleService.appStyle.body1,
+                    textAlign: TextAlign.start,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+        icon: Icon(Icons.info_outline),
+      );
 
   @override
   String get title => "Reservasjoner";
@@ -24,6 +105,28 @@ class ReservationDialogController extends DialogTemplateController {
       customerReservations.remove(reservation);
     });
     reservation.docRef.delete();
+    reservation.didComeThrough = false;
+    partner.docRef
+        .collection("offers")
+        .document(offer.id)
+        .collection("reservations")
+        .document(reservation.id)
+        .setData(reservation.toJson());
+  }
+
+  void confirmReservationSale({CustomerReservation reservation}) {
+    setState(() {
+      customerReservations.remove(reservation);
+    });
+    reservation.docRef.delete();
+    reservation.didComeThrough = true;
+
+    partner.docRef
+        .collection("offers")
+        .document(offer.id)
+        .collection("reservations")
+        .document(reservation.id)
+        .setData(reservation.toJson());
   }
 
   @override
@@ -177,12 +280,27 @@ class ReservationDialog extends DialogTemplate {
                         ),
                       ),
                     ),
-                    IconButton(
-                      onPressed: () => controller.deleteReservation(
-                          reservation: reservation),
-                      icon: Icon(Icons.delete),
-                      iconSize: ServiceProvider.instance.instanceStyleService
-                          .appStyle.iconSizeStandard,
+                    IntrinsicHeight(
+                      child: Column(
+                        children: <Widget>[
+                          IconButton(
+                            onPressed: () => controller.confirmReservationSale(
+                                reservation: reservation),
+                            icon: Icon(Icons.check),
+                            color: ServiceProvider
+                                .instance.instanceStyleService.appStyle.green,
+                            iconSize: ServiceProvider.instance
+                                .instanceStyleService.appStyle.iconSizeStandard,
+                          ),
+                          IconButton(
+                            onPressed: () => controller.deleteReservation(
+                                reservation: reservation),
+                            icon: Icon(Icons.clear),
+                            iconSize: ServiceProvider.instance
+                                .instanceStyleService.appStyle.iconSizeStandard,
+                          ),
+                        ],
+                      ),
                     )
                   ],
                 );

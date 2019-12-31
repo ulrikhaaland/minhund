@@ -12,12 +12,14 @@ class CustomerReservation {
       this.message,
       this.phoneNumber,
       this.reservedAt,
+      this.didComeThrough,
       this.amount});
   String customerId;
   String id;
   String message;
   String reservationName;
   String phoneNumber;
+  bool didComeThrough;
   int amount;
   DateTime reservedAt;
   @JsonKey(ignore: true)

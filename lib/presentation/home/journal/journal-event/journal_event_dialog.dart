@@ -43,6 +43,10 @@ class JournalEventDialogController extends DialogTemplateController
 
   bool hasFocus = true;
 
+  bool focusAfterTitle = true;
+
+  bool focusAfterDate = true;
+
   final bool canEdit;
 
   PageState pageState;
@@ -120,6 +124,7 @@ class JournalEventDialogController extends DialogTemplateController
 
       reminderDropDownValue = "Ingen";
     } else {
+      focusAfterDate = false;
       firstBuild = false;
       placeHolderEventItem = JournalEventItem(
           id: eventItem.id,
@@ -139,6 +144,8 @@ class JournalEventDialogController extends DialogTemplateController
 
     saveBtnCtrlr = SaveButtonController(
         canSave: canSave, onPressed: () => saveEventItem());
+
+    _setDatePickers();
 
     super.initState();
   }
@@ -204,6 +211,53 @@ class JournalEventDialogController extends DialogTemplateController
   @override
   Future<void> onEventUpdate({JournalEventItem event}) {
     return actionController.onEventUpdate(event: event);
+  }
+
+  void _setDatePickers() {
+    datePickerController = DateTimePickerController(
+        asListTile: true,
+        validate: false,
+        overrideInitialDate:
+            placeHolderEventItem.timeStamp == null ? true : false,
+        onConfirmed: (date) async {
+          if (focusAfterDate) {
+            await Future.delayed(Duration(milliseconds: 100));
+            timePickerController.openDatePicker(context);
+          }
+          placeHolderEventItem.timeStamp = DateTime(
+              date.year,
+              date.month,
+              date.day,
+              placeHolderEventItem.timeStamp?.hour ?? 11,
+              placeHolderEventItem.timeStamp?.minute ?? 11,
+              11);
+
+          focusAfterDate = false;
+        },
+        initialDate: placeHolderEventItem.timeStamp ?? DateTime.now(),
+        title: "Dato",
+        label: "Dato");
+
+    timePickerController = DateTimePickerController(
+        asListTile: true,
+        validate: false,
+        time: true,
+        dateFormat: "HH-mm",
+        overrideInitialDate:
+            placeHolderEventItem.timeStamp == null ? true : false,
+        onConfirmed: (date) {
+          placeHolderEventItem.timeStamp = DateTime(
+              placeHolderEventItem.timeStamp?.year ?? DateTime.now().year,
+              placeHolderEventItem.timeStamp?.month ?? DateTime.now().month,
+              placeHolderEventItem.timeStamp?.day ?? DateTime.now().day,
+              date.hour,
+              date.minute,
+              0);
+          print(placeHolderEventItem.timeStamp.toString());
+        },
+        initialDate: placeHolderEventItem.timeStamp ?? DateTime.now(),
+        title: "Tidspunkt",
+        label: "Tidspunkt");
   }
 }
 
@@ -271,71 +325,10 @@ class JournalEventDialog extends DialogTemplate {
     return buildRead(context);
   }
 
-  void _setDatePickers() {
-    controller.datePickerController = DateTimePickerController(
-        asListTile: true,
-        validate: false,
-        // width: ServiceProvider.instance.screenService
-        //         .getWidthByPercentage(context, 80) /
-        //     2.1,
-        overrideInitialDate:
-            controller.placeHolderEventItem.timeStamp == null ? true : false,
-        onConfirmed: (date) {
-          controller.placeHolderEventItem.timeStamp = DateTime(
-              date.year,
-              date.month,
-              date.day,
-              controller.placeHolderEventItem.timeStamp?.hour ?? 11,
-              controller.placeHolderEventItem.timeStamp?.minute ?? 11,
-              11);
-
-          // if (controller.placeHolderEventItem.timeStamp.second ==
-          //     11)
-          //   Timer(
-          //       Duration(milliseconds: 50),
-          //       () => controller.timePickerController
-          //           .openDatePicker(context));
-        },
-        initialDate:
-            controller.placeHolderEventItem.timeStamp ?? DateTime.now(),
-        title: "Dato",
-        label: "Dato");
-
-    controller.timePickerController = DateTimePickerController(
-        asListTile: true,
-        validate: false,
-        time: true,
-        dateFormat: "HH-mm",
-        width: ServiceProvider.instance.screenService
-                .getWidthByPercentage(context, 80) /
-            2.1,
-        overrideInitialDate:
-            controller.placeHolderEventItem.timeStamp == null ? true : false,
-        onConfirmed: (date) {
-          controller.placeHolderEventItem.timeStamp = DateTime(
-              controller.placeHolderEventItem.timeStamp?.year ??
-                  DateTime.now().year,
-              controller.placeHolderEventItem.timeStamp?.month ??
-                  DateTime.now().month,
-              controller.placeHolderEventItem.timeStamp?.day ??
-                  DateTime.now().day,
-              date.hour,
-              date.minute,
-              0);
-          print(controller.placeHolderEventItem.timeStamp.toString());
-        },
-        initialDate:
-            controller.placeHolderEventItem.timeStamp ?? DateTime.now(),
-        title: "Tidspunkt",
-        label: "Tidspunkt");
-  }
-
   Widget buildEdit(BuildContext context) {
     double padding = getDefaultPadding(context);
 
     controller.hasFocus = controller.scopeNode.hasFocus;
-
-    _setDatePickers();
 
     return TapToUnfocus(
       child: Scrollbar(
@@ -380,10 +373,15 @@ class JournalEventDialog extends DialogTemplate {
                               });
                             },
                             textInputAction: TextInputAction.next,
-                            onFieldSubmitted: () {
+                            onFieldSubmitted: () async {
                               controller.hasFocus = false;
-                              controller.datePickerController
-                                  .openDatePicker(context);
+
+                              if (controller.focusAfterTitle) {
+                                controller.datePickerController
+                                    .openDatePicker(context);
+                              }
+
+                              controller.focusAfterTitle = false;
                             },
                           ),
                           Divider(),
