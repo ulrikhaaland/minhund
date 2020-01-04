@@ -112,8 +112,7 @@ class JournalAddCategoryController extends DialogTemplateController
   }
 
   @override
-  // TODO: implement withBorºder
-  bool get withBorder => true;
+  bool get withBorder => false;
 }
 
 class JournalAddCategory extends DialogTemplate {

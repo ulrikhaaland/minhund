@@ -129,10 +129,8 @@ class MapPageController extends BaseController {
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
-        topLeft: Radius.circular(ServiceProvider
-            .instance.instanceStyleService.appStyle.borderRadius),
-        topRight: Radius.circular(ServiceProvider
-            .instance.instanceStyleService.appStyle.borderRadius),
+        topLeft: Radius.circular(12),
+        topRight: Radius.circular(12),
       )),
       elevation:
           ServiceProvider.instance.instanceStyleService.appStyle.elevation,
@@ -191,9 +189,9 @@ class MapPageController extends BaseController {
                             latlong.LatLng(
                                 locationData.latitude, locationData.longitude),
                             latLng)
-                        .round()
+                        .truncate()
                         .toString() +
-                    " km",
+                    " km unna",
                 style: ServiceProvider
                     .instance.instanceStyleService.appStyle.italic,
               ),
@@ -215,10 +213,12 @@ class MapPageController extends BaseController {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Text(
-            "En gjemt perle midt i smørøyet av lorem ipsum, is a dummy text that has been the industry standard since 1892",
-            style: ServiceProvider.instance.instanceStyleService.appStyle.body1,
-          ),
+          if (place.description != null && place.description != "")
+            Text(
+              place.description,
+              style:
+                  ServiceProvider.instance.instanceStyleService.appStyle.body1,
+            ),
           if (place.lat != null && place.long != null) ...[
             SecondaryButton(
               text: "Veibeskrivelse",

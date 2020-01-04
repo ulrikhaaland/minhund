@@ -72,23 +72,23 @@ class _ProfileSubscriptionSegmentState
             },
           ),
         ),
-        Flexible(
-          child: PrimaryButton(
-            controller: PrimaryButtonController(
-              elevation: 2,
-              color: Colors.white,
-              width: ServiceProvider.instance.screenService
-                  .getWidthByPercentage(context, 60),
-              text: widget.user.isSubscribed ? "Mitt abonnement" : "Abonner",
-              textStyle: ServiceProvider
-                  .instance.instanceStyleService.appStyle.buttonText
-                  .copyWith(
-                      color: ServiceProvider
-                          .instance.instanceStyleService.appStyle.textGrey),
-              onPressed: () => null,
-            ),
-          ),
-        )
+        // Flexible(
+        //   child: PrimaryButton(
+        //     controller: PrimaryButtonController(
+        //       elevation: 2,
+        //       color: Colors.white,
+        //       width: ServiceProvider.instance.screenService
+        //           .getWidthByPercentage(context, 60),
+        //       text: widget.user.isSubscribed ? "Mitt abonnement" : "Abonner",
+        //       textStyle: ServiceProvider
+        //           .instance.instanceStyleService.appStyle.buttonText
+        //           .copyWith(
+        //               color: ServiceProvider
+        //                   .instance.instanceStyleService.appStyle.textGrey),
+        //       onPressed: () => null,
+        //     ),
+        //   ),
+        // )
       ],
     );
   }

@@ -54,7 +54,6 @@ class ProfilePage extends BaseView {
 
     controller.rootPageController = Provider.of<RootPageController>(context);
 
-
     controller.user.isSubscribed = false;
 
     double padding = getDefaultPadding(context);
@@ -67,12 +66,12 @@ class ProfilePage extends BaseView {
       child: Column(
         children: <Widget>[
           Container(
-            height: MediaQuery.of(context).padding.top * 3.5,
+            height: MediaQuery.of(context).padding.top * 2,
             color: ServiceProvider
                 .instance.instanceStyleService.appStyle.backgroundColor,
           ),
           Expanded(
-            flex: 2,
+            flex: 5,
             child: CustomPaint(
               painter: Chevron(),
               child: Column(
@@ -106,38 +105,57 @@ class ProfilePage extends BaseView {
                         .instance.instanceStyleService.appStyle.body1,
                   ),
                   Padding(
-                    padding: EdgeInsets.all(padding * 4),
+                    padding: EdgeInsets.all(0),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                        Column(
-                          children: <Widget>[
-                            FloatingActionButton(
-                              heroTag: null,
-                              backgroundColor: ServiceProvider
-                                  .instance.instanceStyleService.appStyle.pink,
-                              onPressed: () =>
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => ProfileSettings(
-                                            controller:
-                                                ProfileSettingsController(
-                                              onSignOut: () {
-                                                Navigator.pop(context);
-                                                
-                                                controller.rootPageController.signOut();
-                                              },
-                                              user: controller.user,
-                                            ),
-                                          ))),
-                              child: Icon(Icons.settings,
-                                  size: iconSizeStandard, color: Colors.white),
-                            ),
-                            // Text(
-                            //   "Innstillinger",
-                            //   style: ServiceProvider.instance
-                            //       .instanceStyleService.appStyle.body1,
-                            // )
-                          ],
+                        FloatingActionButton(
+                          heroTag: null,
+                          backgroundColor: ServiceProvider
+                              .instance.instanceStyleService.appStyle.pink,
+                          onPressed: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ProfileSettings(
+                                        controller: ProfileSettingsController(
+                                          onSignOut: () {
+                                            Navigator.pop(context);
+
+                                            controller.rootPageController
+                                                .signOut();
+                                          },
+                                          user: controller.user,
+                                        ),
+                                      ))),
+                          child: Icon(Icons.settings,
+                              size: iconSizeStandard, color: Colors.white),
+                        ),
+                        Container(
+                          height: ServiceProvider.instance.screenService
+                              .getHeightByPercentage(context, 18),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                              FloatingActionButton(
+                                heroTag: null,
+                                backgroundColor: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.green,
+                                onPressed: () => launchUrl(
+                                    url: "https://mihu.no/tilbakemelding/"),
+                                child: Icon(Icons.feedback,
+                                    size: iconSizeStandard,
+                                    color: Colors.white),
+                              ),
+                              Container(
+                                height: padding * 2,
+                              ),
+                              Text(
+                                "Gi tilbakemelding",
+                                style: ServiceProvider.instance
+                                    .instanceStyleService.appStyle.descTitle,
+                              )
+                            ],
+                          ),
                         ),
                         FloatingActionButton(
                           heroTag: null,
@@ -163,7 +181,7 @@ class ProfilePage extends BaseView {
             ),
           ),
           Flexible(
-            flex: 1,
+            flex: 2,
             child: ProfileSubscriptionSegment(
               user: controller.user,
             ),
