@@ -10,6 +10,8 @@ import 'package:minhund/presentation/widgets/dialog/dialog_pop_button.dart';
 import 'package:minhund/presentation/widgets/dialog/dialog_template.dart';
 import 'package:minhund/presentation/widgets/tap_to_unfocus.dart';
 import 'package:minhund/presentation/widgets/textfield/primary_textfield.dart';
+import 'package:minhund/provider/cloud_functions_provider.dart';
+import 'package:minhund/provider/fcm_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 
 class CustomerReserveDialogController extends DialogTemplateController {
@@ -63,7 +65,6 @@ class CustomerReserveDialogController extends DialogTemplateController {
                 .setData(
                   customerReservation.toJson(),
                 );
-
             setState(() => reservationCompleted = true);
           }),
         )

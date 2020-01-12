@@ -1,10 +1,10 @@
 import * as functions from "firebase-functions";
-import * as firebase_tools from "firebase-tools";
+const firebase_tools = require("firebase-tools");
 import * as admin from "firebase-admin";
 
 admin.initializeApp();
 
-const db = admin.firestore();
+// const db = admin.firestore();
 const messaging = admin.messaging();
 
 exports.recursiveUserSpecificDelete = functions
@@ -78,56 +78,58 @@ exports.recursiveUniversalDelete = functions
       });
   });
 
-export const sendNotificationToDevice = (
-  data: FirebaseFirestore.DocumentData,
-  fcm: string
-): any => {
-  const payload: admin.messaging.MessagingPayload = {
-    notification: {
-      title: data.title,
-      body: data.body,
-      // icon: 'your-icon-url',
-      click_action: "FLUTTER_NOTIFICATION_CLICK"
-    },
+export const sendNotificationToDevice = functions
+  .runWith({
+    timeoutSeconds: 540,
+    memory: "2GB"
+  })
+  .https.onCall((data, context) => {
+    const payload: admin.messaging.MessagingPayload = {
+      notification: {
+        title: data.title,
+        body: data.body,
+        // icon: 'your-icon-url',
+        click_action: "FLUTTER_NOTIFICATION_CLICK"
+      },
 
-    data: {
-      title: data.title,
-      body: data.body,
-      note: data.note !== null ? data.note : "",
-      eventId: data.eventId
-    }
-  };
-  return messaging.sendToDevice(fcm, payload);
-};
-
-export const scheduledFunctionPlainEnglish = functions.pubsub
-  .schedule("5 10 * * *")
-  .onRun(() => {
-    const compareDateString = admin.firestore.Timestamp.fromDate(new Date())
-      .toDate()
-      .toISOString()
-      .split("T")[0];
-
-    return db
-      .collection("reminders")
-      .where("timestampAsIso", "==", compareDateString)
-      .get()
-      .then(qSnap => {
-        qSnap.docs.forEach(doc => {
-          const reminder = doc.data();
-          return db
-            .doc(`users/${reminder.userId}`)
-            .get()
-            .then(userDoc => {
-              const fcm = userDoc.data().fcm;
-              if (fcm !== null) {
-                sendNotificationToDevice(reminder, fcm);
-              }
-              return doc.ref.delete().then(promise => {
-                return promise;
-              });
-            });
-        });
-        return;
-      });
+      data: {
+        title: data.title,
+        body: data.body,
+        note: data.note !== null ? data.note : "",
+        eventId: data.eventId
+      }
+    };
+    return messaging.sendToDevice(data.fcm, payload);
   });
+
+// export const scheduledFunctionPlainEnglish = functions.pubsub
+//   .schedule("5 10 * * *")
+//   .onRun(() => {
+//     const compareDateString = admin.firestore.Timestamp.fromDate(new Date())
+//       .toDate()
+//       .toISOString()
+//       .split("T")[0];
+
+//     return db
+//       .collection("reminders")
+//       .where("timestampAsIso", "==", compareDateString)
+//       .get()
+//       .then(qSnap => {
+//         qSnap.docs.forEach(doc => {
+//           const reminder = doc.data();
+//           return db
+//             .doc(`users/${reminder.userId}`)
+//             .get()
+//             .then(userDoc => {
+//               const fcm = userDoc.data().fcm;
+//               if (fcm !== null) {
+//                 sendNotificationToDevice(reminder, fcm);
+//               }
+//               return doc.ref.delete().then(promise => {
+//                 return promise;
+//               });
+//             });
+//         });
+//         return;
+//       });
+//   });
