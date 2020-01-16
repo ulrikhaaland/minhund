@@ -132,8 +132,8 @@ class JournalAddCategory extends DialogTemplate {
           controller.height = constraints.maxHeight;
           return Container(
             padding: EdgeInsets.all(padding * 2),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: ListView(
+              // crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 PrimaryTextField(
                   asListTile: true,
