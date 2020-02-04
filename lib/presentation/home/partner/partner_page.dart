@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:minhund/helper/auth.dart';
 import 'package:minhund/helper/helper.dart';
 import 'package:minhund/model/address.dart';
 import 'package:minhund/model/partner/opening_hours.dart';
@@ -13,6 +14,9 @@ import 'package:minhund/provider/file_provider.dart';
 import 'package:minhund/provider/partner/partner_provider.dart';
 import 'package:minhund/service/service_provider.dart';
 import 'package:minhund/utilities/master_page.dart';
+import 'package:provider/provider.dart';
+
+import '../../../root_page.dart';
 
 class PartnerPageController extends MasterPageController {
   PageState pageState;
@@ -39,7 +43,8 @@ class PartnerPageController extends MasterPageController {
 
   SaveButtonController saveButtonController;
 
-  PartnerPageController({this.pageState = PageState.read, this.partner});
+  PartnerPageController(
+      {this.pageState = PageState.read, this.partner, });
 
   @override
   Widget get bottomNav => null;
@@ -184,7 +189,14 @@ class PartnerPageController extends MasterPageController {
   }
 
   @override
-  Widget get actionOne => null;
+  Widget get actionOne => IconButton(
+        icon: Icon(Icons.exit_to_app),
+        onPressed: () {
+          Provider.of<RootPageController>(context).signOut();
+        },
+        iconSize: ServiceProvider
+            .instance.instanceStyleService.appStyle.iconSizeStandard,
+      );
 
   @override
   Widget get fab => null;
@@ -214,8 +226,6 @@ class PartnerPage extends MasterPage {
     if (!mounted) return Container();
 
     return buildEdit(context);
-
-    return Container();
   }
 
   Widget buildRead(BuildContext context) {
@@ -353,7 +363,6 @@ class PartnerPage extends MasterPage {
             child: Column(
               children: <Widget>[
                 controller.customImage,
-                
                 controller.openingHours,
                 Container(
                   height: padding * 4,

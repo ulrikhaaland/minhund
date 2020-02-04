@@ -23,13 +23,13 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Photo</string>
+	<string>Take pictures of your dog.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Share location</string>
+	<string>To display a map with dog friendly locations in your area.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Share location</string>
+	<string>To display a map with dog friendly locations in your area.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Photo</string>
+	<string>Upload pictures of your dog.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

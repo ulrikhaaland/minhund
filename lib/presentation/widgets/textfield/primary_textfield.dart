@@ -189,7 +189,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                         left: padding * 4,
                         right: padding * 4,
                         bottom: widget.prefixText == null ? padding * 2 : 0),
-                    child: Container(
+                    child: Center(
                       child: widget.textFieldType == TextFieldType.ordinary
                           ? TextField(
                               enabled: widget.enabled ?? true,
@@ -299,7 +299,7 @@ class _PrimaryTextFieldState extends State<PrimaryTextField>
                                         break;
                                       case RegExType.email:
                                         pattern =
-                                            r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+                                            r"^[a-zA-Z0-9-_.]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
                                         errorMessage =
                                             'Vennligst fyll inn en gyldig email adresse';
 
