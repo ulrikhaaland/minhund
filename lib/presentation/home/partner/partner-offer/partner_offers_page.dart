@@ -179,6 +179,10 @@ class PartnerOffersPageController extends MasterPageController
 
   @override
   bool get hasBottomNav => true;
+
+  @override
+  // TODO: implement disableResize
+  bool get disableResize => null;
 }
 
 class PartnerOffersPage extends MasterPage {

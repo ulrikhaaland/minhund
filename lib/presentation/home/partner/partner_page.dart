@@ -43,14 +43,17 @@ class PartnerPageController extends MasterPageController {
 
   SaveButtonController saveButtonController;
 
-  PartnerPageController(
-      {this.pageState = PageState.read, this.partner, });
+  PartnerPageController({
+    this.pageState = PageState.read,
+    this.partner,
+  });
 
   @override
   Widget get bottomNav => null;
 
   @override
   String get title => partner.name;
+
   @override
   List<Widget> get actionTwoList => [
         pageState == PageState.read
@@ -64,6 +67,7 @@ class PartnerPageController extends MasterPageController {
               )
             : SaveButton(controller: saveButtonController),
       ];
+
   @override
   void initState() {
     if (partner.address == null) partner.address = Address();
@@ -175,19 +179,6 @@ class PartnerPageController extends MasterPageController {
     );
   }
 
-  Widget editBasicContainer({
-    Widget child,
-  }) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: getDefaultPadding(context) * 2),
-      child: Container(
-        alignment: Alignment.centerLeft,
-        height: constraints.minHeight * 0.1,
-        child: child,
-      ),
-    );
-  }
-
   @override
   Widget get actionOne => IconButton(
         icon: Icon(Icons.exit_to_app),
@@ -206,6 +197,10 @@ class PartnerPageController extends MasterPageController {
 
   @override
   bool get hasBottomNav => true;
+
+  @override
+  // TODO: implement disableResize
+  bool get disableResize => true;
 }
 
 class PartnerPage extends MasterPage {
@@ -234,56 +229,49 @@ class PartnerPage extends MasterPage {
     controller.customImage.controller.edit = false;
     controller.customImage.controller.setState(() {});
 
-    return LayoutBuilder(
-      builder: (context, con) {
-        controller.constraints = con;
-        return SingleChildScrollView(
-          child: Container(
-            width: ServiceProvider.instance.screenService
-                .getWidthByPercentage(context, 80),
-            child: Column(
-              children: <Widget>[
-                controller.customImage,
-                Container(
-                  height: padding * 4,
-                ),
-                controller.openingHours,
-                Container(
-                  height: padding * 4,
-                ),
-                controller.readBasicContainer(
-                    key: "Adresse", value: controller.partner.address?.address),
-                controller.readBasicContainer(
-                    key: "Postnummer", value: controller.partner.address?.zip),
-                controller.readBasicContainer(
-                  key: "Poststed",
-                  value: controller.partner.address?.city,
-                ),
-                controller.readBasicContainer(
-                  key: "Email",
-                  value: controller.partner.email,
-                ),
-                controller.readBasicContainer(
-                  key: "Telefonnummer",
-                  value: controller.partner.phoneNumber != null
-                      ? "+47 " + controller.partner.phoneNumber
-                      : null,
-                ),
-                controller.readBasicContainer(
-                  key: "Nettsted",
-                  value: controller.partner.websiteUrl != null
-                      ? "www." + controller.partner.websiteUrl
-                      : null,
-                ),
-                controller.readBasicContainer(
-                  key: "Kundenummer",
-                  value: controller.partner.id,
-                ),
-              ],
-            ),
+    return Container(
+      width: ServiceProvider.instance.screenService
+          .getWidthByPercentage(context, 80),
+      child: ListView(
+        children: <Widget>[
+          controller.customImage,
+          Container(
+            height: padding * 4,
           ),
-        );
-      },
+          controller.openingHours,
+          Container(
+            height: padding * 4,
+          ),
+          controller.readBasicContainer(
+              key: "Adresse", value: controller.partner.address?.address),
+          controller.readBasicContainer(
+              key: "Postnummer", value: controller.partner.address?.zip),
+          controller.readBasicContainer(
+            key: "Poststed",
+            value: controller.partner.address?.city,
+          ),
+          controller.readBasicContainer(
+            key: "Email",
+            value: controller.partner.email,
+          ),
+          controller.readBasicContainer(
+            key: "Telefonnummer",
+            value: controller.partner.phoneNumber != null
+                ? "+47 " + controller.partner.phoneNumber
+                : null,
+          ),
+          controller.readBasicContainer(
+            key: "Nettsted",
+            value: controller.partner.websiteUrl != null
+                ? "www." + controller.partner.websiteUrl
+                : null,
+          ),
+          controller.readBasicContainer(
+            key: "Kundenummer",
+            value: controller.partner.id,
+          ),
+        ],
+      ),
     );
   }
 

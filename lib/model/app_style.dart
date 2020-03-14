@@ -83,7 +83,9 @@ class AppStyle {
   TextStyle cancel;
   TextStyle confirm;
   TextStyle smallTitle;
+
   TextStyle descTitle;
+  TextStyle tabBarStyle;
   TextStyle body1Black;
   TextStyle pageTitle;
   TextStyle titleWhite;

@@ -48,6 +48,10 @@ class CustomerOfferPageController extends MasterPageController {
   @override
   // TODO: implement hasBottomNav
   bool get hasBottomNav => false;
+
+  @override
+  // TODO: implement disableResize
+  bool get disableResize => null;
 }
 
 class CustomerOfferPage extends MasterPage {

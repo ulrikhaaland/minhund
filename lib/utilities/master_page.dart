@@ -15,7 +15,10 @@ abstract class MasterPageController extends BaseController {
 
   bool get enabledTopSafeArea;
 
+  bool get disableResize;
+
   Widget get actionOne;
+
   List<Widget> get actionTwoList;
 
   bool get hasBottomNav;
@@ -89,8 +92,7 @@ abstract class MasterPage extends BaseView {
 
     return TapToUnfocus(
         child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            resizeToAvoidBottomPadding: false,
+            resizeToAvoidBottomPadding: controller.disableResize ?? false,
             backgroundColor: ServiceProvider
                 .instance.instanceStyleService.appStyle.backgroundColor,
             appBar: appBar,

@@ -167,6 +167,10 @@ class BottomNavigationController extends MasterPageController {
 
   @override
   bool get hasBottomNav => true;
+
+  @override
+  // TODO: implement disableResize
+  bool get disableResize => null;
 }
 
 class BottomNavigation extends MasterPage {

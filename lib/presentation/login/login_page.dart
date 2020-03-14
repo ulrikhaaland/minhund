@@ -74,45 +74,45 @@ class LoginPage extends BaseView {
                     .getHeightByPercentage(context, 5),
                 width: 1,
               ),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => PhoneLogin(
-                              controller: PhoneLoginController(
-                                  auth: controller.auth,
-                                  rootPageController:
-                                      controller.rootPageController),
-                            )),
-                  );
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 161, 196, 253),
-                      borderRadius: BorderRadius.circular(ServiceProvider
-                          .instance
-                          .instanceStyleService
-                          .appStyle
-                          .borderRadius)),
-                  height: ServiceProvider.instance.screenService
-                      .getPortraitHeightByPercentage(context, 7.5),
-                  width: ServiceProvider.instance.screenService
-                      .getWidthByPercentage(context, 70),
-                  child: Center(
-                    child: Text(
-                      "Telefon",
-                      style: ServiceProvider
-                          .instance.instanceStyleService.appStyle.buttonText,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                height: ServiceProvider.instance.screenService
-                    .getHeightByPercentage(context, 5),
-                width: 1,
-              ),
+//              InkWell(
+//                onTap: () {
+//                  Navigator.push(
+//                    context,
+//                    MaterialPageRoute(
+//                        builder: (context) => PhoneLogin(
+//                              controller: PhoneLoginController(
+//                                  auth: controller.auth,
+//                                  rootPageController:
+//                                      controller.rootPageController),
+//                            )),
+//                  );
+//                },
+//                child: Container(
+//                  decoration: BoxDecoration(
+//                      color: Color.fromARGB(255, 161, 196, 253),
+//                      borderRadius: BorderRadius.circular(ServiceProvider
+//                          .instance
+//                          .instanceStyleService
+//                          .appStyle
+//                          .borderRadius)),
+//                  height: ServiceProvider.instance.screenService
+//                      .getPortraitHeightByPercentage(context, 7.5),
+//                  width: ServiceProvider.instance.screenService
+//                      .getWidthByPercentage(context, 70),
+//                  child: Center(
+//                    child: Text(
+//                      "Telefon",
+//                      style: ServiceProvider
+//                          .instance.instanceStyleService.appStyle.buttonText,
+//                    ),
+//                  ),
+//                ),
+//              ),
+//              Container(
+//                height: ServiceProvider.instance.screenService
+//                    .getHeightByPercentage(context, 5),
+//                width: 1,
+//              ),
               InkWell(
                 onTap: () => Navigator.push(
                   context,

@@ -261,6 +261,10 @@ class JournalEventPageController extends MasterPageController
 
   @override
   bool get hasBottomNav => false;
+
+  @override
+  // TODO: implement disableResize
+  bool get disableResize => null;
 }
 
 class JournalEventPage extends MasterPage {

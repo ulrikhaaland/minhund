@@ -111,6 +111,10 @@ class OfferPageController extends MasterPageController {
 
   @override
   bool get hasBottomNav => true;
+
+  @override
+  // TODO: implement disableResize
+  bool get disableResize => null;
 }
 
 class OfferPage extends MasterPage {
@@ -145,7 +149,7 @@ class OfferPage extends MasterPage {
                 ),
                 child: TabBar(
                   labelStyle: ServiceProvider
-                      .instance.instanceStyleService.appStyle.descTitle,
+                      .instance.instanceStyleService.appStyle.tabBarStyle,
                   indicatorColor: ServiceProvider
                       .instance.instanceStyleService.appStyle.skyBlue,
                   indicatorWeight: 3,

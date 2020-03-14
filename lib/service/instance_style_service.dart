@@ -94,6 +94,14 @@ class InstanceStyleService {
       color: _appStyle.textGrey,
     );
 
+    _appStyle.tabBarStyle = new TextStyle(
+      fontSize: screenHeight * 0.022 * factor,
+      fontFamily: 'Apercu',
+      fontWeight: FontWeight.bold,
+      fontStyle: FontStyle.normal,
+      color: _appStyle.skyBlue,
+    );
+
     _appStyle.body1 = new TextStyle(
       fontFamily: "Apercu",
       fontSize: screenHeight * 0.020 * factor,

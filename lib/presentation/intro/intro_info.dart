@@ -78,6 +78,10 @@ class IntroInfoOwnerController extends MasterPageController {
 
   @override
   bool get hasBottomNav => false;
+
+  @override
+  // TODO: implement disableResize
+  bool get disableResize => null;
 }
 
 class IntroInfoOwner extends MasterPage {
