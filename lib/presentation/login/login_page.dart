@@ -30,18 +30,21 @@ class LoginPage extends BaseView {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: ServiceProvider
-            .instance.instanceStyleService.appStyle.backgroundColor,
-        elevation: 0,
-      ),
       backgroundColor: ServiceProvider
           .instance.instanceStyleService.appStyle.backgroundColor,
       body: Column(
         children: <Widget>[
           Container(
             height: ServiceProvider.instance.screenService
-                .getHeightByPercentage(context, 10),
+                .getHeightByPercentage(context, 5),
+          ),
+          Image.asset(
+            "lib/assets/images/logo.png",
+            height: 150,
+          ),
+          Container(
+            height: ServiceProvider.instance.screenService
+                .getHeightByPercentage(context, 5),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

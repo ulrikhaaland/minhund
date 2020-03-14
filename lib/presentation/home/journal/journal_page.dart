@@ -123,7 +123,7 @@ class JournalPageController extends MasterPageController
       return a.timeStamp.compareTo(b.timeStamp);
     });
 
-    latestList.sort((a, b) {
+    latestList.sort((b, a) {
       a.timeStamp = a.timeStamp ?? DateTime(2069);
       b.timeStamp = b.timeStamp ?? DateTime(2420);
 

@@ -118,8 +118,8 @@ class JournalEventPageController extends MasterPageController
       completedEvents = [];
     }
 
-    sortListByDate(eventItemList: completedEvents);
-    sortListByDate(eventItemList: upcomingEvents);
+    sortListByDate(eventItemList: completedEvents, completed: true);
+    sortListByDate(eventItemList: upcomingEvents, completed: false);
   }
 
   onSaveItem(JournalEventItem item) async {
@@ -166,20 +166,31 @@ class JournalEventPageController extends MasterPageController
     refresh();
   }
 
-  void sortListByDate({@required List<JournalEventItem> eventItemList}) {
+  void sortListByDate(
+      {@required List<JournalEventItem> eventItemList, bool completed}) {
+    print("asd");
     if (eventItemList.isNotEmpty) {
       eventItemList.sort((a, b) {
-        if (a.timeStamp != null && b.timeStamp != null)
-          return a.timeStamp.compareTo(b.timeStamp);
-        else
-          return 0;
+        if (completed) {
+          DateTime at =
+              a.timeStamp ?? DateTime.now().subtract(Duration(days: 10000));
+          DateTime bt =
+              b.timeStamp ?? DateTime.now().subtract(Duration(days: 10000));
+          return at.compareTo(bt);
+        } else {
+          DateTime at =
+              a.timeStamp ?? DateTime.now().subtract(Duration(days: 10000));
+          DateTime bt =
+              b.timeStamp ?? DateTime.now().subtract(Duration(days: 10000));
+          return at.compareTo(bt);
+        }
       });
-      eventItemList.sort((a, b) {
-        int assortIndex = a.sortIndex ?? eventItemList.length + 1;
-        int bssortIndex = b.sortIndex ?? eventItemList.length + 1;
-
-        return assortIndex.compareTo(bssortIndex);
-      });
+//      eventItemList.sort((a, b) {
+//        int assortIndex = a.sortIndex ?? eventItemList.length + 1;
+//        int bssortIndex = b.sortIndex ?? eventItemList.length + 1;
+//
+//        return assortIndex.compareTo(bssortIndex);
+//      });
     }
   }
 

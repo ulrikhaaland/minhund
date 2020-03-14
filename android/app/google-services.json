@@ -38,6 +38,57 @@
             {
               "client_id": "685102100437-ejkv66eccdkqs2b0vrtdmla21njr1k6c.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "685102100437-16ub1qetmt6divnd5cnfurckjcti30sf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.minhund"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:685102100437:android:b1560a99be836ad45b175c",
+        "android_client_info": {
+          "package_name": "no.mihu.minhund"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "685102100437-bu18eh3edntkgjt6l0t7423ou4ovttah.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "no.mihu.minhund",
+            "certificate_hash": "befe7a42defe48aff847cfc048443fb18b53719d"
+          }
+        },
+        {
+          "client_id": "685102100437-ejkv66eccdkqs2b0vrtdmla21njr1k6c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4Jwt8EcZJiWAR-QW-5rWg88F63xpHmec"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "685102100437-ejkv66eccdkqs2b0vrtdmla21njr1k6c.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "685102100437-16ub1qetmt6divnd5cnfurckjcti30sf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.minhund"
+              }
             }
           ]
         }

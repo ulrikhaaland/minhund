@@ -1,4 +1,4 @@
-package com.example.minhund
+package no.mihu.minhund
 
 import android.os.Bundle
 
